@@ -1,0 +1,186 @@
+﻿@model HCM.Models.VacationsViewModel
+@using HCMBLL.Enums;
+@using HCM.Models;
+
+@{
+    ViewBag.Title = @Resources.Globalization.InquiryBalancesText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+
+        insertSelectionOptionToDDL('ddlVacationTypes', 0);
+
+        $('#tdAddVacationDetails').hide();          // used to hide vacation adding details on _vacation partial view
+        $('#tblVacation').hide();                   // used to hide all Divs for Balances on _vacation partial view
+
+        $('#ddlVacationTypes').on('change', function (event) {
+
+            $('#tblVacation').hide();
+
+            if ($(this).val() == '0') {
+                $('#tblVacation').hide();        //used to hide all Divs for Balances on _vacation partial view
+            }
+            else {
+                $('#tblVacation').show();
+            }
+
+            BindEmployeeVacations($('#hdnFldEmployeeCodeID').val());
+        });
+
+    });
+
+    function BindEmployeeVacations(EmployeeCodeID) {
+
+        var VacationTypeID = $('#ddlVacationTypes').val();
+        $('.divBalance').hide();        //used to hide all Divs for Balances on _vacation partial view
+
+        if (VacationTypeID == '0') {
+            $('#divExceptionalBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Exceptional)') {
+            $('#divExceptionalBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Normal)') {
+            $('#divNormalBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Sick)') {
+            $('#divSickBalance').show();
+            $('#divSickDDL').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.AccompanimentSick)') {
+            $('#divAccompanimentSickBalance').show();
+            $('#divSickDDL').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Accompaniment)') {
+            $('#divAccompanimentBalance').show();
+
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Born)') {
+            $('#divBornBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Dead)') {
+            $('#divDeadBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.MotherHood)') {
+            $('#divMotherHoodBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Birth)') {
+            $('#divBirthBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Studies)') {
+            $('#divStudiesBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Sports)') {
+
+            $('#divSportsBalance').show();
+        }
+         else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Emergency)') {
+
+            $('#divEmergencyBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Compensatory)') {
+            $('#divCompensatory').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Marriage)') {
+            $('#divMarriageBalance').show();
+        }
+            else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Exam)') {
+            $('#divExamBalance').show();
+        }
+
+        else {
+            $('#divExceptionalBalance').show();
+        }
+
+        if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Normal)') {
+
+            var VacationStartDate = $('#txtVacationStartDate').val();
+            GetVacationBalance(EmployeeCodeID, VacationTypeID, VacationStartDate);
+        }
+        else {
+            GetVacationBalance(EmployeeCodeID, VacationTypeID);
+        }
+    }
+
+    function GetVacationsType(GenderID) {
+
+        if (GenderID != 'NULL')
+            GenderID = GenderID;
+        else
+            GenderID = '@Convert.ToInt16(@GendersEnum.Male)';
+
+        $.ajax({
+            type: "POST"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/Vacations/GetVacationsType/" + GenderID
+            , success: function (d) {
+                $("#ddlVacationTypes").html("");
+                var VacationsTypes = d.data;
+                $.each(VacationsTypes, function (i, data) {
+                    $("#ddlVacationTypes").append($('<option></option>').val(data.VacationTypeID).html(data.VacationTypeName));
+                    $('.divBalance').hide();
+                    $('#divNormalBalance').show();
+                    ResetVacationBalance();
+                });
+                insertSelectionOptionToDDL('ddlVacationTypes', 0);
+
+                $('#tblVacation').hide();
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function Reset() {
+        $('#ddlVacationTypes').val(0);
+        ResetVacationBalance();
+    }
+
+    </script>
+
+<p style="font-size:larger">@Resources.Globalization.InquiryBalancesText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.InquiryBalancesDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+       
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+            <br />
+            <table class="table table-responsive table-striped">
+                <tr>
+                    <td class="col-md-6">
+                        @Html.LabelFor(model => model.VacationType, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-6">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-6">
+                        @Html.DropDownListFor(model => model.VacationType.VacationTypeID, new SelectList(new HCMBLL.VacationsTypesBLL().GetVacationsTypes(Convert.ToInt16(GendersEnum.Male)), "VacationTypeID", "VacationTypeName"), new { @id = "ddlVacationTypes", @style = "width:100%" })
+                    </td>
+                    <td class="col-md-6">
+                    </td>
+                </tr>
+            </table>
+
+            @Html.Partial("~/Views/Vacations/_Vacation.cshtml", @Model)
+        
+        
+    </div>
+</div>
+

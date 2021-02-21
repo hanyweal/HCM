@@ -1,0 +1,198 @@
+﻿@model HCM.Models.PassengerOrdersViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.DetailsPassengerOrderText;
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        BindItinerary();
+        BindEscort();
+    });
+
+    function BindItinerary() {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "/PassengerOrders/GetPassengerOrdersItinerariesByPassengerOrderID/" + '@Model.PassengerOrderID',
+            success: function (result) {
+                $("#tblPassengerOrdersItineraries").DataTable({
+                    destroy: true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "FromCity",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "ToCity",
+                            "autowidth": true
+                        }
+                    ]
+                });
+
+            }
+        });
+    }
+      function BindEscort() {
+        $("#tblEscort").DataTable({
+            destroy: true,
+            "searching": false,
+            "ordering": false,
+            "paging": false,
+            "ajax": {
+                "url": "/PassengerOrders/GetPassengerOrdersEscortsByPassengerOrderID/" + '@Model.PassengerOrderID',
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "EscortName",
+                    "autowidth": true
+                },
+                {
+                    "data": "EscortIDNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EscortAge",
+                    "autowidth": true
+                },
+                {
+                    "data": "EscortRelativeRelation",
+                    "autowidth": true
+                }
+            ]
+        });
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.DetailsPassengerOrderText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.DetailsPassengerOrderDescText
+    </div>
+    <div class="panel-body">
+        @Html.AntiForgeryToken()
+        <table class="table table-responsive table-condensed">
+            <tbody>
+                @Html.HiddenFor(model => model.PassengerOrderID)
+                <tr>
+                    <td class="col-md-2">
+                        <b>@Resources.Globalization.EmployeeCodeNoText</b>
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.Employee.EmployeeCodeNo)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <b>@Resources.Globalization.EmployeeNameArText</b>
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.Employee.EmployeeNameAr)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.TravellingDate, new { @class = "control-label" })
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.TravellingDate, new { @class = "TxtHijriPicker form-control", @id = "txtTravellingDate" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.RankName, new { @class = "control-label" })
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.RankName, new { @class = "form-control", @id = "txtRankName", @readonly = "readonly" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.TicketsClasses, new { @class = "control-label" })
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.TicketClassName, new { @class = "form-control", @id = "txtTicketClassName", @readonly = "readonly" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.Going, new { @class = "control-label" })
+                    </td>
+                    <td>
+                        @Html.CheckBoxFor(model => model.Going)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.Returning, new { @class = "control-label" })
+                    </td>
+                    <td>
+                        @Html.CheckBoxFor(model => model.Returning)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.Reason, new { @class = "control-label" })
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Reason)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.CreatedBy, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.CreatedBy)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.CreatedDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.CreatedDate)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <span class="control-label">@Resources.Globalization.PassengerOrderItinerariesText</span>
+        <table id="tblPassengerOrdersItineraries" class="table table-responsive table-hover" style="width:100%">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.FromCityText</td>
+                    <td>@Resources.Globalization.ToCityText</td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <span class="control-label">@Resources.Globalization.PassengerOrderEscortsDataText</span>
+    <table id="tblEscort" class="table table-responsive table-condensed table-striped dataTable">
+        <thead>
+            <tr>
+                <td>@Resources.Globalization.NameText</td>
+                <td>@Resources.Globalization.EmployeeIDNoText</td>
+                <td>@Resources.Globalization.AgeText</td>
+                <td>@Resources.Globalization.RelativeRelationText</td>
+            </tr>
+        </thead>
+    </table>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "PassengerOrders"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

@@ -1,0 +1,107 @@
+﻿@model HCM.Models.ContractorsBasicSalariesViewModel
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+
+@{
+    ViewBag.Title = Resources.Globalization.AddNewContractorsBasicSalariesText;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+
+    var ContractorBasicSalaryID = 0;
+    function OnSuccess(data) {
+        $('#ContractorsBasicSalariesForm')[0].reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText),"OkFunction")');
+        ContractorBasicSalaryID = data.ContractorBasicSalaryID;
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+    function OkFunction() {
+        //
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.AddNewContractorsBasicSalariesText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewContractorsBasicSalariesDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.ContractorsBasicSalaries })
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("CreateContractorsBasicSalaries", "BasicSalaries", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }, new { id = "ContractorsBasicSalariesForm" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            //Employees Partial View
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.BasicSalary, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.TransfareAllowance, new { @class = "control-label" })</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.BasicSalary, new { @class = "form-control allownumericwithdecimal", @id = "txtBasicSalary", @value = "0" })
+                            @Html.ValidationMessageFor(model => model.BasicSalary, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.TransfareAllowance, new { @class = "form-control allownumericwithdecimal", @id = "txtTransfareAllowance", @value = "0" })
+                            @Html.ValidationMessageFor(model => model.TransfareAllowance, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" id="btnReset" class="btn btn-default" value="@Resources.Globalization.ResetText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "BasicSalaries"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }*@

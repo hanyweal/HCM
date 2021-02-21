@@ -1,0 +1,139 @@
+﻿
+@{
+    //  ViewBag.Title = Resources.Globalization.StopWorksText;
+}
+
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+<script>
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblStopWorks").DataTable({
+             dom: 'Bfrtip',
+            //"destroy":true,
+            "ajax": {
+                "url": "/StopWorks/GetStopWorks",
+                "type": "get",
+                "datatype": "json"
+            },
+              "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                     "data": "StopWorkID",
+                     "autowidth": true,
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true,
+                },
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true,
+                },
+                {
+                    "data": "EmployeeIDNo",
+                    "autowidth": true,
+                },
+                {
+                    "data": "StopWorkStartDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "StopWorkEndDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "IsConvicted",
+                    "autowidth": true,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "StopWorkID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Details", "StopWorks")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "StopWorkID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "StopWorks")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "StopWorkID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "StopWorks")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "StopWorkID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("End", "StopWorks")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-ban-circle" title="' + '@Resources.Globalization.EndStopWorkText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "StopWorkID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = 'PrintStopWork(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" title="' + '@Resources.Globalization.PrintText' + '"/></a>'
+                    }
+                },
+            ]
+        });
+    });
+
+    function PrintStopWork(StopWorkID) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/StopWorks/PrintStopWork/")' + StopWorkID);
+        ShowModal("#divReportModal");
+    }
+
+</script>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.SearchStopWorkDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblStopWorks" class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.SequenceNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeIDNoText</td>
+                    <td>@Resources.Globalization.StopWorkStartDateText</td>
+                    <td>@Resources.Globalization.StopWorkEndDateText</td>
+                    <td>@Resources.Globalization.IsConvictedText</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+

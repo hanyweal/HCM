@@ -1,0 +1,140 @@
+﻿@model HCM.Models.AllowancesViewModel
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        BindAllowances();
+
+        $("#OpenAllowancesPopup").click(function () {
+            ShowModal("#divAllowancesModal");
+        });
+    });
+
+    function BindAllowances() {
+        var tblAllowances = $("#tblAllowances").DataTable({
+            "ajax": {
+                "url": "/Allowances/GetAllowances",
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "AllowanceName",
+                    "autowidth": true
+                },
+                {
+                    "data": "AllowanceAmountType.AllowanceAmountTypeName",
+                    "autowidth": true
+                },
+                {
+                    "data": "AllowanceAmount",
+                    "autowidth": true
+                },
+                //{
+                //    "data": "Employee.JobName",
+                //    "autowidth": true
+                //},
+                {
+                    "data": "AllowanceID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        return '<a onClick="closeAllowancesPopup(' +
+                                                data + ', ' +
+                                                '\'' + row.AllowanceName + '\'' + ', ' +
+                                                '\'' + row.AllowanceAmountType.AllowanceAmountTypeName + '\'' + ', ' +
+                                                '\'' + row.AllowanceAmount + '\'' +
+                                            ')"><span class="glyphicon glyphicon-thumbs-up" /></a>'
+                    }
+                }
+            ]
+        });
+    }
+
+    function closeAllowancesPopup(AllowanceID, AllowanceName, AllowanceAmountTypeName, AllowanceAmount) {
+
+        $("#txtAllowanceName").val(AllowanceName);
+        $("#txtAllowanceAmountTypeName").val(AllowanceAmountTypeName);
+        $("#txtAllowanceAmount").val(AllowanceAmount);
+        $("#hdnFldAllowanceID").val(AllowanceID);
+
+        DestroyModal("#divAllowancesModal");
+    }
+
+    function ResetAllowance() {
+        $("#txtAllowanceName").val('');
+        $("#hdnFldAllowanceID").val('');
+        $("#txtAllowanceAmountTypeName").val('');
+        $("#txtAllowanceAmount").val('');
+    }
+
+</script>
+
+<table class="table table-responsive table-condensed table-striped" style="text-align:right">
+    <tr>
+        <td class="col-md-4">
+            @Html.LabelFor(model => model.AllowanceName, new { @class = "control-label" })
+        </td>
+        <td class="col-md-4">
+            @Html.LabelFor(model => model.AllowancesAmountTypes, new { @class = "control-label" })
+        </td>
+        <td class="col-md-4">
+            @Html.LabelFor(model => model.AllowanceAmount, new { @class = "control-label" })
+        </td>
+    </tr>
+    <tr>
+        <td class="col-md-4">
+            <div class="input-group" style="width:100%">
+                @Html.TextBoxFor(model => model.AllowanceName, new { @class = "form-control", @id = "txtAllowanceName", @readonly = "readonly" })
+                @*<a id="OpenAllowancesPopup" title="@Resources.Globalization.SearchAboutAllowanceTooltipText">
+                        <span class="glyphicon glyphicon-search" style="font-size:large"></span>
+                    </a>*@
+                <span id="OpenAllowancesPopup" class="input-group-addon clickable" title="@Resources.Globalization.SearchAboutAllowanceTooltip">
+                    <i class="glyphicon glyphicon-search"></i>
+                </span>
+            </div>
+            @Html.HiddenFor(model => model.AllowanceID, new { @id = "hdnFldAllowanceID" })
+            @Html.ValidationMessageFor(model => model.AllowanceName, "", new { @class = "text-danger" })
+        </td>
+        <td class="col-md-4">
+            @Html.TextBoxFor(model => model.AllowanceAmountType.AllowanceAmountTypeName, new { @class = "form-control", @id = "txtAllowanceAmountTypeName", @readonly = "readonly" })
+        </td>
+        <td class="col-md-4">
+            @Html.TextBoxFor(model => model.AllowanceAmount, new { @class = "form-control", @id = "txtAllowanceAmount", @readonly = "readonly" })
+        </td>
+    </tr>
+</table>
+
+<div class="modal fade" id="divAllowancesModal">
+    <div class="modal-dialog" style="width:800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.AllowancesListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                    </div>
+                </div>
+                <table id="tblAllowances" class="table table-responsive table-hover dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.AllowanceNameText</td>
+                            <td>@Resources.Globalization.AllowanceAmountTypeText</td>
+                            <td>@Resources.Globalization.AllowanceAmountText</td>
+                            <td>@Resources.Globalization.SelectText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

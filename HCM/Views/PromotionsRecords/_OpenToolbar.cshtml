@@ -1,0 +1,177 @@
+﻿@using HCM.Classes.Enums
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#btnShowCandidates").click(function () {
+            BindCandidates();
+
+            
+        });
+        extentedFuncForJobsCategoriesPopup = "ResetCandidates";
+    });
+
+    function OnSuccessPromotionCreation(data) {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+        $("#hdnFldPromotionRecordToolbarID").val('@Convert.ToInt32(PromotionsRecordsToolbarEnum.Opened)');
+        $("#divToolbar").load('@RazorHelper.ShowPormotionToolbar(this, PromotionsRecordsToolbarEnum.Opened)', AppendToolbar);
+        $("#hdnFldPromotionRecordID").val(data.PromotionRecordID);
+        $("#txtPromotionRecordNo").val(data.PromotionRecordNo);
+        $("#txtPromotionRecordStatusName").val(data.PromotionRecordStatus.PromotionRecordStatusName);
+        ReadOnlyModePromotionsPeriods();
+        ReadOnlyModeJobsCategories();
+    }
+
+    function BindCandidates(Mode, PromotionRecordID) {
+        var RequestedUrl = '';
+        var JobCategoryID = $("#hdnFldJobCategoryID").val() == '' ? 0 : $("#hdnFldJobCategoryID").val();
+        var RankID = $("#hdnFldRankID").val() == '' ? 0 : $("#hdnFldRankID").val();
+        var PromotionPeriodID = $("#ddlPromotionPeriod").val() == '' ? 0 : $("#ddlPromotionPeriod").val();
+
+        if (Mode == "refresh") {
+            RequestedUrl = "GetAllCandidatesByPromotionRecordID/" + PromotionRecordID; //tblCandidates.ajax.url('/PromotionsRecords/GetAllCandidatesByPromotionRecordID/' + PromotionRecordID).load();
+        }
+        else {
+            RequestedUrl = "GetPromotionCandidates/" + RankID + "/" + JobCategoryID + "/" + PromotionPeriodID;
+        }
+
+        var tblCandidates = $("#tblCandidates").DataTable({
+            "dom": 'Bfrtip',
+            "ajax": {
+                "url": "/PromotionsRecords/" + RequestedUrl,
+                "type": "get",
+                "datatype": "json",
+                "error": function (xhr, status, error) {
+                    OnFailure();
+                },
+            },
+            "destroy": true,
+            "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            //"createdRow": function (data, row, index) {
+            //    //console.log(row.IsIncluded);
+            //    //if (row.IsIncluded == 'false') {
+            //    //    //$(row).css('color','red');
+            //    //    $(row).removeClass('even');
+            //    //    $(row).addClass('blueColor');
+            //    //}
+            //},
+            "drawCallback": function (settings) {
+                $('#tblCandidates tbody tr').each(function () {
+
+                    //var IsIncluded = $("#chbxIncluded:checked", this);
+                    //console.log($("#chbxIncluded", this));
+                    //if ($("#chbxIncluded:checked", this).checked == 'false') {
+                    //    $(this).addClass("alert alert-danger");
+                    //}
+
+                    if ($("#divIsIncluded", this).text() == 'false') {
+                        //$(this).removeClass("even");
+                        $(this).addClass("alert alert-danger");
+                        $(this).addClass("red");
+                    }
+                    else {
+                        $(this).addClass("alert alert-info");
+                        $(this).addClass("lightBlue");
+                    }
+                });
+            },
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobCategoryName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobCode",
+                    "autowidth": true
+                },
+                {
+                    "data": "OrganizationName",
+                    "autowidth": true
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true
+                },
+                {
+                    "data": "LastQualificationDegreeName",
+                    "autowidth": true
+                },
+                {
+                    "data": "LastQualificationName",
+                    "autowidth": true
+                },
+                {
+                    "data": "LastGeneralSpecializationName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JoinDate",
+                    "autowidth": true
+                },
+                {
+                    "data": "AddedWayName",
+                    "autowidth": true
+                },
+                {
+                    "data": "IsIncluded",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        var checked = data ? "checked" : "";
+                        return '<span><input id="chbxIncluded" type="checkbox" disabled ' + checked + ' /><div id="divIsIncluded" hidden>' + data + '</div></span>';
+                    }
+                },
+                {
+                    "data": "EmployeeCodeID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = "ShowEmployeeDetails(" + row.EmployeeCareerHistoryID
+                                                     + "," + row.EmployeeCodeID
+                                                     + "," + row.EmployeeCodeNo
+                                                     + ",'" + row.EmployeeNameAr
+                                                     + "','" + row.RankName
+                                                     + "','" + row.JoinDate
+                                                     + "','" + row.AddedWayName
+                                                     + "','" + row.CreatedBy
+                                                     + "','" + row.ManualAddedReason
+                                                     + "','" + row.CreatedDate
+                                                     + "',null,'Create', 0, " + row.AddedWayID
+                                                     + ");";
+                        return "<a onclick=\"" + Url + "\"><span Class='glyphicon glyphicon-info-sign' title='" + '@Resources.Globalization.DetailsText' + "'/></a>"
+                    }
+                },
+            ]
+        });
+    }
+
+</script>
+
+<div class="btn-group">
+    <button id="btnSave" class="btn btn-default" type="submit">
+        <span class="glyphicon glyphicon-floppy-saved"></span> @Resources.Globalization.SaveText
+    </button>
+    @Html.Partial("~/Views/Shared/_JobsVacanciesPopup.cshtml")
+    <button id="btnShowCandidates" class="btn btn-default" type="button" title="@Resources.Globalization.ClickToShowCandidatesTooltip">
+        <span class="glyphicon glyphicon-user"></span> @Resources.Globalization.ShowJobsCandidatesText
+    </button>
+</div>
+
+

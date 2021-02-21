@@ -1,0 +1,108 @@
+﻿@model HCM.Models.RanksTicketsClassesViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.DeleteRankTicketClassText;
+}
+<script type="text/javascript">
+
+    function OkFunction() {
+        window.location.href = "/RanksTicketsClasses/Index";
+    }
+
+    $(document).ready(function () {
+
+        $("#BtnDelete").confirm({
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () { $("#BtnDelete").submit(); },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+         
+    });
+
+    function OnSuccess() {
+        //alert('OnSuccess');
+        $("#BtnDelete").attr("disabled", "disabled");
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+    }
+
+    function OnFailure() {
+        //alert('OnFailure');
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.DeleteRankTicketClassText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.DeleteRankTicketClassDescText
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Delete", "RanksTicketsClasses", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            InsertionMode = InsertionMode.Replace,
+            HttpMethod = "DELETE",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            <span class="control-label">@Resources.Globalization.RankTicketClassBasicInfoText</span>
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.Ranks, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.Rank.RankName)
+                            @Html.HiddenFor(model => model.RankTicketClassID)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.TicketsClasses, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.TicketClass.TicketClassName)
+                        </td>
+                    </tr> 
+                </tbody>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" id="BtnDelete" name="BtnDelete" value="@Resources.Globalization.DeleteText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "RanksTicketsClasses"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

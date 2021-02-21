@@ -1,0 +1,199 @@
+﻿@model  HCM.Models.UmAlquraCalViewModel
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //$("#txtDay,#txtMonth,#txtYear").focus(function () {
+        //    //$(this).val('');
+        //});
+
+        $('#txtDay,#txtMonth,#txtYear').keydown(function (e) {
+            var code = e.keyCode || e.which;
+            if (code === 13) { // user pressed on enterkey
+                e.preventDefault();
+                if ($(this).attr('id') == 'txtDay') {
+                    $('#txtMonth').focus();
+                }
+                else if ($(this).attr('id') == 'txtMonth') {
+                    $('#txtYear').focus();
+                }
+            }
+        });
+
+        //$("#txtDay,#txtMonth").keyup(function () {
+            //if ($(this).val().length === 2) {
+            //    if ($(this).attr('id') == 'txtDay') {
+            //        $('#txtMonth').focus();
+            //    }
+            //    else {
+            //        $('#txtYear').focus();
+            //    }
+            //}
+        //});
+
+        $("#txtDay,#txtMonth,#txtYear").blur(function () {
+            if ($(this).val().length > 0) {
+                if ($(this).val().length == 1)
+                {
+                    $(this).val("0" + $(this).val());
+                }
+                if ($(this).attr('id') == 'txtDay') {
+                    $.ajax({
+                        type: "get"
+                        , dataType: "json"
+                        , contentType: "application/json; charset=utf-8"
+                        , url: "/Helper/GetDays/" + $("#txtDay").val()
+                        , success: function (data) {
+                            if (data.data.length === 0) {
+                                $("#txtDay").val('');
+                                $("#txtDay").focus();
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.SelectedDayShouldBeText))');
+                            }
+                        }
+                        , error: function (xhr, status, error) {
+                            console.log(xhr, status, error);
+                        }
+                    });
+                }
+                else if ($(this).attr('id') == 'txtMonth') {
+                    $.ajax({
+                        type: "get"
+                        , dataType: "json"
+                        , contentType: "application/json; charset=utf-8"
+                        , url: "/Helper/GetMonths/" + $("#txtMonth").val()
+                        , success: function (data) {
+                            if (data.data.length === 0) {
+                                $("#txtMonth").val('');
+                                $("#txtMonth").focus();
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.SelectedMonthShouldBeText))');
+                            }
+                        }
+                        , error: function (xhr, status, error) {
+                            console.log(xhr, status, error);
+                        }
+                    });
+                }
+                else {
+                    $.ajax({
+                        type: "get"
+                        , dataType: "json"
+                        , contentType: "application/json; charset=utf-8"
+                        , url: "/Helper/GetYears/" + $("#txtYear").val()
+                        , success: function (data) {
+                            if (data.data.length === 0) {
+                                $("#txtYear").val('');
+                                $("#txtYear").focus();
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.SelectedYearShouldBeText))');
+                            }
+                        }
+                        , error: function (xhr, status, error) {
+                            console.log(xhr, status, error);
+                        }
+                    });
+                }
+            }
+        });
+
+        $("#txtDay").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    type: "get"
+                    , dataType: "json"
+                    , contentType: "application/json; charset=utf-8"
+                    , url: "/Helper/GetDays/" + $("#txtDay").val()
+                    , success: function (data) {
+                        response($.map(data.data, function (item) {
+                            return { label: item, value: item }
+                        }));
+                    }
+                    , error: function (xhr, status, error) {
+                        console.log(xhr, status, error);
+                    }
+                });
+            }
+        });
+
+        $("#txtMonth").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    type: "get"
+                    , dataType: "json"
+                    , contentType: "application/json; charset=utf-8"
+                    , url: "/Helper/GetMonths/" + $("#txtMonth").val()
+                    , success: function (data) {
+                        response($.map(data.data, function (item) {
+                            return { label: item, value: item }
+                        }));
+                    }
+                    , error: function (xhr, status, error) {
+                        console.log(xhr, status, error);
+                    }
+                });
+            }
+        });
+
+        $("#txtYear").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    type: "get"
+                    , dataType: "json"
+                    , contentType: "application/json; charset=utf-8"
+                    , url: "/Helper/GetYears/" + $("#txtYear").val()
+                    , success: function (data) {
+                        response($.map(data.data, function (item) {
+                            return { label: item, value: item }
+                        }));
+                    }
+                    , error: function (xhr, status, error) {
+                        console.log(xhr, status, error);
+                    }
+                });
+            }
+        });
+
+        @*$('#spanUmalquraCal').on('click', function () {
+             //PreviousDelegationStartDate = this.value;
+             $(this).calendarsPicker({
+                 calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+                 onSelect: customRange,
+                 commandsAsDateFormat: true,
+                 dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+                 onSelect: function (dates) {
+                     $('#txtDay').val(dates[0]._day);
+                     $('#txtMonth').val(dates[0]._month);
+                     $('#txtYear').val(dates[0]._year);
+                 }
+             });
+         });*@
+    });
+
+    function ResetDate() {
+        $('#txtDay').val('');
+        $('#txtMonth').val('');
+        $('#txtYear').val('');
+        $('#txtFullDate').val('');
+    }
+</script>
+
+<div class="input-group">
+    @Html.ValidationSummary(true)
+    @Html.TextBoxFor(model => model.Day, new { @class = "form-control", @id = "txtDay", @placeholder = @Resources.Globalization.DayText, @title = @Resources.Globalization.SelectDayText, @type = "number" })
+    @Html.ValidationMessageFor(model => model.Day, "", new { @class = "text-danger" })
+    <span class="input-group-addon">-</span>
+    @Html.TextBoxFor(model => model.Month, new { @class = "form-control", @id = "txtMonth", @placeholder = @Resources.Globalization.MonthText, @title = @Resources.Globalization.SelectMonthText, @type = "number" })
+    @Html.ValidationMessageFor(model => model.Month, "", new { @class = "text-danger" })
+    <span class="input-group-addon">-</span>
+    @Html.TextBoxFor(model => model.Year, new { @class = "form-control", @id = "txtYear", @placeholder = @Resources.Globalization.YearText, @title = @Resources.Globalization.SelectYearText, @type = "number" })
+    @Html.ValidationMessageFor(model => model.Year, "", new { @class = "text-danger" })
+    <span class="input-group-addon">هـ</span>
+
+    @*@Html.HiddenFor(model => model.FullDate, new
+                    {
+                        @class = "form-control",
+                        @id = "txtFullDate",
+                        @Value = Model.FullDate.HasValue ? Model.FullDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                    })*@
+    
+    @*<span id ="spanUmalquraCal" class="glyphicon glyphicon-calendar input-group-addon clickable" style="position:initial">
+        </span>*@
+</div>

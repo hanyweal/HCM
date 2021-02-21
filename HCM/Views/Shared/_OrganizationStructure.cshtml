@@ -1,0 +1,72 @@
+﻿
+<script type="text/javascript">
+    $(document).ready(function () {
+
+         $('#txtFilterInOrganizationTree').on('keyup', function myfunction() {
+            $('#OrganizationTree').treeview('search', [$(this).val(), { revealResults: true, exactMatch: false, }]);
+         });
+
+        BindOrgTree();
+    });
+
+    function BindOrgTree() {
+        $.ajax({
+            type: "POST"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "@Url.Content("~/OrganizationStructure/GetOrganizationStructure")"
+            , success: function (d) {
+                console.log('d.data', d.data);
+                $('#OrganizationTree').treeview({
+                    data: '[' + JSON.stringify(d.data).replace(/OrganizationNameWithBranch/g, "text").replace(/ChildOrganization/g, "nodes") + ']',
+                    levels: 2, // for default expanded
+                    backColor: 'white',
+                    showBorder: true,
+                    selectedBackColor: '#2D3E50',
+                    selectedBackColor: '#2D3E50',
+                    searchResultBackColor: '#2D3E50',
+                    searchResultColor: 'white',
+                    //enableLinks: true,
+                    //expandIcon: "glyphicon glyphicon-triangle-right",
+                    //collapseIcon: "glyphicon glyphicon-triangle-bottom",
+                    //backColor: 'green'
+                    onNodeSelected: function (event, data) {
+                        $('#hdnFldOrganizationID').val(data.OrganizationID);
+                        $('#hdnFldOrganizationName').val(data.OrganizationName);
+                        //DestroyModal('#divOrganizationStructureModal');
+                        var CallBackFnName = 'OnOrganizationStructureNodeSelected';
+                        if (typeof CallBackFnName !== 'undefined' && $.isFunction(window[CallBackFnName])) {
+                            window[CallBackFnName]();
+                        }
+                    }
+                });
+            }
+            , error: function (xhr, status, error) {
+                //alert(error.message);
+                 $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "/Error")');
+            },
+        });
+    }
+
+    function ResetOrganization() {
+        $("#hdnFldOrganizationID").val('');
+        $("#txtOrganizationName").val('');
+        $("#hdnFldOrganizationName").val('');
+    }
+
+</script>
+
+<div class="row">
+    <div class="col-md-12">
+        <input type="text" id="txtFilterInOrganizationTree" class="form-control" placeholder="@Resources.Globalization.SearchText" />
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="OrganizationTree" style="width:100%;"></div>
+    </div>
+</div>
+
+<input type="hidden" id="hdnFldOrganizationID" />
+<input type="hidden" id="hdnFldOrganizationName" />

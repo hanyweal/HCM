@@ -1,0 +1,6 @@
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDB\bin\Debug\HCMDB.dacpac
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDB\bin\Debug\HCMDB.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDB\bin\Debug\HCMDB.pdb
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDB\obj\Debug\HCMDB.sqlprojAssemblyReference.cache
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDB\obj\Debug\HCMDB.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDB\obj\Debug\HCMDB.pdb

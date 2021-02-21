@@ -1,0 +1,20 @@
+﻿@helper DisplayImage(string Image)
+{
+    if (Image != null)
+    {
+        //string ImageBase64 = Convert.ToBase64String(Image);
+        string ImageBase64 = Image;
+        string ImageSrc = string.Format("data:image/gif;base64,{0}", ImageBase64);
+        <img id="ImgUserPic" class="img-circle img-responsive" src="@ImageSrc" />
+    }
+    else
+    {
+        <img id="ImgUserPic" class="img-circle img-responsive" src="/Content/Images/anonymous.png" />
+    }
+}
+
+@helper ShowAlert(System.Web.Mvc.WebViewPage page, HCM.Classes.Enums.ModalTypes ModalType, string Message, string CallBackFnName = null)
+{
+    @page.Url.Content("~/Modal/Index/" + ModalType + "/" + Message + "/" + CallBackFnName);
+}
+

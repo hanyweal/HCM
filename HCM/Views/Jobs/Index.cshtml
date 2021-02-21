@@ -1,0 +1,380 @@
+﻿@{
+    //ViewBag.Title = "Index";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = Resources.Globalization.JobsText;
+}
+
+<script>
+    $(document).ready(function () {
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+        BindJobsGeneralGroups();
+        BindJobsGroups();
+        BindJobsCategories();
+        BindJobs();
+    });
+
+    //---=====  Start Bind Data Grids
+    function BindJobsGeneralGroups() {
+        $("#tblJobsGeneralGroups").DataTable({
+             dom: 'Bfrtip',
+            "ajax": {
+                "url": "/Jobs/GetJobsGeneralGroups",
+                "type": "get",
+                "datatype": "json"
+            },
+             "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "JobGeneralGroupName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobGeneralGroupID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("EditJobGeneralGroup", "Jobs")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "JobGeneralGroupID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("DeleteJobGeneralGroup", "Jobs")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    }
+                },
+
+            ]
+        });
+    }
+
+    function BindJobsGroups() {
+        $("#tblJobsGroups").DataTable({
+             dom: 'Bfrtip',
+            "ajax": {
+                "url": "/Jobs/GetJobsGroups",
+                "type": "get",
+                "datatype": "json"
+            },
+             "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                 {
+                     "data": "JobGeneralGroup.JobGeneralGroupName",
+                     "autowidth": true,
+                 },
+                {
+                    "data": "JobGroupName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobGroupID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("EditJobGroup", "Jobs")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "JobGroupID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("DeleteJobGroup", "Jobs")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    }
+                },
+
+            ]
+        });
+    }
+
+    function BindJobsCategories() {
+        $("#tblJobsCategories").DataTable({
+             dom: 'Bfrtip',
+            "ajax": {
+                "url": "/Jobs/GetJobsCategories",
+                "type": "get",
+                "datatype": "json"
+            },
+             "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "JobGroup.JobGeneralGroup.JobGeneralGroupName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "JobGroup.JobGroupName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "JobCategoryName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobCategoryID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("AddPromotionJobCategory", "Jobs")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-plus-sign" title="' + '@Resources.Globalization.AddPromotionJobCategoryText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "JobCategoryID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("AddJobCategoryQualification", "Jobs")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-education" title="' + '@Resources.Globalization.AddJobCategoryQualificationText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "JobCategoryID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("EditJobCategory", "Jobs")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "JobCategoryID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("DeleteJobCategory", "Jobs")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    }
+                },
+
+            ]
+        });
+    }
+
+    function BindJobs() {
+        $("#tblJobs").DataTable({
+              dom: 'Bfrtip',
+            "ajax": {
+                "url": "/Jobs/GetJobs",
+                "type": "get",
+                "datatype": "json"
+            },
+             "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                 {
+                     "data": "JobCategory.JobGroup.JobGeneralGroup.JobGeneralGroupName",
+                     "autowidth": true,
+                 }, {
+                     "data": "JobCategory.JobGroup.JobGroupName",
+                     "autowidth": true,
+                 }, {
+                     "data": "JobCategory.JobCategoryName",
+                     "autowidth": true,
+                 },
+                {
+                    "data": "JobCode",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "Jobs")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "JobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "Jobs")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    }
+                },
+
+            ]
+        });
+    }
+    //--======  End Bind Data Grids
+
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.JobsSettingsText</p>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.JobsSettingsDescText
+    </div>
+    <div class="panel-body">
+        @Html.AntiForgeryToken()
+        <table class="table table-responsive table-striped" style="width:100%">
+            <tbody>
+                <tr>
+                    <td>
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#TabJobGeneralGroup" data-toggle="tab">@Resources.Globalization.JobGeneralGroupNameText</a>
+                            </li>
+                            <li>
+                                <a href="#TabJobGroup" data-toggle="tab">@Resources.Globalization.JobGroupNameText</a>
+                            </li>
+                            <li>
+                                <a href="#TabJobCategory" data-toggle="tab">@Resources.Globalization.JobCategoryNameText</a>
+                            </li>
+                            <li>
+                                <a href="#TabJob" data-toggle="tab">@Resources.Globalization.JobNameText</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content clearfix">
+                            <div id="TabJobGeneralGroup" class="tab-pane active padding-5">
+                                <div id="divJobGeneralGroup">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <a href="~/Jobs/CreateJobGeneralGroup">@Resources.Globalization.CreateNewText</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="panel panel-default" style="padding:0px">
+                                            <div class="panel-heading">
+                                                @Resources.Globalization.SearchJobsGeneralGroupsDescText
+                                            </div>
+                                            <div class="panel-body">
+                                                <table id="tblJobsGeneralGroups" class="table table-responsive table-hover" style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <td>@Resources.Globalization.JobGeneralGroupNameText</td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="TabJobGroup" class="tab-pane padding-5">
+                                <div id="divJobGroup">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <a href="~/Jobs/CreateJobGroup">@Resources.Globalization.CreateNewText</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="panel panel-default" style="padding:0px">
+                                            <div class="panel-heading">
+                                                @Resources.Globalization.SearchJobsGroupsDescText
+                                            </div>
+                                            <div class="panel-body">
+                                                <table id="tblJobsGroups" class="table table-responsive table-hover" style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <td>@Resources.Globalization.JobGeneralGroupNameText</td>
+                                                            <td>@Resources.Globalization.JobGroupNameText</td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="TabJobCategory" class="tab-pane padding-5">
+                                <div id="divJobCategory">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <a href="~/Jobs/CreateJobCategory">@Resources.Globalization.CreateNewText</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="panel panel-default" style="padding:0px">
+                                            <div class="panel-heading">
+                                                @Resources.Globalization.SearchJobsCategoriesDescText
+                                            </div>
+                                            <div class="panel-body">
+                                                <table id="tblJobsCategories" class="table table-responsive table-hover" style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <td>@Resources.Globalization.JobGeneralGroupNameText</td>
+                                                            <td>@Resources.Globalization.JobGroupNameText</td>
+                                                            <td>@Resources.Globalization.JobCategoryNameText</td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="TabJob" class="tab-pane padding-5">
+                                <div id="divJob">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <a href="~/Jobs/Create">@Resources.Globalization.CreateNewText</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="panel panel-default" style="padding:0px">
+                                            <div class="panel-heading">
+                                                @Resources.Globalization.SearchJobsDescText
+                                            </div>
+                                            <div class="panel-body">
+                                                <table id="tblJobs" class="table table-responsive table-hover" style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <td>@Resources.Globalization.JobGeneralGroupNameText</td>
+                                                            <td>@Resources.Globalization.JobGroupNameText</td>
+                                                            <td>@Resources.Globalization.JobCategoryNameText</td>
+                                                            <td>@Resources.Globalization.JobCodeText</td>
+                                                            <td>@Resources.Globalization.JobNameText</td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+

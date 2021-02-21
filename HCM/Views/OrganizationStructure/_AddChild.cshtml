@@ -1,0 +1,122 @@
+﻿@model HCM.Models.OrganizationStructureViewModel
+@using HCM.Models
+@{
+    ViewBag.Title = Resources.Globalization.OrganizationStructureText;
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    bool IsCreatePermission = new HCM.Classes.Helpers.PSAHelper().IsCreatePermission(Request.Url.ToString());
+    bool IsUpdatePermission = new HCM.Classes.Helpers.PSAHelper().IsUpdatePermission(Request.Url.ToString());
+    bool IsDeletePermission = new HCM.Classes.Helpers.PSAHelper().IsDeletePermission(Request.Url.ToString());
+}
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#btnAdd").click(function () {
+            var ChildOrganization =
+            {
+                OrganizationCode: $('#txtChildOrganizationCode').val(),
+                OrganizationName: $('#txtChildOrganizationName').val(),
+                ParentOrganizationID: $('#hdnFldOrganizationID').val(),
+                ManagerCodeID: null,
+                BranchID: $('#ddlChildBranches').val(),
+            };
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                url: "@Url.Content("~/OrganizationStructure/Create")",
+                data: JSON.stringify(ChildOrganization),
+                success: AddingSuccess,
+                error: function (xhr, status, error) {
+                    OnFailure();
+                }
+            });
+        });
+
+    });
+
+    function ResetChildOrganization() {
+        $('#txtChildOrganizationCode').val('');
+        $('#txtChildOrganizationName').val('');
+    }
+
+    function AddingSuccess(data) {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText))');
+
+        if (chart) {
+            chart.addNode(data);
+        }
+        ResetChildOrganization();
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "/Error")');
+    }
+
+    function ResetChildOrganization() {
+        $('#txtChildOrganizationCode').val('');
+        $('#txtChildOrganizationName').val('');
+        $('#hdnFldEmployeeCodeIDAddedOrganization').val('');
+        $('#txtEmployeeNameArAddOrganization').val('');
+        $('#txtEmployeeOrganizationNameAddOrganization').val('');
+        $('#txtEmployeeCodeNoAddOrganization').val('');
+        $('#txtHiringDateAddOrganization').val('');
+        $('#txtEmployeeIDNoAddOrganization').val('');
+    }
+
+    </script>
+
+@if (IsCreatePermission)
+{
+    <div class="panel panel-default" style="padding:0px">
+        <div class="panel-heading">
+            @Resources.Globalization.WantedAddedOrganizationText
+        </div>
+        <div class="panel-body">
+            <table class="table table-responsive table-condensed table-striped">
+                <tr>
+                    <td class="col-md-4">
+                        @Html.LabelFor(model => model.OrganizationCode, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-4">
+                        @Html.LabelFor(model => model.OrganizationName, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-4">
+                        @Html.LabelFor(model => model.BranchName, new { @class = "control-label" })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        @Html.TextBoxFor(model => model.OrganizationCode, new { @class = "form-control", @id = "txtChildOrganizationCode" })
+                    </td>
+                    <td class="col-md-4">
+                        @Html.TextBoxFor(model => model.OrganizationName, new { @class = "form-control", @id = "txtChildOrganizationName" })
+                    </td>
+                    <td class="col-md-4">
+                        @Html.DropDownListFor(model => model.BranchID, new SelectList(new HCMBLL.BranchesBLL().GetBranches(), "BranchID", "BranchName"), new { @id = "ddlChildBranches", @style = "width:100%" })
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="col-md-12">
+                        @*<div class="panel panel-default" style="padding:0px">
+                                <div class="panel-heading">
+                                    @Resources.Globalization.OrganizationManagerText
+                                </div>
+                                <div class="panel-body">
+                                    @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { IsShowAllFields = false, PartialName = "AddChildOrganization" })
+                                </div>
+                            </div>*@
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="panel-footer">
+            <div class="row">
+                <div class="col-md-9"></div>
+                <div class="col-md-3">
+                    <input id="btnAdd" type="submit" class="btn btn-default" value="@Resources.Globalization.AddText" />
+                </div>
+            </div>
+        </div>
+    </div>
+}

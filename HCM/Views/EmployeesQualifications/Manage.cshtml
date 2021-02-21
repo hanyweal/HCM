@@ -1,0 +1,601 @@
+﻿@model HCM.Models.EmployeesQualificationsViewModel
+@using HCM.Classes.Enums;
+
+@{
+    if (Model.HasCreatingAccess)
+    {
+        <p>
+            <a onclick="OpenQualificationPopup(null,'Add')"> @Resources.Globalization.CreateNewText</a>
+        </p>
+    }
+}
+
+<script>
+    var PageMode;
+    var EmpQualificationID;
+
+    $(document).ready(function () {
+
+        $('#txtFullGPA').on('change', function (event) {
+            if (parseInt($('#txtGPA').val())) {
+                if (parseFloat($('#txtGPA').val()) > parseFloat($('#txtFullGPA').val())) {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationFullGPAShouldBeGreaterThanGPAText))');
+                    $('#txtGPA').val('');
+                    $('#txtFullGPA').val('');
+                    return;
+                }
+            }
+        });
+
+        $('#txtGPA').on('change', function (event) {
+            if (parseInt($('#txtFullGPA').val())) {
+                if (parseFloat($('#txtGPA').val()) > parseFloat($('#txtFullGPA').val())) {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationFullGPAShouldBeGreaterThanGPAText))');
+                    $('#txtGPA').val('');
+                    $('#txtFullGPA').val('');
+                    return;
+                }
+            }
+        });
+
+        $('#txtGraduationDate').on('blur', function () {
+            if ($('#txtGraduationYear').val()) {
+                $('#txtGraduationDate').val('');
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationAlreadyEnteredGraduationYearText))');
+                return;
+            }
+        });
+
+        $('#txtGraduationYear').on('change', function (event) {
+            if ($('#txtGraduationDate').val()) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationAlreadyEnteredGraduationDateText))');
+                $('#txtGraduationYear').val('');
+                return;
+            }
+        });
+
+        insertSelectionOptionToDDL('ddlQualificationDegree');
+        insertSelectionOptionToDDL('ddlQualification');
+        insertSelectionOptionToDDL('ddlGeneralSpecialization');
+        insertSelectionOptionToDDL('ddlExactSpecialization');
+        insertSelectionOptionToDDL('ddlQualificationType');
+
+
+        GetEmployeeQualification('@Model.EmployeeVM.EmployeeCodeID');
+
+        $("#BtnSave").click(function () {
+
+            var EmployeesQualificationsObj =
+           {
+               QualificationDegreeID: $('#ddlQualificationDegree').val(),
+               GeneralSpecializationID: $('#ddlGeneralSpecialization').val(),
+               ExactSpecializationID: $('#ddlExactSpecialization').val() ? $('#ddlExactSpecialization').val() : 0,
+               QualificationID: $('#ddlQualification').val(),
+               EmployeeVM: { EmployeeCodeID: '@Model.EmployeeVM.EmployeeCodeID' },
+               EmployeeQualificationID: EmpQualificationID,
+               UniSchName: $('#txtUniSchName').val(),
+               Department: $('#txtDepartment').val(),
+               FullGPA: $('#txtFullGPA').val() ? $('#txtFullGPA').val() : null,
+               GPA: $('#txtGPA').val() ? $('#txtGPA').val() : null,
+               StudyPlace: $('#txtStudyPlace').val(),
+               GraduationDate: $('#txtGraduationDate').val(),
+               GraduationYear: $('#txtGraduationYear').val(),
+               QualificationType: { QualificationTypeID: $('#ddlQualificationType').val() ? $('#ddlQualificationType').val() : 0 },
+           };
+
+
+            if (PageMode == 'Add') {
+                $.ajax({
+                    type: "POST"
+                 , contentType: "application/json; charset=utf-8"
+                 , url: "@Url.Content("~/EmployeesQualifications/Create")"
+                 , data: JSON.stringify(EmployeesQualificationsObj)
+                 , success: function (result) {
+                     $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+                     DestroyModal("#divEmployeeQualificationModal");
+                     GetEmployeeQualification('@Model.EmployeeVM.EmployeeCodeID');
+                 }
+                , error: function (xhr, status, error) {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                }
+                });
+            }
+            else if (PageMode == 'Edit') {
+                $.ajax({
+                    type: "POST"
+                  , contentType: "application/json; charset=utf-8"
+                  , url: "@Url.Content("~/EmployeesQualifications/Edit")"
+                  , data: JSON.stringify(EmployeesQualificationsObj)
+                  , success: function (result) {
+                      $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+                      DestroyModal("#divEmployeeQualificationModal");
+                      GetEmployeeQualification('@Model.EmployeeVM.EmployeeCodeID');
+                  }
+                 , error: function (xhr, status, error) {
+                     $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                 }
+                });
+            }
+        });
+    });
+
+
+    function OpenQualificationPopup(Row, Type) {
+
+        if (Row != null) {
+            var DepartmentText = Row.Department ? Row.Department : null;
+            var EmployeeQualificationID = Row.EmployeeQualificationID;
+            var GeneralSpecializationID = Row.GeneralSpecialization ? Row.GeneralSpecialization.GeneralSpecializationID : null;
+            var ExactSpecializationID = Row.ExactSpecialization ? Row.ExactSpecialization.ExactSpecializationID : null;
+            var QualificationID = Row.Qualification ? Row.Qualification.QualificationID : null;
+            var QualificationDegreeID = Row.QualificationDegree ? Row.QualificationDegree.QualificationDegreeID : null;
+            var GraduationYear = Row.GraduationYear ? Row.GraduationYear : null;
+            var GraduationDate = Row.GraduationDate ? RenderDate(Row.GraduationDate) : null;
+            var StudyPlaceText = Row.StudyPlace ? Row.StudyPlace : null;
+            var UniSchNameText = Row.UniSchName ? Row.UniSchName : null;
+            var FullGPA = Row.FullGPA ? Row.FullGPA : null;
+            var GPA = Row.GPA ? Row.GPA : null;
+            var QualificationTypeID = Row.QualificationType ? Row.QualificationType.QualificationTypeID : null;
+        }
+        EmpQualificationID = EmployeeQualificationID ? EmployeeQualificationID : 0;
+
+        if (!Type) {
+            Type = 'Edit';
+
+            if (QualificationDegreeID != null) {
+                $('#ddlQualificationDegree').val(QualificationDegreeID);
+            }
+            if (QualificationID) {
+                $('#ddlQualification').val(QualificationID);
+                GetQualifications(Row);
+            }
+            if (QualificationTypeID != null) {
+                $('#ddlQualificationType').val(QualificationTypeID);
+            }
+        }
+        else {
+
+            $("#ddlQualificationDegree").val("");
+            $("#ddlQualification").empty();
+            insertSelectionOptionToDDL('ddlQualification');
+            $("#ddlGeneralSpecialization").empty();
+            insertSelectionOptionToDDL('ddlGeneralSpecialization');
+            $("#ddlExactSpecialization").empty();
+            insertSelectionOptionToDDL('ddlExactSpecialization');
+            $("#ddlQualificationType").val("");
+        }
+
+        PageMode = Type;
+
+        $('#txtUniSchName').val(UniSchNameText);
+        $('#txtDepartment').val(DepartmentText);
+        $('#txtFullGPA').val(FullGPA);
+        $('#txtGPA').val(GPA);
+        $('#txtStudyPlace').val(StudyPlaceText);
+        $('#txtGraduationDate').val(GraduationDate);
+        $('#txtGraduationYear').val(GraduationYear);
+
+
+        ShowModal("#divEmployeeQualificationModal");
+    }
+
+    function RemoveEmployeeQualification(EmployeeQualificationID) {
+
+        $.confirm({
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            animation: 'zoom',
+            boxWidth: '280px',
+            useBootstrap: false,
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $.ajax({
+                            type: 'POST',
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            url: "@Url.Content("~/EmployeesQualifications/Delete/")" + EmployeeQualificationID,
+                            success: function (result) {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+                                GetEmployeeQualification('@Model.EmployeeVM.EmployeeCodeID');
+                            }
+                        , error: function (xhr, status, error) {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                        }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+    }
+
+    function GetQualifications(Row) {
+        var QualificationID;
+        if (Row) {
+            var QualificationID = Row.Qualification ? Row.Qualification.QualificationID : null;
+        }
+
+        if ($("#ddlQualificationDegree").val() != "") {
+            var id = $("#ddlQualificationDegree").val();
+            $.ajax({
+                type: "get"
+              , dataType: "json"
+              , url: "/Qualifications/GetQualifications/" + id
+              , success: function (d) {
+                  $("#ddlQualification").html("");
+                  $("#ddlGeneralSpecialization").html("");
+                  $("#ddlExactSpecialization").html("");
+                  var Qualifications = d.data;
+                  $.each(Qualifications, function (i, Qualification) {
+                      $("#ddlQualification").append($('<option></option>').val(Qualification.QualificationID).html(Qualification.QualificationName));
+                  });
+                  if (QualificationID) {
+                      $("#ddlQualification").val(QualificationID);
+                      GetGeneralSpecialization(Row);
+                  }
+                  else {
+                      insertSelectionOptionToDDL('ddlQualification');
+                      insertSelectionOptionToDDL('ddlGeneralSpecialization');
+                      insertSelectionOptionToDDL('ddlExactSpecialization');
+                  }
+              }
+              , error: function (xhr, status, error) {
+                  alert(error.message);
+              }
+            });
+        }
+        else {
+            $("#ddlQualification").html("");
+            $("#ddlGeneralSpecialization").html("");
+            $("#ddlExactSpecialization").html("");
+            insertSelectionOptionToDDL('ddlQualification');
+            insertSelectionOptionToDDL('ddlGeneralSpecialization');
+            insertSelectionOptionToDDL('ddlExactSpecialization');
+        }
+    }
+
+    function GetGeneralSpecialization(Row) {
+        var GeneralSpecializationID;
+        if (Row) {
+            GeneralSpecializationID = Row.GeneralSpecialization ? Row.GeneralSpecialization.GeneralSpecializationID : null;
+        }
+        if ($("#ddlQualification").val() != "") {
+            var id = $("#ddlQualification").val();
+            $.ajax({
+                type: "get"
+           , dataType: "json"
+           , url: "/Qualifications/GetGeneralSpecializations/" + id
+           , success: function (d) {
+               $("#ddlGeneralSpecialization").html("");
+               $("#ddlExactSpecialization").html("");
+               var GeneralSpecializations = d.data;
+               $.each(GeneralSpecializations, function (i, GeneralSpecialization) {
+                   $("#ddlGeneralSpecialization").append($('<option></option>').val(GeneralSpecialization.GeneralSpecializationID).html(GeneralSpecialization.GeneralSpecializationName));
+               });
+               if (GeneralSpecializationID) {
+                   $("#ddlGeneralSpecialization").val(GeneralSpecializationID);
+                   GetExactSpecializations(Row);
+               }
+               else {
+                   insertSelectionOptionToDDL('ddlGeneralSpecialization');
+                   insertSelectionOptionToDDL('ddlExactSpecialization');
+               }
+           }
+           , error: function (xhr, status, error) {
+               alert(error.message);
+           }
+            });
+        }
+        else {
+            $("#ddlGeneralSpecialization").html("");
+            $("#ddlExactSpecialization").html("");
+            insertSelectionOptionToDDL('ddlGeneralSpecialization');
+            insertSelectionOptionToDDL('ddlExactSpecialization');
+        }
+    }
+
+    function GetExactSpecializations(Row) {
+        var ExactSpecializationID;
+        if (Row) {
+            ExactSpecializationID = Row.ExactSpecialization ? Row.ExactSpecialization.ExactSpecializationID : null;
+        }
+        if ($("#ddlGeneralSpecialization").val() != "") {
+            var id = $("#ddlGeneralSpecialization").val();
+            $.ajax({
+                type: "get"
+           , dataType: "json"
+           , url: "/Qualifications/GetExactSpecializations/" + id
+           , success: function (d) {
+               $("#ddlExactSpecialization").html("");
+               var ExactSpecializations = d.data;
+               $.each(ExactSpecializations, function (i, ExactSpecialization) {
+                   $("#ddlExactSpecialization").append($('<option></option>').val(ExactSpecialization.ExactSpecializationID).html(ExactSpecialization.ExactSpecializationName));
+               });
+               if (ExactSpecializationID) {
+                   $("#ddlExactSpecialization").val(ExactSpecializationID);
+               }
+               else {
+                   insertSelectionOptionToDDL('ddlExactSpecialization');
+               }
+           }
+           , error: function (xhr, status, error) {
+               alert(error.message);
+           }
+            });
+        }
+        else {
+            $("#ddlExactSpecialization").html("");
+            insertSelectionOptionToDDL('ddlExactSpecialization');
+        }
+    }
+
+    function GetEmployeeQualification(EmployeeCodeID) {
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/EmployeesQualifications/GetEmployeeQualificationByEmployeeCodeID/")" + EmployeeCodeID,
+            success: function (result) {
+                $("#tblEmployeeQualification").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": true,
+                    //"order": [[1, "desc"]],
+                    "data": result.data,
+                    "columns": [
+                        //{
+                        //    "data": "EmployeeQualificationID",
+                        //    "autowidth": false,
+                        //},
+                        {
+                            "data": "QualificationDegree.QualificationDegreeName",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "Qualification.QualificationName",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "GeneralSpecialization.GeneralSpecializationName",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "ExactSpecialization.ExactSpecializationName",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+
+                         {
+                             "data": "QualificationType.QualificationTypeName",
+                             "autowidth": false,
+                             "defaultContent": ""
+                         },
+
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+
+                        {
+                            "data": "EmployeeQualificationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                if ('@Model.HasUpdatingAccess' == 'True') {
+                                    Url = 'OpenQualificationPopup(' + JSON.stringify(row) + ');';
+                                    return "<a onclick='" + Url + "'><span Class='glyphicon glyphicon-edit' title='" + '@Resources.Globalization.UpdatingText' + "'/></a>";
+                                }
+                                else
+                                    return '';
+                            }
+                        },
+                        {
+                            "data": "EmployeeQualificationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                if ('@Model.HasDeletingAccess' == 'True') {
+                                    Url = 'RemoveEmployeeQualification(' + data + ');';
+                                    return '<a id="btnRemove" onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>';
+                                }
+                                else
+                                    return '';                                
+                            }
+                        },
+                    ]
+                });
+            }
+        });
+    }
+
+    function Reset() {
+        $('#txtUniSchName').val("");
+        $('#txtDepartment').val("");
+        $('#txtFullGPA').val("");
+        $('#txtGPA').val("");
+        $('#txtStudyPlace').val("");
+        $('#txtGraduationDate').val("");
+        $('#txtGraduationYear').val("");
+    }
+</script>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EmployeesText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-responsive table-condensed table-striped" style="text-align:right">
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeCodeNo, new { @class = "control-label" })
+                </td>
+                <td>@Html.LabelFor(model => model.EmployeeVM.EmployeeNameAr, new { @class = "control-label" })</td>
+                <td>@Html.LabelFor(model => model.EmployeeVM.EmployeeOrganizationName, new { @class = "control-label" })</td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeCodeNo, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.HiddenFor(model => model.EmployeeVM.EmployeeCodeID)
+                </td>
+                <td class="col-md-4">@Html.TextBoxFor(model => model.EmployeeVM.EmployeeNameAr, new { @class = "form-control", @readonly = "readonly" })</td>
+                <td class="col-md-4">@Html.TextBoxFor(model => model.EmployeeVM.EmployeeOrganizationName, new { @class = "form-control", @readonly = "readonly" })</td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeIDNo, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeJobName, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.HiringDate, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeIDNo, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeJobName, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.HiringDate, new
+                       {
+                           @class = "form-control",
+                           @id = "txtHiringDate",
+                           @readonly = "readonly",
+                           @Value = Model.EmployeeVM.HiringDate.HasValue ? Model.EmployeeVM.HiringDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                       })
+                </td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeRankName, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeJobNo, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4"></td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeRankName, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeJobNo, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.EmployeeQualificationText
+    </div>
+    <div class="panel-body">
+        <table id="tblEmployeeQualification" class="table table-responsive table-hover dataTable">
+            <thead>
+                <tr>
+                    @*<td>
+                            @Resources.Globalization.SequenceNoText
+                        </td>*@
+                    <td>
+                        @Resources.Globalization.QualificationDegreeNameText
+                    </td>
+                    <td>
+                        @Resources.Globalization.QualificationNameText
+                    </td>
+                    <td>
+                        @Resources.Globalization.GeneralSpecializationNameText
+                    </td>
+                    <td>
+                        @Resources.Globalization.ExactSpecializationNameText
+                    </td>
+
+                    <td>
+                        @Resources.Globalization.QualificationTypeText
+                    </td>
+
+                    <td>
+                        @Resources.Globalization.CreatedByText
+                    </td>
+                    <td>
+                        @Resources.Globalization.CreatedDateText
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "EmployeesQualifications"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+<div class="modal fade" id="divEmployeeQualificationModal">
+    <div class="modal-dialog" style="width:1100px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                </div>
+            </div>
+            <div class="modal-body">
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <div class="panel panel-default" style="padding:0px">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-9">
+                                @Resources.Globalization.QualificationsText
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        @Html.Partial("~/Views/Shared/_QualificationData.cshtml",new HCM.Models.EmployeesQualificationsViewModel())
+                        <table class="table table-responsive table-condensed">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <center>
+                                            <input type="submit" class="btn btn-default" id="BtnSave" value="@Resources.Globalization.SaveText" />
+                                            <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                                        </center>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

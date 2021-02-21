@@ -1,0 +1,35 @@
+﻿
+<script>
+    $(document).ready(function() {
+
+        $("#divReportModal").on('hidden.bs.modal', function () {
+            var iframe = $("#divReportModal .modal-body #iframeReportContent");
+            iframe.attr('src', '');
+        });
+
+    });
+</script>
+
+<div class="modal fade" id="divReportModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+
+                </div>
+            </div>
+            <div class="modal-body" style="height:600px;">
+                <iframe id="iframeReportContent" style="border:none;width:100%;height:100%"></iframe>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+

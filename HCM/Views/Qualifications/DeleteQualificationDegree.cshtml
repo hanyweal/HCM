@@ -1,0 +1,97 @@
+﻿@model HCM.Models.QualificationsDegreesViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#BtnDelete").confirm({
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () { $("#BtnDelete").submit(); },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    });
+
+    function OnSuccess() {
+        $("#BtnDelete").attr("disabled", "disabled");
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.DeleteQualificationDegreeText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.DeleteQualificationDegreeDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("DeleteQualificationDegree", "Qualifications", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.QualificationDegreeBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">              
+                <tbody>
+                    <tr>
+                        <td class="col-md-2">
+                           @Html.LabelFor(model => model.QualificationDegreeName, new { @class = "control-label" })
+                           @Html.HiddenFor(model => model.QualificationDegreeID)
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.QualificationDegreeName, new { @class = "form-control" })
+                        </td>
+                    </tr>                   
+                </tbody>
+            </table>
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" id="BtnDelete" name="BtnDelete" value="@Resources.Globalization.DeleteText" />
+                            </center>
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Qualifications"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+

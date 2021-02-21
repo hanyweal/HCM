@@ -1,0 +1,210 @@
+﻿@model HCM.Models.EmployeesViewModel
+@{
+    ViewBag.Title = Resources.Globalization.AddNewEmployeeText;
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        @*$.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            //console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }*@
+
+    });
+
+    function OnSuccess() {
+        Reset();
+        @*$("#divAlert").load('@Url.Content("~/Modal/Index/" +  ModalTypes.Success + "/" + Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');*@
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+
+    function OnFailure() {
+        @*$("#divAlert").load('@this.Url.Content("~/Modal/Index/" +  ModalTypes.Failure + "/Error")');*@
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        $('#EmployeeIDNo').val('');
+        $('#FirstNameAr').val('');
+        $('#MiddleNameAr').val('');
+        $('#GrandFatherNameAr').val('');
+        $('#LastNameAr').val('');
+        $('#FirstNameEn').val('');
+        $('#MiddleNameEn').val('');
+        $('#GrandFatherNameEn').val('');
+        $('#LastNameEn').val('');
+        $('#txtEmployeeBirthDate').val('');
+        $('#EmployeeBirthPlace').val('');
+        $('#EmployeeMobileNo').val('');
+        $('#EmployeePassportNo').val('');
+        $('#EmployeeEMail').val('');
+        $('#txtEmployeeIDIssueDate').val('');
+        $('#EmployeePassportSource').val('');
+        $('#txtEmployeePassportIssueDate').val('');
+        $('#txtEmployeePassportEndDate').val('');
+        $('#txtEmployeeIDExpiryDate').val('');
+        $('#EmployeeIDIssuePlace').val('');
+        $('#EmployeeIDCopyNo').val('');
+        $('#MaritalStatus').val('1');
+        $('#DependentCount').val('');
+    }
+
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.AddNewEmployeeText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.AddNewEmployeeDescText
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "Employees", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <table id="tblEmployeeProfile" class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">@Html.LabelFor(c => c.EmployeeIDNo)</td>
+                        <td class="col-md-4">@Html.LabelFor(c => c.EmployeeNameAr)</td>
+                        <td class="col-md-4">@Html.LabelFor(c => c.EmployeeNameEn)</td>@*No EmployeeNameEn Found In ViewModel*@
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(c => c.EmployeeIDNo, new { @class = "form-control", @type = "number" })
+                            @Html.ValidationMessageFor(model => model.EmployeeIDNo, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(c => c.FirstNameAr, new { @class = "form-control", @placeholder = "الاسم الأول" })
+                                    @Html.ValidationMessageFor(model => model.FirstNameAr, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(c => c.MiddleNameAr, new { @class = "form-control", @placeholder = "اسم الأب" })
+                                </div>
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(c => c.GrandFatherNameAr, new { @class = "form-control", @placeholder = "اسم الجد" })
+                                </div>
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(c => c.LastNameAr, new { @class = "form-control", @placeholder = "اسم العائلة" })
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(c => c.FirstNameEn, new { @class = "form-control", @placeholder = "الاسم الأول" })
+                                </div>
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(c => c.MiddleNameEn, new { @class = "form-control", @placeholder = "اسم الأب" })
+                                </div>
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(c => c.GrandFatherNameEn, new { @class = "form-control", @placeholder = "اسم الجد" })
+                                </div>
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(c => c.LastNameEn, new { @class = "form-control", @placeholder = "اسم العائلة" })
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(c => c.EmployeeBirthDate)@*No EmployeeBirthDate Found In ViewModel*@
+                        <td>@Html.LabelFor(c => c.EmployeeBirthPlace)</td>@*No EmployeeBirthPlace Found In ViewModel*@
+                        <td>@Html.LabelFor(c => c.EmployeeMobileNo)</td>@*No EmployeeMobileNo Found In ViewModel*@
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.EmployeeBirthDate, new { @class = "TxtHijriPicker form-control", @id = "txtEmployeeBirthDate", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.EmployeeBirthDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>@Html.TextBoxFor(c => c.EmployeeBirthPlace, new { @class = "form-control" })</td>
+                        <td>@Html.TextBoxFor(c => c.EmployeeMobileNo, new { @class = "form-control" })</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(c => c.EmployeePassportNo)</td>@*No EmployeePassportNo Found In ViewModel*@
+                        <td>@Html.LabelFor(c => c.EmployeeEMail)</td>@*No EmployeeEMail Found In ViewModel*@
+                        <td>@Html.LabelFor(c => c.EmployeeIDIssueDate)</td>@*No EmployeeIDIssueDate Found In ViewModel*@
+                    </tr>
+                    <tr>
+                        <td>@Html.TextBoxFor(c => c.EmployeePassportNo, new { @class = "form-control" })</td>
+                        <td>@Html.TextBoxFor(c => c.EmployeeEMail, new { @class = "form-control" })</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.EmployeeIDIssueDate, new { @class = "TxtHijriPicker form-control", @id = "txtEmployeeIDIssueDate", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.EmployeeIDIssueDate, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(c => c.EmployeePassportSource)</td>@*No EmployeePassportSource Found In ViewModel*@
+                        <td>@Html.LabelFor(c => c.EmployeePassportIssueDate)</td>@*No EmployeePassportIssueDate Found In ViewModel*@
+                        <td>@Html.LabelFor(c => c.EmployeePassportEndDate)</td>@*No EmployeePassportEndDate Found In ViewModel*@
+                    </tr>
+                    <tr>
+                        <td>@Html.TextBoxFor(c => c.EmployeePassportSource, new { @class = "form-control" })</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.EmployeePassportIssueDate, new { @class = "TxtHijriPicker form-control", @id = "txtEmployeePassportIssueDate", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.EmployeePassportIssueDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.EmployeePassportEndDate, new { @class = "TxtHijriPicker form-control", @id = "txtEmployeePassportEndDate", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.EmployeePassportEndDate, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(c => c.EmployeeIDExpiryDate)</td>
+                        <td>@Html.LabelFor(c => c.EmployeeIDIssuePlace)</td>
+                        <td>@Html.LabelFor(c => c.EmployeeIDCopyNo)</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.EmployeeIDExpiryDate, new { @class = "TxtHijriPicker form-control", @id = "txtEmployeeIDExpiryDate", @readonly = "readonly" })
+                            @*@Html.ValidationMessageFor(model => model.EmployeeIDExpiryDate, "", new { @class = "text-danger" })*@
+                        </td>
+                        <td>@Html.TextBoxFor(c => c.EmployeeIDIssuePlace, new { @class = "form-control" })</td>
+                        <td>@Html.TextBoxFor(c => c.EmployeeIDCopyNo, new { @class = "form-control", @type = "number", @maxlength = "2" })</td>                        
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(c => c.MaritalStatus)</td>
+                        <td>@Html.LabelFor(c => c.DependentCount)</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(model => model.MaritalStatus.MaritalStatusID, new SelectList(new HCMBLL.MaritalStatusBLL().GetMaritalStatus(), "MaritalStatusID", "MaritalStatusName"), new { @id = "ddlMaritalStatus", @style = "width:100%" })
+                        </td>                        
+                        <td>@Html.TextBoxFor(c => c.DependentCount, new { @class = "form-control", @type = "number", @maxlength = "2" })</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Employees"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

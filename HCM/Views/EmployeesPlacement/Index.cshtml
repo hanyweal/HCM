@@ -1,0 +1,1011 @@
+﻿@using HCM.Classes.Enums;
+@{
+    Layout = "~/Views/Shared/_EServiecsLayout.cshtml";
+    ViewBag.Title = @Resources.Globalization.EmployeesPlacementText;
+}
+
+<script type="text/javascript" src="~/Scripts/jquery.countdown.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+
+        BindPlacementPeriodCountDown();
+
+        BindOrgTree();
+
+        BindAssigningEndReasons();
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+            // $.fn.dataTable.ext.errMode = 'throw';
+        }
+
+        $(document).on('show.bs.modal', '.modal', function (event) {
+            var zIndex = 1040 + (10 * $('.modal:visible').length);
+            $(this).css('z-index', zIndex);
+            setTimeout(function () {
+                $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+            }, 0);
+        });
+
+        $("#btnAddNewEmployeeUnderManager").click(function () {
+            $("#lblTitle").html('@Resources.Globalization.AssigningEmployeeUnderManagerText');
+            $(".job").show();
+            ResetEmployee();
+            ShowModal("#divAssigningManagerToOrgModal");
+        });
+
+        $("#btnSaveEndingAssigning").click(function () {
+
+            var Assigning =
+            {
+                AssigningID: $("#hdnFldAssigningID").val(),
+                EmployeeCodeID: $("#hdnFldEndingAssigningEmployeeCodeID").val(),
+                EndAssigningReasonID: $("#ddlAssigningEndReasons").val(),
+                Notes : $("#txtEndingAssigningNotes").val(),
+            };
+
+            $.ajax({
+                type: "POST"
+                , contentType: "application/json; charset=utf-8"
+                , url: "@Url.Content("~/EmployeesPlacement/EndingEmployeeAssigning/")"
+                , data: JSON.stringify(Assigning)
+                , success: function () {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.EndingAssigningEmployeeDoneText))');
+                    DestroyModal("#divEndingAssigningEmployeeModal");
+                    ResetEndingAssigningEmployee();
+                    BindEmployeesUnderManager($("#hdnFldSelectedOrganizationID").val());
+                }
+                , error: function (xhr, status, error) {
+                     $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                }
+            });
+
+        });
+
+        if ($("#hdnFldUserCodeID").val() == '')
+            $("#divRemainingPeriodToPlacement").hide();
+        else
+            BindOrgTree();
+    });
+
+    function BindPlacementPeriodCountDown(){
+        var LastDayOfEmployeesPlacementGreg = '@ViewBag.LastDayOfEmployeesPlacementGreg';
+        var Days,Hours,Minutes,Seconds
+        $('#divDays').countdown(LastDayOfEmployeesPlacementGreg, function (event) {
+            Days = event.strftime('%D');
+            $(this).html(event.strftime('%D'));
+        });
+
+        $('#divHours').countdown(LastDayOfEmployeesPlacementGreg, function (event) {
+                Hours = event.strftime('%H');
+                $(this).html(event.strftime('%H'));
+        });
+
+        $('#divMinutes').countdown(LastDayOfEmployeesPlacementGreg, function (event) {
+                Minutes = event.strftime('%M');
+                $(this).html(event.strftime('%M'));
+        });
+
+        $('#divSeconds').countdown(LastDayOfEmployeesPlacementGreg, function (event) {
+                Seconds = event.strftime('%S');
+            $(this).html(event.strftime('%S'));
+        });
+
+        if (Days == '00' && Hours == '00' && Minutes == '00' && Seconds == '00') {
+            $('#divRemainingPeriodToPlacement').addClass("alert-danger");
+            $('#tblRemainingPeriodToPlacement').addClass("alert-danger");
+        }
+        else {
+            $('#divRemainingPeriodToPlacement').addClass("alert-info");
+            $('#tblRemainingPeriodToPlacement').addClass("alert-info");
+        }
+    }
+
+    function BindOrgTree() {
+        $.ajax({
+            type: "GET"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "@Url.Content("~/EmployeesPlacement/GetAllOrganizationsForManager")"
+            , success: function (d) {
+                $('#OrganizationsTree').treeview({
+                    data: JSON.stringify(d.data).replace(/OrganizationName/g, "text").replace(/ChildOrganization/g, "nodes"),
+                    levels: 1, // for default expanded
+                    backColor: 'white',
+                    showBorder: true,
+                    selectedBackColor: '#dff0d8', //'#2D3E50'
+                    selectedColor:'#3c763d',
+                    //enableLinks: true,
+                    //expandIcon: "glyphicon glyphicon-triangle-right",
+                    //collapseIcon: "glyphicon glyphicon-triangle-bottom",
+                    //backColor: 'green',
+                    onNodeSelected: function (event, data) {
+                        $('#lblSelectedOrganizationText').css('font-weight', 'normal');
+                        $('#lblSelectedOrganizationText').html("الجهة المختارة هي : ");
+                        $('#lblSelectedOrganization').html(data.text);
+                        $('#divSelectedOrganization').removeClass('alert-danger').addClass('alert-info');
+                        $("#divOrganizationContent").show();
+                        $("#hdnFldSelectedOrganizationID").val(data.OrganizationID);
+                        BindManagers(data.OrganizationID);
+                        BindEmployeesUnderManager(data.OrganizationID);
+
+                        ////DestroyModal('#divEmployeesPlacementModal');
+                        //var CallBackFnName = 'OnEmployeesPlacementNodeSelected';
+
+                        //if (typeof CallBackFnName !== 'undefined' && $.isFunction(window[CallBackFnName])) {
+                        //    window[CallBackFnName]();
+                        //}
+                    }
+                });
+
+                if (d.data.length == 0) {
+                    $("#divPlacement").hide();
+                    $("#divNoPrivilage").show();
+                }
+                else {
+                    $("#divPlacement").show();
+                    $("#divNoPrivilage").hide();
+                }
+            }
+            , error: function (xhr, status, error) {
+                alert(error.error);
+            },
+        });
+    }
+
+    function ShowEmployeesPopup(OrganizationNameVal, ManagerCodeNoVal, ManagerCodeIDVal, ManagerIDNoVal, OrganizationIDVal, FullManagerNameVal) {
+        var FullManagerName =  $("#txtEmployeeNameAr");
+        var ManagerCodeNo = $("#txtEmployeeCodeNo");
+        var ManagerCodeID = $("#hdnFldEmployeeCodeID");
+        var ManagerIDNo = $("#txtEmployeeIDNo");
+        var OrganizationID = $("#hdnFldOrganizationID");
+        var ModalTitle = $("#lblTitle");
+
+        ManagerCodeNo.val(ManagerCodeNoVal);
+        ManagerCodeID.val(ManagerCodeIDVal);
+        ManagerIDNo.val(ManagerIDNoVal);
+        OrganizationID.val(OrganizationIDVal);
+        FullManagerName.val(FullManagerNameVal);
+        ModalTitle.html('@Resources.Globalization.ManagerText' + " " +  OrganizationNameVal);
+        $(".job").hide();
+        ShowModal("#divAssigningManagerToOrgModal");
+    }
+
+    function ShowEndingAssigningEmployeePopup(AssigningIDVal,EmployeeCodeIDVal, EmployeeCodeNoVal, EmployeeNameVal, OrganizationNameVal, JobNameVal) {
+        var AssigningID = $("#hdnFldAssigningID");
+        var EmployeeCodeID = $("#hdnFldEndingAssigningEmployeeCodeID");
+        var EmployeeName =  $("#txtEndingAssigningEmployeeNameAr");
+        var EmployeeCodeNo = $("#txtEndingAssigningEmployeeCodeNo");
+      
+        var OrganizationName = $("#txtEndingAssigningOrganizationName");
+        var JobName = $("#txtEndingAssigningJobName");
+
+        AssigningID.val(AssigningIDVal);
+        EmployeeName.val(EmployeeNameVal);
+        EmployeeCodeNo.val(EmployeeCodeNoVal);
+        EmployeeCodeID.val(EmployeeCodeIDVal);
+        OrganizationName.val(OrganizationNameVal);
+        JobName.val(JobNameVal);
+
+        ShowModal("#divEndingAssigningEmployeeModal");
+    }
+
+    function ShowOrganizationManagersHistoryPopup(OrganizationID) {
+        BindOrganizationManagers(OrganizationID);
+        ShowModal("#divOrganizationManagersHistoryModal");
+    }
+
+    function BindManagers(OrganizationID) {
+        $("#tblManagers").DataTable({
+            "autoWidth": false,
+            "ordering": false,
+            "destroy": true,
+            "ajax": {
+                "url": "/EmployeesPlacement/GetOrganizationsUnderManager/" + OrganizationID,
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "OrganizationName",
+                    "autoWidth": false,
+                },
+                {
+                    "data": "ManagerCodeNo",
+                    "autoWidth": false,
+                },
+                {
+                    "data": "FullManagerName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "LastUpdatedDate",
+                    "autowidth": false,
+                    "render": RenderDateTime
+                },
+                {
+                    "data": "OrganizationID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        return '<a onclick="ShowOrganizationManagersHistoryPopup(\''
+                            + row.OrganizationID
+                            + '\')"><span Class="glyphicon glyphicon-menu-hamburger" title="' + '@Resources.Globalization.ManagersListHistoryText' + '"/></a>';
+                        }
+                },
+                {
+                    "data": "OrganizationID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        //return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" onClick="ShowEmployeesPopup(' + row + ')" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                        return '<a onclick="ShowEmployeesPopup(\''
+                            + row.OrganizationName + '\',\''
+                            + row.ManagerCodeNo + '\',\''
+                            + row.ManagerCodeID + '\',\''
+                            + row.ManagerIDNo + '\',\''
+                            + row.OrganizationID + '\',\''
+                            + row.FullManagerName
+                            + '\')"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.EditingOrganizationManagerText' + '"/></a>';
+                    }
+                },
+            ],
+
+        });
+    }
+
+    function BindOrganizationManagers(OrganizationID) {
+        $("#tblOrganizationManagers").DataTable({
+            "autoWidth": false,
+            "ordering": false,
+            "destroy": true,
+            "ajax": {
+                "url": "/OrganizationStructure/GetOrganizationManagers/" + OrganizationID,
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "ManagerCodeNo",
+                    "autoWidth": false,
+                },
+                {
+                    "data": "ManagerName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "FromDate",
+                    "autowidth": false,
+                    "render": RenderDate
+                },
+                 {
+                    "data": "ToDate",
+                    "autowidth": false,
+                    "render": RenderDate
+                },
+            ]
+        });
+    }
+
+    function BindEmployeesUnderManager(OrganizationID) {
+        $("#tblEmployeesUnderManager").DataTable({
+            "autoWidth": false,
+            "ordering": false,
+            "destroy": true,
+            "ajax": {
+                "url": "/EmployeesPlacement/GetEmployeesUnderManagerByOrganization/" + OrganizationID,
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autoWidth": false,
+                },
+                {
+                    "data": "FullEmployeeName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "OrganizationName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "JobName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "AssigningReason",
+                    "autoWidth": false
+                },
+                {
+                    "data": "CreatedDate",
+                    "autowidth": false,
+                    "render": RenderDateTime
+                },
+                @*{
+                    "data": "AssigningID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        return '<a onclick="RemoveEmployeeFromManager(\''
+                            + row.AssigningID
+                            + '\')"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    }
+                },*@
+                {
+                    "data": "AssigningID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        //return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" onClick="ShowEmployeesPopup(' + row + ')" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                       return '<a onclick="ShowEndingAssigningEmployeePopup(\''
+                           + row.AssigningID + '\',\''
+                            + row.EmployeeCodeID + '\',\''
+                            + row.EmployeeCodeNo + '\',\''
+                            + row.FullEmployeeName + '\',\''
+                            + row.OrganizationName + '\',\''
+                            + row.JobName + '\',\''
+                            + '\')"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.EndingEmployeeAssigningText' + '"/></a>'
+                    }
+                },
+            ],
+
+        });
+    }
+
+    function RemoveEmployeeFromManager(AssigningID) {
+        jQuery.confirm({
+        animation: 'zoom',
+        content: '@Resources.Globalization.DeleteCofirmationMessageText',
+        title: '@Resources.Globalization.CofirmationMessageTitle',
+        buttons: {
+            confirm: {
+                action: function ()
+                {
+                    $.ajax({
+                        type: "DELETE"
+                            , url: "@Url.Content("/EmployeesPlacement/RemoveEmployeeFromOrganizationManager/")" + AssigningID
+                            , success: function () {
+                                BindEmployeesUnderManager($("#hdnFldSelectedOrganizationID").val());
+                            }
+                            , error: function (xhr, status, error) {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                            }
+                    });
+                },
+                btnClass: 'btn-blue',
+                text: '@Resources.Globalization.ConfirmButtonText',
+            },
+            cancel: {
+                action: function () { },
+                text: '@Resources.Globalization.CancelButtonText',
+            },
+        },
+        });
+    }
+
+    function BindAssigningEndReasons() {
+        $.ajax({
+              type: "GET"
+            , dataType: "json"
+            , url: "/Assignings/GetAssigningReasons/"
+            , success: function (d) {
+                $("#ddlAssigningEndReasons").html("");
+                var AssigningEndReasons = d.data;
+                $.each(AssigningEndReasons, function (i, AssigningEndReason) {
+                    if (i <= 1) { // we need first two reasons (based on busniess needs - based on employee needs)
+                        $("#ddlAssigningEndReasons").append($('<option></option>').val(AssigningEndReason.AssigningReasonID).html(AssigningEndReason.AssigningReasonName));
+                    } 
+                });
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function ResetEndingAssigningEmployee() {
+        var AssigningID = $("#hdnFldAssigningID");
+        var EmployeeName =  $("#txtEndingAssigningEmployeeNameAr");
+        var EmployeeCodeNo = $("#txtEndingAssigningEmployeeCodeNo");
+        var OrganizationName = $("#txtEndingAssigningOrganizationName");
+        var JobName = $("#txtEndingAssigningJobName");
+
+        AssigningID.val('');
+        EmployeeName.val('');
+        EmployeeCodeNo.val('');
+        OrganizationName.val('');
+        JobName.val('');
+    }
+
+
+    //////////////
+    var OrgNodes;
+    function ShowOrg() {
+         $.ajax({
+                type: "GET"
+                //, dataType: "json"
+                , url: "@Url.Content("/EmployeesPlacement/GetOrganizationsUnderManager/")"
+                , success: function (d) {
+                    OrgNodes = d.data;
+                    BindOrg(OrgNodes);
+                }
+                , error: function (xhr, status, error) {
+                alert(error.error);
+                }
+        });
+    }
+
+    function BindOrg(OrgNodes) {
+
+        for (var i = 0; i < OrgNodes.length; i++) {
+            var node = OrgNodes[i];
+            if (node.ManagerCodeNo != null) {
+                node.tags = ["Done"];
+            }
+                //else
+                //    console.log(node.ManagerCodeNo);
+            //switch (node.ManagerCodeNo) {
+            //    case "QA":
+            //        node.tags = ["QA"];
+            //        break;
+            //    case "Marketer":
+            //    case "Designer":
+            //    case "Sales Manager":
+            //        node.tags = ["Marketing"];
+            //        break;
+            }
+
+
+
+    // custom template
+    //            OrgChart.templates.myTemplate = Object.assign({}, OrgChart.templates.ana);
+    //    OrgChart.templates.myTemplate.size = [200, 200];
+    //    OrgChart.templates.myTemplate.node = '<circle cx="100" cy="100" r="100" fill="#4D4D4D" stroke-width="1" stroke="#1C1C1C"></circle>';
+
+
+    //OrgChart.templates.myTemplate.ripple = {
+    //    radius: 100,
+    //    color: "#0890D3",
+    //    rect: null
+    //};
+    //OrgChart.templates.myTemplate.field_0 = '<text style="font-size: 24px;" fill="#ffffff" x="100" y="90" text-anchor="middle">{val}</text>';
+    //OrgChart.templates.myTemplate.field_1 = '<text style="font-size: 16px;" fill="#ffffff" x="100" y="60" text-anchor="middle">{val}</text>';
+    //OrgChart.templates.myTemplate.img_0 = '<clipPath id="ulaImg"><circle cx="100" cy="150" r="40"></circle></clipPath><image preserveAspectRatio="xMidYMid slice" clip-path="url(#ulaImg)" xlink:href="{val}" x="60" y="110"  width="80" height="80"></image>';
+    //OrgChart.templates.myTemplate.edge = '<path  stroke="#686868" stroke-width="1px" fill="none" edge-id="[{id}][{child-id}]" d="M{xa},{ya} C{xb},{yb} {xc},{yc} {xd},{yd}"/>';
+    //OrgChart.templates.myTemplate.plus =
+    //     '<rect x="0" y="0" width="36" height="36" rx="12" ry="12" fill="#2E2E2E" stroke="#aeaeae" stroke-width="1"></rect>'
+    //    + '<line x1="4" y1="18" x2="32" y2="18" stroke-width="1" stroke="#aeaeae"></line>'
+    //    + '<line x1="18" y1="4" x2="18" y2="32" stroke-width="1" stroke="#aeaeae"></line>';
+    //OrgChart.templates.myTemplate.minus =
+    //     '<rect x="0" y="0" width="36" height="36" rx="12" ry="12" fill="#2E2E2E" stroke="#aeaeae" stroke-width="1"></rect>'
+    //    + '<line x1="4" y1="18" x2="32" y2="18" stroke-width="1" stroke="#aeaeae"></line>';
+    //OrgChart.templates.myTemplate.expandCollapseSize = 36;
+    //OrgChart.templates.myTemplate.nodeMenuButton = '<g style="cursor:pointer;" transform="matrix(1,0,0,1,93,15)" control-node-menu-id="{id}"><rect x="-4" y="-10" fill="#000000" fill-opacity="0" width="22" height="22"></rect><line x1="0" y1="0" x2="0" y2="10" stroke-width="2" stroke="#0890D3" /><line x1="7" y1="0" x2="7" y2="10" stroke-width="2" stroke="#0890D3" /><line x1="14" y1="0" x2="14" y2="10" stroke-width="2" stroke="#0890D3" /></g>';
+    //OrgChart.templates.myTemplate.exportMenuButton = '<div style="position:absolute;right:{p}px;top:{p}px; width:40px;height:50px;cursor:pointer;" control-export-menu=""><hr style="background-color: #0890D3; height: 3px; border: none;"><hr style="background-color: #0890D3; height: 3px; border: none;"><hr style="background-color: #0890D3; height: 3px; border: none;"></div>';
+    //OrgChart.templates.myTemplate.pointer = '<g data-pointer="pointer" transform="matrix(0,0,0,0,100,100)"><g transform="matrix(0.3,0,0,0.3,-17,-17)"><polygon fill="#0890D3" points="53.004,173.004 53.004,66.996 0,120"/><polygon fill="#0890D3" points="186.996,66.996 186.996,173.004 240,120"/><polygon fill="#0890D3" points="66.996,53.004 173.004,53.004 120,0"/><polygon fill="#0890D3" points="120,240 173.004,186.996 66.996,186.996"/><circle fill="#0890D3" cx="120" cy="120" r="30"/></g></g>';
+
+
+        OrgChart.templates.ana.ManagerName = '<text style="font-size: 18px;" fill="#ffffff" x="240" y="30" text-anchor="right">{val}</text>';
+        OrgChart.templates.ana.ManagerCodeNo = '<text style="font-size: 12px;" fill="#ffffff" x="240" y="50" text-anchor="right">{val}</text>';
+        OrgChart.templates.ana.OrganizationName = '<text text-overflow="ellipsis" style="font-size: 12px;" fill="#ffffff" x="125" y="100" text-anchor="middle">{val}</text>';
+        OrgChart.templates.ana.ManagerImage = '<image preserveAspectRatio="xMidYMid slice" xlink:href="{val}" x="5" y="5" width="80" height="80"></image>';
+                //OrgChart.templates.ana.ManagerImage = '<clipPath id="ulaImg"><circle cx="100" cy="150" r="40"></circle></clipPath><image preserveAspectRatio="xMidYMid slice" clip-path="url(#ulaImg)" xlink:href="{val}" x="60" y="110"  width="80" height="80"></image>';
+        OrgChart.templates.ana.ManagerCodeID = '<input type="hidden" value="{val}" />';
+        OrgChart.templates.ana.ManagerIDNo = '<input type="hidden" value="{val}" />';
+            OrgChart.templates.ana.FullManagerName = '<input type="hidden" value="{val}" />';
+                OrgChart.templates.ana.tags= '"{val}"'
+            //OrgChart.templates.ana.nodeMenuButton = '<g style="cursor:pointer;" transform="matrix(1,0,0,1,93,15)" control-node-menu-id="{id}"><rect x="240" y="50" fill="#000000" fill-opacity="0" width="22" height="22"></rect><line x1="0" y1="0" x2="0" y2="10" stroke-width="2" stroke="#0890D3" /><line x1="7" y1="0" x2="7" y2="10" stroke-width="2" stroke="#0890D3" /><line x1="14" y1="0" x2="14" y2="10" stroke-width="2" stroke="#0890D3" /></g>';
+
+        var editForm = function () {
+            this.nodeId = null;
+        };
+
+        editForm.prototype.init = function (obj) {
+            var that = this;
+            this.obj = obj;
+            //this.editForm = $("#editForm");
+            this.editForm = document.getElementById("editForm")
+            this.ManagerName =  $("#txtEmployeeNameAr");
+            this.OrganizationName = $("#lblOrganizationName");
+            this.ManagerCodeNo = $("#txtEmployeeCodeNo");
+            this.ManagerCodeID = $("#hdnFldEmployeeCodeID");
+            this.ManagerIDNo = $("#txtEmployeeIDNo");
+            this.OrganizationID = $("#hdnFldOrganizationID");
+            this.cancelButton = $("#btnCancel");
+            //this.saveButton = document.getElementById("btnSave");
+
+            this.saveButton = $("#btnSave");
+
+            this.cancelButton.on("click", function () {
+                that.hide();
+            });
+
+            //this.saveButton.on("click", function () {
+            //    var node = chart.get(that.nodeId);
+            //    //node.ManagerName = that.nameInput.value;
+            //    //node.OrganizationName = that.titleInput.value;
+
+            //    chart.updateNode(node);
+            //    that.hide();
+            //});
+        };
+
+        editForm.prototype.show = function (nodeId) {
+            this.nodeId = nodeId;
+            var node = chart.get(nodeId);
+            this.ManagerName.val(node.ManagerName);
+            this.OrganizationName.html(node.OrganizationName);
+            this.ManagerCodeNo.val(node.ManagerCodeNo);
+            this.ManagerCodeID.val(node.ManagerCodeID);
+            this.ManagerIDNo.val(node.ManagerIDNo);
+            this.OrganizationID.val(node.id);
+            //this.FullManagerName.val(node.FullManagerName);
+
+            //console.log(node);
+
+            ShowModal("#divAssigningManagerToOrgModal");
+
+            //var left = document.body.offsetWidth / 2 - 150;
+            //this.editForm.style.display = "block";
+            //this.editForm.style.left = left + "px";
+            //var node = chart.get(nodeId);
+            //this.nameInput.value = node.ManagerName;
+            //this.titleInput.value = node.OrganizationName;
+        };
+
+        editForm.prototype.hide = function (showldUpdateTheNode) {
+            //this.editForm.style.display = "none";
+            ShowOrg();
+        };
+
+        var chart = new OrgChart(document.getElementById("divOrgChart"), {
+            mouseScrool: OrgChart.action.none,
+            layout: OrgChart.tree,
+            mouseScrool: OrgChart.action.scroll,
+            showYScroll: OrgChart.scroll.visible,
+        //showXScroll: OrgChart.scroll.visible,
+                //scaleInitial: "1.5",
+            //scaleInitial: OrgChart.match.height,
+            //layout: OrgChart.match.bo,//OrgChart.match.height
+            // orientation: OrgChart.tree,
+            template: "ana",
+            enableSearch: false,
+            nodeMenu: {
+                edit: { text: "@Resources.Globalization.EditText" },
+                add: { text: "@Resources.Globalization.AddText" },
+                remove: { text: "@Resources.Globalization.DeleteText" }
+            },
+            //   nodeMenu:{
+            //svg:{text: "Add"},
+            // csv:{text: "Edit"},
+            // remove:{text: "Remove"}
+        //},
+            tags:{
+                FirstLevel:{
+              	    nodeMenu:{
+                	    add: { text: "@Resources.Globalization.AddText" },
+                	    //set_target: { text: "Set Target for Emp", onClick: function(){ alert('set target') } }
+              	    }
+                },
+                SecondLevel:{
+              	    nodeMenu:{
+                        edit: { text: "@Resources.Globalization.EditText", },
+                	    //update_target_status: { text: "Edit Emp Details", onClick: function(){ alert('update target') }  }
+              	    }
+                }
+            },
+            editUI: new editForm(),
+            nodeBinding: {
+                ManagerName: "ManagerName",
+                OrganizationName: "OrganizationName",
+                ManagerImage : "ManagerImage",
+                ManagerCodeNo: "ManagerCodeNo",
+                ManagerCodeID: "ManagerCodeID",
+                tags:"tags",
+                //ManagerIDNo: "ManagerIDNo",
+                FullManagerName: "FullManagerName",
+                //nodeMenu :"nodeMenuButton"
+            },
+            nodes : OrgNodes
+            //nodes: [
+            //    { id: 1, ManagerName: "فهد العبودي", FullManagerName: "فهد ناصر محمد العبودي" ,ManagerCodeNo:"90012454", OrganizationName: "الإدارة العامة للحاسب الآلي وتقنية المعلومات" , tags:["FirstLevel"], ManagerIDNo:"12345679891", ManagerCodeID:1, ManagerImage: "https://cdn.balkan.app/shared/empty-img-white.svg"  },
+            //    { id: 2, ManagerName: "عبدالعزيز الدوسري", FullManagerName: "عبدالعزيز خالد الوبران" , ManagerCodeNo:"90034000", OrganizationName: "إدارة الشتغيل والصيانة", tags:["SecondLevel"],  ManagerIDNo:"12345679891", ManagerCodeID:2, pid: 1 , ManagerImage: "http://localhost:32788/Content/Images/90025159.jpg" },
+            //    { id: 3, ManagerName: "ماجد العمري", FullManagerName: "ماجد ضحوي العمري" , ManagerCodeNo:"90034054", OrganizationName: "إدارة النظم والتطبيقات" , tags:["SecondLevel"], ManagerIDNo:"12345679891", ManagerCodeID:3 , pid: 1, ManagerImage: "http://localhost:32788/Content/Images/90025159.jpg" }
+            //]
+        });
+
+}
+
+</script>
+
+@Html.Partial("~/Views/Shared/_AssigningManagerToOrganization.cshtml")
+
+<div class="panel panel-default" style="padding:0px;">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                @Resources.Globalization.EmployeesPlacementDescText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body" style="width:100%;margin-left:auto;margin-right:auto">
+
+        <div id="divRemainingPeriodToPlacement" class="row bold text-center alert">
+            <table id="tblRemainingPeriodToPlacement" class="table table-bordered bold text-center" style="width:350px;margin-left:auto;margin-right:auto;">
+                <tr>
+                    <td colspan="4">
+                        @Resources.Globalization.LastDayOfEmployeesPlacementText  @ViewBag.LastDayOfEmployeesPlacement
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        @Resources.Globalization.RemainingPeriodToPlacementText
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size:small">
+                        @Resources.Globalization.DaysText
+                    </td>
+                    <td style="font-size:small">
+                        @Resources.Globalization.HoursText
+                    </td>
+                    <td style="font-size:small">
+                        @Resources.Globalization.MinutesText
+                    </td>
+                    <td style="font-size:small">
+                        @Resources.Globalization.SecondsText
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="divDays" style="font-size:larger"></div>
+                    </td>
+                    <td>
+                        <div id="divHours" style="font-size:larger"></div>
+                    </td>
+                    <td>
+                        <div id="divMinutes" style="font-size:larger"></div>
+                    </td>
+                    <td>
+                        <div id="divSeconds" style="font-size:larger"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="row">
+            <table class="table table-responsive table-condensed">
+                <tbody>
+
+                    <tr>
+                        <td colspan="5">
+                            <div class="container font-13" style="width:100%;padding:0">
+                                <div id="divNoPrivilage" hidden>
+                                    <div class="alert alert-danger bold text-center">
+                                        @Resources.Globalization.NoPrivilageToUseEmployeesPlacementServiceText
+                                    </div>
+                                </div>
+                                <div id="divPlacement" class="row" style="padding:0" hidden>
+                                    <div class="col-md-3">
+                                        <div class="container" style="width:100%">
+                                          
+                                            <div class="row alert alert-warning" style="margin-bottom:0;font-size:small">
+                                                @Resources.Globalization.ManagersOrganizationsText
+                                            </div>
+                                            <div class="row">
+                                                <div id="OrganizationsTree" style="width:100%"></div>
+                                                <input type="hidden" id="hdnFldSelectedOrganizationID" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div id="divSelectedOrganization" class="alert alert-danger">
+                                            <label id="lblSelectedOrganizationText">@Resources.Globalization.SelectOrganizationText</label>
+                                            <label id="lblSelectedOrganization"></label>
+                                        </div>
+
+                                        <div id="divOrganizationContent" hidden>
+                                            <ul class="nav nav-tabs">
+                                                <li class="active warning">
+                                                    <a href="#TabManagers" data-toggle="tab">@Resources.Globalization.OrganizationsManagersText</a>
+                                                </li>
+                                                <li class="warning">
+                                                    <a href="#TabEmployees" data-toggle="tab">@Resources.Globalization.EmployeesText</a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content clearfix">
+                                                <div id="TabManagers" class="tab-pane padding-5 active">
+                                                    <div class="panel panel-default" style="padding:0px">
+                                                        <div class="panel-heading">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    @Resources.Globalization.AssginingManagersToOrganizationsDescText
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="panel-body">
+                                                            <table id="tblManagers" class="dataTable" style="width:100%">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <td>@Resources.Globalization.OrganizationNameText</td>
+                                                                        <td>@Resources.Globalization.ManagerCodeNoText</td>
+                                                                        <td>@Resources.Globalization.ManagerNameArText</td>
+                                                                        <td>@Resources.Globalization.CreatedDateText</td>
+                                                                        <td></td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                </thead>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="TabEmployees" class="tab-pane padding-5">
+                                                    <div class="panel panel-default" style="padding:0px">
+                                                        <div class="panel-heading">
+                                                            <div class="row">
+                                                                <div class="col-md-9">
+                                                                    @Resources.Globalization.AssginingEmployeesUnderManagersDescText
+                                                                </div>
+                                                                <div class="col-md-3">
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="panel-body">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <input id="btnAddNewEmployeeUnderManager" type="button" value="@Resources.Globalization.AssigningEmployeeUnderManagerText" class="btn btn-default" />
+                                                                </div>
+                                                            </div>
+                                                            <br />
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <table id="tblEmployeesUnderManager" class="dataTable" style="width:100%">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                                                                                <td>@Resources.Globalization.EmployeeNameArText</td>
+                                                                                <td>@Resources.Globalization.OrganizationNameText</td>
+                                                                                <td>@Resources.Globalization.JobNameText</td>
+                                                                                <td>@Resources.Globalization.AssigningReasonText</td>
+                                                                                <td>@Resources.Globalization.CreatedDateText</td>
+                                                                                <td></td>
+                                                                                <td></td>
+                                                                            </tr>
+                                                                        </thead>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="divEmployeesModal">
+    <div class="modal-dialog" style="width:700px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.EmployeesListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+
+                    </div>
+                </div>
+                <table id="tblEmployees" class="table table-responsive table-hover dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                            <td>@Resources.Globalization.EmployeeNameArText</td>
+                            <td>@Resources.Globalization.SelectText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divJobsToPlacementModal">
+    <div class="modal-dialog" style="width:700px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.JobsListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <table id="tblJobsToPlacement" class="table table-responsive table-condensed table-striped dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            @*<td>@Resources.Globalization.JobCategoryNameText</td>*@
+                            <td>@Resources.Globalization.JobNameText</td>
+                            <td>@Resources.Globalization.SelectText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divEndingAssigningEmployeeModal">
+    <div class="modal-dialog" style="width:600px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title text-center alert alert-warning">
+                    <label id="lblTitle" class="control-label">@Resources.Globalization.EndingEmployeeAssigningText</label>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+
+                    </div>
+                </div>
+                <table class="table table-responsive table-condensed table-striped" style="margin-bottom:0">
+
+                    <tr>
+                        <td colspan="2" class="col-md-12 text-center" style="text-align:center;vertical-align:middle">
+                            <div class="user-image">
+                                <img id="imgEndingAssigningEmployeePic" style="width:100px;height:100px" src="/Content/Images/anonymous.png" />
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-6">
+                            <label class="control-label">@Resources.Globalization.EmployeeCodeNoText</label>
+                        </td>
+                        <td class="col-md-6">
+                            <label class="control-label">@Resources.Globalization.EmployeeNameArText</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-6">
+                            <input type="text" class="form-control" id="txtEndingAssigningEmployeeCodeNo" readonly />
+                            <input type="hidden" id="hdnFldAssigningID" />
+                            <input type="hidden" id="hdnFldEndingAssigningEmployeeCodeID" />
+                        </td>
+                        <td class="col-md-6">
+                            <input type="text" class="form-control" id="txtEndingAssigningEmployeeNameAr" readonly />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-6">
+                            <label class="control-label">@Resources.Globalization.OrganizationNameText</label>
+                        </td>
+                        <td class="col-md-6">
+                            <label class="control-label">@Resources.Globalization.JobNameText</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-6">
+                            <input type="text" class="form-control" id="txtEndingAssigningOrganizationName" readonly />
+                        </td>
+                        <td class="col-md-6">
+                            <input type="text" class="form-control" id="txtEndingAssigningJobName" readonly />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2" class="col-md-12">
+                            <label class="control-label">@Resources.Globalization.AssigningEndReasonText</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2" class="col-md-12">
+                            <select id="ddlAssigningEndReasons" style="width:100%">
+                                @*<option value="1">بناءا على طلبه</option>
+                                <option value="2">بناءا على حاجة العمل</option>*@
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2" class="col-md-12">
+                            <label class="control-label">@Resources.Globalization.NotesText</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2" class="col-md-12">
+                            <textarea class="form-control" id="txtEndingAssigningNotes"></textarea>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2" class="col-md-12" style="text-align:center">
+                            <button class="btn btn-default" id="btnSaveEndingAssigning">@Resources.Globalization.SaveText</button>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divOrganizationManagersHistoryModal">
+    <div class="modal-dialog" style="width:700px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.ManagersListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+
+                    </div>
+                </div>
+                <table id="tblOrganizationManagers" class="table table-responsive table-hover dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.ManagerCodeNoText</td>
+                            <td>@Resources.Globalization.ManagerNameArText</td>
+                            <td>@Resources.Globalization.FromDateText</td>
+                            <td>@Resources.Globalization.ToDateText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,390 @@
+﻿@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.OrganizationsJobsText;
+}
+
+<p>
+    @Html.ActionLink(@Resources.Globalization.AddNewOrganizationJobText, "Create")
+</p>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        AddCustomColumnFilter('tblOrganizationJob', "PopulateOrganizationJob");
+
+        PopulateOrganizationJob();
+
+        $("#ExportExcelButton").click(function () {
+            $.ajax({
+                type: "GET"
+                , contentType: "application/json;"
+                , url: "/OrganizationJob/ExportExcel"
+                , success: function (response) {
+                    var url = "/WebForms/Reports/FileDownload.aspx?fileName=" + response.DownLoadFile;
+                    window.location.href = url;
+                }
+                , error: function (xhr, status, error) {
+
+                }
+            });
+        });
+
+    });
+
+    function PopulateOrganizationJob() {
+
+        var txtSearchJobNo = $('#txtSearchJobNo').val();
+        var txtSearchOrganizationName = $('#txtSearchOrganizationName').val();
+        var txtSearchJobName = $('#txtSearchJobName').val();
+        var txtSearchRankName = $('#txtSearchRankName').val();
+        var txtSearchJobCode = $('#txtSearchJobCode').val();
+        var txtSearchJobCategoryName = $('#txtSearchJobCategoryName').val();
+
+        var url = "/OrganizationJob/GetOrganizationsJobs";
+        url = url + "/" + (txtSearchJobNo.length > 0 ? txtSearchJobNo.trim() : "null");
+        url = url + "/" + (txtSearchOrganizationName.length > 0 ? txtSearchOrganizationName.trim() : "null");
+        url = url + "/" + (txtSearchJobName.length > 0 ? txtSearchJobName.trim() : "null");
+        url = url + "/" + (txtSearchRankName.length > 0 ? txtSearchRankName.trim() : "null");
+        url = url + "/" + (txtSearchJobCode.length > 0 ? txtSearchJobCode.trim() : "null");
+        url = url + "/" + (txtSearchJobCategoryName.length > 0 ? txtSearchJobCategoryName.trim() : "null");
+
+        $("#tblOrganizationJob").DataTable({
+            "destroy":true,
+            "ajax": {
+                "url": url,
+                "type": "get",
+                "datatype": "json",
+                "ordering": true,
+                "data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+            "serverSide": true,
+
+            "columns": [
+                {
+                    "data": "JobNo",
+                    "autowidth": true,
+                     "width": "1%",
+                },
+                {
+                    "data": "OrganizationName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobName",
+                    "autowidth": true
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true,
+                    "width": "1%",
+                },
+                {
+                    "data": "JobCode",
+                    "autowidth": true,
+                },
+                {
+                    "data": "JobCategoryName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "IsVacant",
+                    "autowidth": false,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "IsActive",
+                    "autowidth": false,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "OrganizationJobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        if (!row.IsActive)
+                            return '<span Class="glyphicon glyphicon-ban-circle" title="' + '@Resources.Globalization.ValidationThereIsNoActiveJobOrganizationText' + '"/>';
+                        Url = '@Url.Action("Edit", "OrganizationJob")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "OrganizationJobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        if (!row.IsActive)
+                                                        return '<span Class="glyphicon glyphicon-ban-circle" title="' + '@Resources.Globalization.ValidationThereIsNoActiveJobOrganizationText' + '"/>';
+                        Url = '@Url.Action("JobOperation", "OrganizationJob")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-cog" title="' + '@Resources.Globalization.JobsOperationsTypesText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "OrganizationJobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = 'Popup(' + '\'' + row.OrganizationJobID + '\'' + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-user" title="' + '@Resources.Globalization.EmployeesOfOrganizationJobText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "OrganizationJobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = 'PopupOrganizationJobHistory(' + '\'' + row.OrganizationJobID + '\'' + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-th-list" title="' + '@Resources.Globalization.OrganizationJobHistoryText' + '"/></a>'
+                    }
+                },
+            ]
+        });
+
+    }
+
+    function Popup(OrganizationJobID) {
+        BindEmployeesHasTheOrganizationJob(OrganizationJobID);
+        ShowModal("#divEmployeesHasTheOrganizationJob");
+    }
+
+    function BindEmployeesHasTheOrganizationJob(OrganizationJobID) {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "/OrganizationJob/GetEmployeesOfOrganizationJob/" + OrganizationJobID,
+            success: function (result) {
+                $("#tblEmployeesHasTheOrganizationJob").DataTable({
+                    "destroy": true,
+                    "ordering": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "EmployeeCodeNo",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "EmployeeNameAr",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "JoinDate",
+                            "autowidth": true,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "CareerDegreeName",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "JobName",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "RankName",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "JobNo",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "OrganizationName",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "IsActive",
+                            "autowidth": false,
+                            "render": RenderCheckBox
+                        },
+                        {
+                            "data": "CareerHistoryTypeName",
+                            "autowidth": true
+                        }
+                    ]
+                });
+            }
+            , error: function (xhr, status, error) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+            }
+        });
+
+    }
+
+    function PopupOrganizationJobHistory(OrganizationJobID) {
+        BindOrganizationJobHistory(OrganizationJobID);
+        ShowModal("#divOrganizationJobHistory");
+    }
+
+    function BindOrganizationJobHistory(OrganizationJobID) {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "/OrganizationJob/GetOrganizationJobHistory/" + OrganizationJobID,
+            success: function (result) {
+                $("#tblOrganizationJobHistory").DataTable({
+                    "destroy": true,
+                    "ordering": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "JobNo",
+                            "autowidth": true
+                        },
+                        {
+                             "data": "OrganizationName",
+                             "autowidth": true
+                        },
+                        {
+                            "data": "JobName",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "RankName",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "JobOperationTypeName",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "JobOperationDate",
+                            "autowidth": true,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "IsActive",
+                            "autowidth": false,
+                            "render": RenderCheckBox
+                        },
+                    ]
+                });
+            }
+            , error: function (xhr, status, error) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+            }
+        });
+
+    }
+
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchOrganizationJobDescText
+    </div>
+    <input id="ExportExcelButton" type="button" style="float:left" value="@Resources.Globalization.ExportToExcelText" />
+    <div class="panel-body">
+        <table id="tblOrganizationJob" class="table table-responsive table-hover dataTable font-12" style="width:100%">
+            <thead>
+                <tr>
+                    <th id="JobNo" class="search col-md-1">@Resources.Globalization.NumberText</th>
+                    <th id="OrganizationName" class="search col-md-2">@Resources.Globalization.OrganizationNameText</th>
+                    <th id="JobName" class="search col-md-2">@Resources.Globalization.JobNameText</th>
+                    <th id="RankName" class="search col-md-1">@Resources.Globalization.RankNameText</th>
+                    <th id="JobCode" class="search col-md-1">@Resources.Globalization.JobCodeText</th>
+                    <th id="JobCategoryName" class="search col-md-2">@Resources.Globalization.JobCategoryNameText</th>
+                    <th class="no-search">@Resources.Globalization.IsVacantText</th>
+                    <th class="no-search">@Resources.Globalization.IsActiveText</th>
+                    <th class="no-search"> </th>
+                    <th class="no-search"></th>
+                    <th class="no-search"></th>
+                    <th class="no-search"></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="divEmployeesHasTheOrganizationJob">
+    <div class="modal-dialog" style="width:1000px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.EmployeesOfOrganizationJobText
+                </div>
+            </div>
+
+            <div class="modal-body" style="height:500px">
+                <div class="row">
+                    <div class="tab-content clearfix">
+                        <div id="TabEmployeesHasTheOrganizationJob" class="tab-pane active padding-5">
+                            <table id="tblEmployeesHasTheOrganizationJob" class="table table-responsive table-hover dataTable font-12" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th class="col-md-1">@Resources.Globalization.EmployeeCodeNoText</th>
+                                        <th class="col-md-2">@Resources.Globalization.EmployeeNameArText</th>
+                                        <th class="col-md-2">@Resources.Globalization.JoinDateText</th>
+                                        <th class="col-md-1">@Resources.Globalization.CareerDegreeNameText</th>
+                                        <th class="col-md-1">@Resources.Globalization.JobNameText</th>
+                                        <th class="col-md-1">@Resources.Globalization.RankNameText</th>
+                                        <th class="col-md-1">@Resources.Globalization.JobNoText</th>
+                                        <th class="col-md-2">@Resources.Globalization.OrganizationNameText</th>
+                                        <th class="col-md-1">@Resources.Globalization.EmployeeWhoHasOrganizationJobText</th>
+                                        <th class="col-md-1">@Resources.Globalization.CareerHistoryTypeNameText</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divOrganizationJobHistory">
+    <div class="modal-dialog" style="width:1000px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.OrganizationJobHistoryText
+                </div>
+            </div>
+            <div class="modal-body" style="height:500px">
+                <div class="row">
+                    <div class="tab-content clearfix">
+                        <div id="TabOrganizationJobHistory" class="tab-pane active padding-5">
+                            <table id="tblOrganizationJobHistory" class="table table-responsive table-hover dataTable font-12" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th class="col-md-1">@Resources.Globalization.JobNoText</th>
+                                        <th class="col-md-3">@Resources.Globalization.OrganizationNameText</th>
+                                        <th class="col-md-2">@Resources.Globalization.JobNameText</th>
+                                        <th class="col-md-1">@Resources.Globalization.RankNameText</th>
+                                        <th class="col-md-1">@Resources.Globalization.JobOperationTypeText</th>
+                                        <th class="col-md-1">@Resources.Globalization.JobOperationDateText</th>
+                                        <th class="col-md-1">@Resources.Globalization.IsActiveText</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

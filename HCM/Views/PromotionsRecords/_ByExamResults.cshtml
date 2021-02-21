@@ -1,0 +1,135 @@
+﻿@*@model HCM.Models.PromotionsRecordsStatusViewModel*@
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#btnOpenPromotionRecordByExamResultPopup").click(function () {
+
+            var PromotionRecordID = $('#hdnFldPromotionRecordID').val();
+            if (PromotionRecordID == "") PromotionRecordID = 0;
+
+            BindPromotionsRecordsByExamResult(PromotionRecordID);
+            ShowModal("#divPromotionsRecordsByExamResultModal");
+
+        });
+
+        $("#divPromotionsRecordsByExamResultModal").on('hidden.bs.modal', function () {
+             
+            $(this).data('bs.modal', null);
+            BindCandidates();               // function defined in Manage.cshtml
+
+        });
+
+    });
+
+    function BindPromotionsRecordsByExamResult(PromotionRecordID) {
+
+        var url = "/PromotionsRecords/GetCandidatesByExamByPromotionRecordID/" + PromotionRecordID;
+        
+        var tblPromotionsRecordsByExamResult = $("#tblPromotionsRecordsByExamResult").DataTable({
+            "ajax": {
+                "url": url,
+                "type": "get",
+                "datatype": "json"
+            },
+            "destroy": true,
+            "processing": true,
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true,
+                    "defaultContent": ""
+                },
+                {
+                    "data": "PromotionRecordEmployeeID",
+                    "width": '100px',
+                    "render": function (data, type, row) { 
+                        return '<input type="text" class="form-control" value=' + row.ByExamResult + ' text=' + row.ByExamResult + ' onchange="UpdateByExamResult(this, ' + row.PromotionRecordEmployeeID + ')">';
+                    }
+                },
+            ]
+        });
+    }
+
+    function UpdateByExamResult(txtEmployeeCodeNo, PromotionRecordEmployeeID) {
+
+        console.log('func UpdateByExamResult ',PromotionRecordEmployeeID, $(txtEmployeeCodeNo).val());
+         
+        var ExamResult = $(txtEmployeeCodeNo).val();
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/PromotionsRecords/UpdateExamResult/")" + PromotionRecordEmployeeID + "/" + ExamResult,
+            //data: JSON.stringify(Obj),
+            success: OnSuccessExamResult,
+            error: function () {
+
+                $(txtEmployeeCodeNo).val(ExamResult);
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+            }
+        });
+    }
+
+    function OnSuccessExamResult(data) {
+
+        //$("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "")');
+
+        //var PromotionRecordID = $('#hdnFldPromotionRecordID').val();
+        //if (PromotionRecordID == "") PromotionRecordID = 0;
+
+        //BindPromotionsRecordsByExamResult(PromotionRecordID);
+        
+    }
+
+</script>
+
+<button id="btnOpenPromotionRecordByExamResultPopup" class="btn btn-default" type="button" title="@Resources.Globalization.PromotionRecordByExamResultTooltipText">
+    <span class="glyphicon glyphicon-tent"></span>
+    @Resources.Globalization.PromotionRecordByExamResultText
+</button>
+
+<div class="modal fade" id="divPromotionsRecordsByExamResultModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.PromotionsRecordsByExamResultListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="divPromotionsRecordsRedistributeJobsAlert" class="alert alert-info">
+                            @Resources.Globalization.PromotionsRecordsByExamResultListDescText
+                        </div>
+                    </div>
+                </div>
+                <table id="tblPromotionsRecordsByExamResult" class="table table-responsive table-hover dataTable font-12" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                            <td>@Resources.Globalization.EmployeeNameArText</td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = Resources.Globalization.EmployeesExperiencesDetailsText;
+}
+<script>
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblEmployees").DataTable({
+            //"destroy":true,
+            "ajax": {
+                "url": "/Employees/GetEmployeesCodes",
+                "type": "get",
+                "datatype": "json",
+                "data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+            "serverSide": true,
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeIDNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCodeID",
+                    "autowidth": false,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Manage", "EmployeeExperiencesWithDetails")' + "/" + data;
+                        return '<a href="' + Url + '"><span class="glyphicon glyphicon-thumbs-up" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                },
+            ]
+        });
+
+        $("#ExportExcelButton").click(function () {
+            $.ajax({
+                type: "GET",
+                contentType: "application/json;",
+                url: "/EmployeeExperiencesWithDetails/ExportExcel",
+                success: function (response) {
+                    var url = "/WebForms/Reports/FileDownload.aspx?fileName=" + response.DownLoadFile;
+                    window.location.href = url;
+                },
+                error: function (xhr, status, error) {
+
+                }
+            });
+        });
+
+    });
+
+</script>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.EmployeesExperiencesDetailsDescText
+    </div>
+    <input id="ExportExcelButton" type="button" style="float:left" value="@Resources.Globalization.ExportToExcelText" />
+    <div class="panel-body">
+        <table id="tblEmployees" class="table table-responsive table-hover dataTable">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                    <td>@Resources.Globalization.EmployeeIDNoText</td>
+                    <td>@Resources.Globalization.SelectText</td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

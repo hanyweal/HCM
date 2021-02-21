@@ -1,0 +1,286 @@
+﻿@model HCM.Models.EndOfServicesViewModel
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+@using HCM.Classes.Extensions
+
+@{
+    ViewBag.Title = Resources.Globalization.EditEndOfServicesText;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        SetEmployeePopupToReadonly();
+        $('#txtEndOfServiceVacationPeriod').on('change', function (event) {
+            GetEndOfServiceVacationEndDate();
+        });
+        BindEndOfServicesVacations();
+        $("#btnAdd").click(function () {
+            var ObjToPassForAdd = {
+                EndOfServiceID: $('#EndOfServiceID').val(),
+                EndOfServiceVacationType: {
+                    VacationTypeID: $('#ddlVacationTypes').val()
+                },
+                EndOfServiceVacationStartDate: $("#txtVacationStartDate").val(),
+                EndOfServiceVacationEndDate: $("#txtVacationEndDate").val()
+            };
+            $.ajax({
+                type: "POST"
+                //, dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                , contentType: "application/json; charset=utf-8"
+                , url: "@Url.Content("~/EndOfServices/AddEndOfServiceVacations")"
+                , data: JSON.stringify(ObjToPassForAdd)
+                , success: function () {
+                    Reset();
+                    BindEndOfServicesVacations();
+                }
+            , error: function (xhr, status, error) {
+                AddingFailure();
+            }
+            });
+        });
+         
+        $('#txtVacationStartDate').on('focus', function () { 
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+            onSelect: function (dates) { 
+                GetEndOfServiceVacationEndDate();
+            }
+        });
+    });
+
+    var EndOfServiceID = 0;
+    function OnSuccess(data) {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText),"")');
+        EndOfServiceID = data.EndOfServiceID;
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+
+    function AddingSuccess() {
+        //ResetJobCategory();
+
+    }
+
+    function AddingFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+
+    function GetEndOfServiceVacationEndDate() {
+        var EndOfServiceVacationStartDate = $("#txtVacationStartDate").val();
+        var EndOfServiceVacationPeriod = $("#txtEndOfServiceVacationPeriod").val();
+        if (EndOfServiceVacationStartDate != '' && EndOfServiceVacationPeriod != '') {
+            $.ajax({
+                type: "POST"
+                , url: "@Url.Content("~/OverTime/GetOverTimeEndDate/")" + EndOfServiceVacationPeriod + "/" + EndOfServiceVacationStartDate
+                , success: function (d) {
+                    $('#txtVacationEndDate').val(d.data);
+                }
+                , error: function (xhr, status, error) {
+                    AddingFailure();
+                }
+            });
+        }
+        else
+            $('#txtVacationEndDate').val('');
+    }
+
+    function BindEndOfServicesVacations() {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "/EndOfServices/GetEndOfServicesVacationsByEndOfServiceID/" + '@Model.EndOfServiceID',
+            success: function (result) {
+                $("#tblEndOfServicesVacations").DataTable({
+                    destroy: true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "VacationStartDate",
+                            "autowidth": true,
+                            "render": RenderDate
+                        },
+                          {
+                              "data": "VacationPeriod",
+                              "autowidth": true
+                          },
+                        {
+                            "data": "VacationEndDate",
+                            "autowidth": true,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "VacationType.VacationTypeName",
+                            "autowidth": true
+                        },
+
+                        {
+                            "data": "EndOfServiceVacationID",
+                            "width": "5%",
+                            "sorting": false,
+                            "render": function (data, type, row) {
+                                Url = 'RemoveEndOfServiceVacation(' + '\'' + row.EndOfServiceVacationID + '\'' + ');';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                            }
+                        }
+                    ]
+                });
+            }
+        });
+
+    }
+
+    function RemoveEndOfServiceVacation(EndOfServiceVacationID) {
+        $.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $.ajax({
+                            type: "POST"
+                            , contentType: "application/json; charset=utf-8"
+                            , url: "/EndOfServices/RemoveEndOfServiceVacation/" + EndOfServiceVacationID
+                            , success: function () {
+                                @*$("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');*@
+                                BindEndOfServicesVacations();
+                            }
+                        , error: function (xhr, status, error) {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                        }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    }
+
+
+
+    function Reset() {
+        $('#txtVacationStartDate').val('');
+        $('#txtVacationEndDate').val('');
+        $('#ddlVacationTypes').val(1);
+        $('#txtEndOfServiceVacationPeriod').val('0');
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.AddEndOfServicesVacationsText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddDeleteEndOfServicesVacationsDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.EndOfServices })
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Edit", "EndOfServices", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+
+
+            //Employees Partial View
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.HiddenFor(model => model.EndOfServiceID, new { @id = "EndOfServiceID" })
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", Model.EmployeeVM.GetEmployee())
+            <span class="control-label">@Resources.Globalization.EndOfServicesVacationsBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td colspan="3">
+                            @Resources.Globalization.VacationTypeText
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            @Html.DropDownListFor(model => model.EndOfServiceVacationType.VacationTypeID, new SelectList(new HCMBLL.VacationsTypesBLL().GetVacationsTypes(Convert.ToInt16(GendersEnum.Male)), "VacationTypeID", "VacationTypeName"), new { @id = "ddlVacationTypes", @style = "width:30%" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Resources.Globalization.VacationStartDateText</td>
+                        <td>@Resources.Globalization.VacationPeriodText</td>
+                        <td>@Resources.Globalization.VacationStartDateText</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.EndOfServiceVacationStartDate, new { @class = "form-control", @id = "txtVacationStartDate", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.EndOfServiceVacationStartDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            <input type="number" id="txtEndOfServiceVacationPeriod" min="1" class="form-control" value="1" onkeypress="return(AcceptDigitalKeyPress(event))" />
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.EndOfServiceVacationEndDate, new { @class = "form-control", @id = "txtVacationEndDate", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.EndOfServiceVacationEndDate, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+
+
+
+                </tbody>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input id="btnAdd" type="button" class="btn btn-default" value="@Resources.Globalization.AddText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table id="tblEndOfServicesVacations" class="table table-responsive table-condensed table-striped dataTable">
+                <thead>
+                    <tr>
+                        <td>@Resources.Globalization.VacationStartDateText</td>
+                        <td> @Resources.Globalization.VacationPeriodText</td>
+                        <td>@Resources.Globalization.VacationStartDateText</td>
+                        <td>@Resources.Globalization.VacationTypeText</td>
+
+                        <td></td>
+
+                    </tr>
+                </thead>
+            </table>
+
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "EndOfServices"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>

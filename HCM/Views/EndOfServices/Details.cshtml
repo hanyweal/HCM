@@ -1,0 +1,112 @@
+﻿@model HCM.Models.EndOfServicesViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.DetailsEndOfServicesText;
+}
+
+<p style="font-size:larger">@Resources.Globalization.DetailsEndOfServicesText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.DetailsEndOfServicesDescText
+    </div>
+    <div class="panel-body">
+        @*<span class="control-label">@Resources.Globalization.EndOfServicesInfoText</span>*@
+        <span class="control-label">@Resources.Globalization.EmployeesText</span>
+        <table class="table table-responsive table-condensed">
+            <tbody>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.EmployeeVM.EmployeeCodeNo, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.EmployeeVM.EmployeeCodeNo)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.EmployeeVM.EmployeeNameAr, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.EmployeeVM.EmployeeNameAr)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-responsive table-condensed">
+            <tbody>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.EndOfServiceDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.EndOfServiceDate, new
+                                                                                {
+                                                                                    @Value = Model.EndOfServiceDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                                                                })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.EndOfServiceDecisionNo, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.EndOfServiceDecisionNo)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.EndOfServiceDecisionDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.EndOfServiceDecisionDate, new { @Value = Model.EndOfServiceDecisionDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.EndOfServiceCaseID, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.EndOfServiceReason.EndOfServiceCase.EndOfServiceCase)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.EndOfServiceReasonID, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.EndOfServiceReason.EndOfServiceReason)
+                    </td>
+                </tr>                 
+                 
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.CreatedBy, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.CreatedBy)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.CreatedDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.CreatedDate)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        @Html.HiddenFor(model => model.EndOfServiceID)
+
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "EndOfServices"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div> 

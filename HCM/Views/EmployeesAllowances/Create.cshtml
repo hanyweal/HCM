@@ -1,0 +1,130 @@
+﻿@model HCM.Models.EmployeesAllowancesViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.AddNewEmployeeAllowanceText;
+}
+
+<script type="text/javascript">
+    var EmployeeAllowanceID = 0;
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+     
+    function OnSuccess(data) {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+        EmployeeAllowanceID = data.EmployeeAllowanceID;
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        $('#txtAllowanceStartDate').val('');
+        ResetEmployeeData();
+        ResetAllowance();
+    }
+     
+    function OkFunction() {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/EmployeesAllowances/PrintEmployeeAllowance/")' + EmployeeAllowanceID);
+        ShowModal("#divReportModal");
+
+        @*$.ajax({
+            type: "GET"
+             , dataType: "json"
+             , contentType: "application/json; charset=utf-8"
+             , url: "@Url.Content("~/EmployeesAllowances/GetEmployeeAllowanceID")"
+             , success: function (d) {
+                 if (d.data != null) {
+                     var iframe = $("#divReportModal .modal-body #iframeReportContent");
+                     iframe.attr('src', '@Url.Content("~/EmployeesAllowances/PrintEmployeeAllowance/")' + d.data);
+                     ShowModal("#divReportModal");
+                 }
+             }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            },
+        });*@
+    }
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.AddNewEmployeeAllowanceText</p>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewEmployeeAllowanceDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.EmployeesAllowances })
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "EmployeesAllowances", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <span class="control-label">@Resources.Globalization.EmployeeAllowanceBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody> 
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.AllowanceStartDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4"></td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.AllowanceStartDate, new { @class = "form-control TxtHijriPicker", @id = "txtAllowanceStartDate" })
+                            @Html.ValidationMessageFor(model => model.AllowanceStartDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4"></td>
+                    </tr> 
+                    <tr>
+                        <td class="col-md-4" colspan="3">
+                            @Html.Partial("~/Views/Shared/_AllowancesPopup.cshtml", new AllowancesViewModel() { })
+                        </td>
+                    </tr> 
+                </tbody>
+            </table>
+
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { }) 
+            
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "EmployeesAllowances"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>

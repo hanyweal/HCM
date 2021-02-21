@@ -1,0 +1,409 @@
+﻿@model HCM.Models.EmployeesExperiencesViewModel
+@using HCM.Classes.Enums;
+@{
+    if (Model.HasCreatingAccess)
+    {
+        <p>
+            <a onclick="OpenExperiencePopup(0, '', '', '', 'Add')"> @Resources.Globalization.CreateNewText</a>
+        </p>
+    }
+}
+
+<script>
+    var PageMode;
+    var EmpExperienceID;
+    $(document).ready(function () {
+
+        $("#txtTotalYears").keypress(validatenumber);
+        $("#txtTotalMonths").keypress(validatenumber);
+        $("#txtTotalDays").keypress(validatenumber);
+
+        GetEmployeeExperiences('@Model.EmployeeVM.EmployeeCodeID');
+
+        $("#BtnSave").click(function () {
+
+            var EmployeesExperiencesObj =
+           {
+               TotalYears: $("#txtTotalYears").val(),
+               TotalMonths: $("#txtTotalMonths").val(),
+               TotalDays: $("#txtTotalDays").val(),
+               EmployeeVM: { EmployeeCodeID: '@Model.EmployeeVM.EmployeeCodeID' },
+               EmployeeExperienceID: EmpExperienceID,
+           };
+
+            if (PageMode == 'Add') {
+                $.ajax({
+                    type: "POST"
+                 , contentType: "application/json; charset=utf-8"
+                 , url: "@Url.Content("~/EmployeesExperiences/Create")"
+                 , data: JSON.stringify(EmployeesExperiencesObj)
+                 , success: function (result) {
+                     $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+                     GetEmployeeExperiences('@Model.EmployeeVM.EmployeeCodeID');
+                     DestroyModal("#divEmployeeExperienceModal");
+                 }
+                , error: function (xhr, status, error) {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                }
+                });
+            }
+            else if (PageMode == 'Edit') {
+                $.ajax({
+                    type: "POST"
+                  , contentType: "application/json; charset=utf-8"
+                  , url: "@Url.Content("~/EmployeesExperiences/Edit")"
+                  , data: JSON.stringify(EmployeesExperiencesObj)
+                  , success: function (result) {
+                      $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+                      GetEmployeeExperiences('@Model.EmployeeVM.EmployeeCodeID');
+                      DestroyModal("#divEmployeeExperienceModal");
+                  }
+                 , error: function (xhr, status, error) {
+                     $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                 }
+                });
+            }
+        });
+    });
+
+    function OpenExperiencePopup(EmployeeExperienceID, TotalYears, TotalMonths, TotalDays, Type) {
+
+        EmpExperienceID = EmployeeExperienceID;
+
+        if (!Type) {
+            Type = 'Edit';
+        }
+        else {
+            $("#txtTotalYears").val("");
+            $("#txtTotalMonths").val("");
+            $("#txtTotalDays").val("");
+        }
+
+        PageMode = Type;
+        if (TotalYears != "") {
+            $("#txtTotalYears").val(TotalYears);
+        }
+        if (TotalMonths != "") {
+            $("#txtTotalMonths").val(TotalMonths);
+        }
+        if (TotalDays != "") {
+            $("#txtTotalDays").val(TotalDays);
+        }
+        ShowModal("#divEmployeeExperienceModal");
+    }
+
+    function RemoveEmployeeExperience(EmployeeExperienceID) {
+
+        $.confirm({
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            animation: 'zoom',
+            boxWidth: '280px',
+            useBootstrap: false,
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $.ajax({
+                            type: 'POST',
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            url: "@Url.Content("~/EmployeesExperiences/Delete/")" + EmployeeExperienceID,
+                            success: function (result) {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+                                GetEmployeeExperiences('@Model.EmployeeVM.EmployeeCodeID');
+                            }
+                        , error: function (xhr, status, error) {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                        }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+    }
+
+
+    function GetEmployeeExperiences(EmployeeCodeID) {
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/EmployeesExperiences/GetEmployeeExperiencesByEmployeeCodeID/")" + EmployeeCodeID,
+            success: function (result) {
+
+                $("#tblEmployeeExperience").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": true,
+                    //"order": [[1, "desc"]],
+                    "data": result.data,
+                    "columns": [
+                        //{
+                        //    "data": "EmployeeExperienceID",
+                        //    "autowidth": true,
+                        //},
+                        {
+                            "data": "TotalYears",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "TotalMonths",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "TotalDays",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+
+                        {
+                            "data": "EmployeeExperienceID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                if ('@Model.HasUpdatingAccess' == 'True') {
+                                    Url = 'OpenExperiencePopup(' + data + ',' + row.TotalYears + ',' + row.TotalMonths + ',' + row.TotalDays + ');';
+                                    return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>';
+                                }
+                                else
+                                    return '';                                
+                            }
+                        },
+                        {
+                            "data": "EmployeeExperienceID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                if ('@Model.HasDeletingAccess' == 'True') {
+                                    Url = 'RemoveEmployeeExperience(' + data + ');';
+                                    return '<a id="btnRemove" onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>';
+                                }
+                                else
+                                    return '';
+                            }
+                        },
+                    ]
+                });
+            }
+        });
+    }
+
+    function validatenumber(event) {
+        //alert(event.keyCode);
+        var key = window.event ? event.keyCode : event.which;
+        if (event.keyCode == 8 || event.keyCode == 46) {
+            return true;
+        }
+        else if (key < 48 || key > 57) {          // disabled paste option
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    function Reset() {
+        $("#txtTotalYears").val("");
+        $("#txtTotalMonths").val("");
+        $("#txtTotalDays").val("");
+    }
+</script>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EmployeesText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-responsive table-condensed table-striped" style="text-align:right">
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeCodeNo, new { @class = "control-label" })
+                </td>
+                <td>@Html.LabelFor(model => model.EmployeeVM.EmployeeNameAr, new { @class = "control-label" })</td>
+                <td>@Html.LabelFor(model => model.EmployeeVM.EmployeeOrganizationName, new { @class = "control-label" })</td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeCodeNo, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.HiddenFor(model => model.EmployeeVM.EmployeeCodeID)
+                </td>
+                <td class="col-md-4">@Html.TextBoxFor(model => model.EmployeeVM.EmployeeNameAr, new { @class = "form-control", @readonly = "readonly" })</td>
+                <td class="col-md-4">@Html.TextBoxFor(model => model.EmployeeVM.EmployeeOrganizationName, new { @class = "form-control", @readonly = "readonly" })</td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeIDNo, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeJobName, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.HiringDate, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeIDNo, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeJobName, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.HiringDate, new
+                       {
+                           @class = "form-control",
+                           @id = "txtHiringDate",
+                           @readonly = "readonly",
+                           @Value = Model.EmployeeVM.HiringDate.HasValue ? Model.EmployeeVM.HiringDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                       })
+                </td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeRankName, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeJobNo, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4"></td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeRankName, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeJobNo, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.EmployeeExperienceText
+    </div>
+    <div class="panel-body">
+        <table id="tblEmployeeExperience" class="table table-responsive table-hover" style="width:100%">
+            <thead>
+                <tr>
+                    @*<td>
+                            @Resources.Globalization.SequenceNoText
+                        </td>*@
+                    <td>
+                        @Resources.Globalization.TotalYearsText
+                    </td>
+                    <td>
+                        @Resources.Globalization.TotalMonthsText
+                    </td>
+                    <td>
+                        @Resources.Globalization.TotalDaysText
+                    </td>
+                    <td>
+                        @Resources.Globalization.CreatedByText
+                    </td>
+                    <td>
+                        @Resources.Globalization.CreatedDateText
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "EmployeesExperiences"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+<div class="modal fade" id="divEmployeeExperienceModal">
+    <div class="modal-dialog" style="width:1100px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                </div>
+            </div>
+            <div class="modal-body">
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <div class="panel panel-default" style="padding:0px">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-9">
+                                @Resources.Globalization.ExperienceText
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-responsive table-condensed table-striped">
+                            <tbody>
+                                <tr>
+                                    <td class="col-md-4">@Html.LabelFor(model => model.TotalYears, new { @class = "control-label" })</td>
+                                    <td class="col-md-4">@Html.LabelFor(model => model.TotalMonths, new { @class = "control-label" })</td>
+                                    <td class="col-md-4">@Html.LabelFor(model => model.TotalDays, new { @class = "control-label" })</td>
+                                    @Html.HiddenFor(model => model.EmployeeExperienceID)
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        @Html.TextBoxFor(model => model.TotalYears, new { @class = "form-control", @id = "txtTotalYears", @maxlength = "2", onkeypress = "validatenumber(event)", onkeydown = "validatenumber(event)" })
+                                        @Html.ValidationMessageFor(model => model.TotalYears, "", new { @class = "text-danger" })
+                                    </td>
+                                    <td class="col-md-4">
+                                        @Html.TextBoxFor(model => model.TotalMonths, new { @class = "form-control", @id = "txtTotalMonths", @maxlength = "2", onkeypress = "validatenumber(event)", onkeydown = "validatenumber(event)" })
+                                        @Html.ValidationMessageFor(model => model.TotalMonths, "", new { @class = "text-danger" })
+                                    </td>
+                                    <td class="col-md-4">
+                                        @Html.TextBoxFor(model => model.TotalDays, new { @class = "form-control", @id = "txtTotalDays", @maxlength = "2", onkeypress = "validatenumber(event)", onkeydown = "validatenumber(event)" })
+                                        @Html.ValidationMessageFor(model => model.TotalDays, "", new { @class = "text-danger" })
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-responsive table-condensed">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <center>
+                                            <input type="submit" class="btn btn-default" id="BtnSave" value="@Resources.Globalization.SaveText" />
+                                            <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                                        </center>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

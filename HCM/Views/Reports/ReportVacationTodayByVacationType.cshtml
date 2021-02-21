@@ -1,0 +1,98 @@
+﻿@model HCM.Models.ReportVacationTodayByVacationTypeViewModel
+@using HCM.Classes.Enums
+@using HCMBLL
+@using System.Configuration
+
+@{
+    ViewBag.Title = @Resources.Globalization.ReportVacationTodayByVacationTypeText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+
+    $(document).ready(function () {
+        insertSelectionOptionToDDL('ddlVacationsTypes');
+    });
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    @*function Print() {
+        var VacationTypeID = $("#ddlVacationsTypes").val() ? $("#ddlVacationsTypes").val() : '';
+        if (VacationTypeID == '') {
+            VacationTypeID = 0;
+            //$("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(Resources.Globalization.RequiredVacationTypeText))');
+        }
+        
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content(string.Format("~/Reports/VacationTodayByVacationType?VacationTypeID="))' + VacationTypeID);
+        ShowModal("#divReportModal");
+        
+    }*@
+    
+    function Print(data) {
+        
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/WebForms/")' + data.url);
+
+        ShowModal("#divReportModal");
+    }
+</script>
+
+<div class="panel panel-default" style="padding:0">
+    <div class="panel-heading">
+        @Resources.Globalization.ReportVacationTodayByVacationTypeText
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("VacationTodayByVacationType", "Reports", new AjaxOptions()
+        {
+            OnSuccess = "Print",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.ValidationSummary()
+            <div class="form-group">
+                <table class="table table-responsive table-condensed table-striped">
+                    <tbody>
+                        <tr>
+                            <td class="col-md-3">@Html.LabelFor(model => model.VacationTypeID, new { @class = "control-label" })</td>
+                            <td class="col-md-3">&nbsp;</td>
+                            <td class="col-md-3">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-3">
+                                @Html.DropDownListFor(model => model.VacationTypeID, new SelectList(new HCMBLL.VacationsTypesBLL().GetVacationsTypes(), "VacationTypeID", "VacationTypeName"), new { @id = "ddlVacationsTypes", @style = "width:34%" })
+                            </td>
+                            <td class="col-md-3"></td>
+                            <td class="col-md-3"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.StartDate, new { @class = "control-label" })
+                            </td>
+                            <td>
+                                @Html.LabelFor(model => model.EndDate, new { @class = "control-label" })
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control TxtHijriPicker", @id = "txtStartDate", @Value = Model.StartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) })
+                                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control TxtHijriPicker", @id = "txtEndDate", @Value = Model.EndDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) })
+                                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <input type="submit" value='@Resources.Globalization.ReportViewText' class="btn btn-primary"> @*onclick="Print()"*@
+        }
+    </div>
+</div>
+

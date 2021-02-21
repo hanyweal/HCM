@@ -1,0 +1,98 @@
+﻿@model HCM.Models.HolidaysSettingsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.DetailsHolidaySettingText;
+}
+
+<script type="text/javascript">
+    function OkFunction() {
+        window.location.href = "/HolidaysSettings/Index";
+    }
+
+    $(document).ready(function () {
+    });
+     
+</script>
+<p style="font-size:larger">@Resources.Globalization.DetailsHolidaySettingText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.DetailsHolidaySettingDescText
+    </div>
+    <div class="panel-body">
+        @Html.AntiForgeryToken()
+        <span class="control-label">@Resources.Globalization.HolidaySettingBasicInfoText</span>
+        <table class="table table-responsive table-condensed">
+            <tbody>
+                <tr>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.MaturityYearBalance, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-9">
+                        @Html.DisplayFor(model => model.MaturityYearBalance.MaturityYear)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.HolidayType, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-9">
+                        @Html.DisplayFor(model => model.HolidayType.HolidayTypeName)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-3">
+                        @Html.HiddenFor(model => model.HolidaySettingID)
+                        @Html.LabelFor(model => model.HolidaySettingStartDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-9">
+                        @Html.DisplayFor(model => model.HolidaySettingStartDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.HolidaySettingEndDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-9">
+                        @Html.DisplayFor(model => model.HolidaySettingEndDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.HolidaySettingPeriod, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-9">
+                        @Html.DisplayFor(model => model.HolidaySettingPeriod)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.CreatedBy, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-9">
+                        @Html.DisplayFor(model => model.CreatedBy)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.CreatedDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-9">
+                        @Html.DisplayFor(model => model.CreatedDate)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Details/" + @Model.MaturityYearBalance.MaturityYearID, "YearsSettings"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

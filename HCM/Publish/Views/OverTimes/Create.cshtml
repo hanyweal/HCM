@@ -1,0 +1,402 @@
+﻿@model HCM.Models.OverTimesViewModel
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+
+@{
+    ViewBag.Title = Resources.Globalization.AddNewOverTimeText;
+}
+
+<script type="text/javascript">
+
+    var OverTimeID = 0;
+    $(document).ready(function () {
+
+        BindOverTimeEmployees();
+      
+        $('#txtOverTimePeriod').on('change', function (event) {
+            GetOverTimeEndDate();
+        });
+
+        $("#btnAdd").click(function () {
+            var Employee = {};
+            if ($("#txtEmployeeCodeNo").val() != '') {
+                Employee = {
+                    EmployeeCareerHistory: {
+                        EmployeeCareerHistoryID: $("#hdnFldEmployeeCareerHistoryID").val(),
+                        EmployeeCode: {
+                            EmployeeCodeID: $("#hdnFldEmployeeCodeID").val(),
+                            EmployeeCodeNo: $("#txtEmployeeCodeNo").val(),
+                            Employee: {
+                                FirstNameAr: $("#txtEmployeeNameAr").val()
+                            }
+                        }
+                    }
+                }
+            }
+
+            var OverTimeDetailRequest =
+            {
+                OverTimeStartDate: $('#txtOverTimeStartDate').val(),
+                OverTimeEndDate: $('#txtOverTimeEndDate').val(),
+                OverTimePeriod: $('#txtOverTimePeriod').val(),
+                OverTimeDetailRequest: Employee
+            };
+
+            $.ajax({
+                type: "POST"
+                //, dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                , contentType: "application/json; charset=utf-8"
+                , url: "@Url.Content("~/OverTimes/CreateOverTimeDetail")"
+                , data: JSON.stringify(OverTimeDetailRequest)
+                , success: function () {
+                    AddingSuccess();
+                    ResetEmployeeData();
+                }
+            , error: function (xhr, status, error) {
+                AddingFailure();
+            }
+            });
+        });
+        //--=== End Add Employee
+
+
+        var PreviousOverTimeStartDate;
+        $('#txtOverTimeStartDate').on('focus', function () {
+            PreviousOverTimeStartDate = this.value;
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+            onSelect: function (dates) {
+                var rowsCount = GetRowsCount("#tblOverTimeEmployees");
+                if (rowsCount > 0) {
+                    $('#txtOverTimeStartDate').val(PreviousOverTimeStartDate);
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.WarningCannotChangeBecauseEmployeeAdded))');
+                }
+                else {
+                    GetOverTimeEndDate();
+                }
+            }
+        });
+
+        //--=== End Ready function
+    });
+
+    function OnSuccess(data) {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText),"OkFunction")');
+        OverTimeID = data.OverTimeID;
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function AddingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText))');
+        BindOverTimeEmployees();
+    }
+
+    function AddingFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        $('#txtOverTimeStartDate').val('');
+        $('#txtOverTimeEndDate').val('');
+        $('#txtTasks').val('');
+        $('#txtOverTimePeriod').val('1');
+        $('#txtOverTimeWeekWorkHoursAvg').val('');
+        $('#txtFridayHoursAvg').val('');
+        $('#txtSaturdayHoursAvg').val('');
+        $('#txtRequester').val('');
+        ResetEmployeeData();
+        $("#tblOverTimeEmployees").DataTable().clear().draw();
+        ResetEmployeeFromSession();
+    }
+
+    function ResetEmployeeFromSession() {
+        $.ajax({
+            type: "POST"
+            //, contentType: "application/json; charset=utf-8"
+                , url: "@Url.Action("ResetEmployeeFromSession", "OverTimes")"
+                , success: function () {
+                }
+           , error: function (xhr, status, error) {
+               OnFailure();
+           }
+        });
+    }
+
+    //--=== Start Bind Employees AfterSelect
+    function BindOverTimeEmployees() {
+        var OverTimeEmployees;
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "/OverTimes/GetOverTimeEmployees",
+            success: function (result) {
+                $("#tblOverTimeEmployees").DataTable({
+                    destroy: true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "EmployeeCareerHistory.EmployeeCode.Employee.FirstNameAr",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo",
+                            "width": "5%",
+                            "sorting": false,
+                            "render": function (data, type, row) {
+                                Url = 'RemoveEmployeeFromOverTime(' + data + ');';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                            }
+                        }
+                    ]
+                });
+                var rowsCount = GetRowsCount("#tblOverTimeEmployees");//table.data().count();
+
+                if (rowsCount > 0) {
+                    $('#txtOverTimePeriod').prop('readonly', true);
+                }
+                else {
+                    $('#txtOverTimePeriod').prop('readonly', false);
+                }
+            }
+        });
+    }
+    //--=== End Bind Employees AfterSelect
+
+    //--=== Start Remove Employee From OverTime
+    function RemoveEmployeeFromOverTime(EmployeeCodeNo) {
+        $.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+
+                        var OverTimeDetailRequest =
+                            {
+                                OverTimeDetailRequest: {
+                                    EmployeeCareerHistory: {
+                                        EmployeeCode: {
+                                            EmployeeCodeNo: EmployeeCodeNo
+                                        }
+                                    }
+                                }
+                            };
+                        $.ajax({
+                            type: "POST"
+                            //, dataType: "json"
+                            , contentType: "application/json; charset=utf-8"
+                            , url: "@Url.Action("RemoveEmployeeFromOverTime", "OverTimes")"
+                            , data: JSON.stringify(OverTimeDetailRequest)
+                            , success: function () {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+                                // rebind tha data
+                                BindOverTimeEmployees();
+                            }
+                        , error: function (xhr, status, error) {
+                            OnFailure();
+                        }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    }
+    //--=== End Remove Employee From OverTime
+
+    function GetOverTimeEndDate() {
+        var OverTimeStartDate = $("#txtOverTimeStartDate").val();
+        var OverTimePeriod = $("#txtOverTimePeriod").val();
+        if (OverTimeStartDate != '' && OverTimePeriod != '') {
+            $.ajax({
+                type: "POST"
+                , url: "@Url.Content("~/OverTime/GetOverTimeEndDate/")" + OverTimePeriod + "/" + OverTimeStartDate
+                , success: function (d) {
+                    $('#txtOverTimeEndDate').val(d.data);
+                }
+                , error: function (xhr, status, error) {
+                    AddingFailure();
+                }
+            });
+        }
+        else
+            $('#txtOverTimeEndDate').val('');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+    function OkFunction() {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/OverTimes/PrintOverTime/")' + OverTimeID);
+        ShowModal("#divReportModal");
+    }
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.AddNewOverTimeText</p>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewOverTimeDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.OverTimes })
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "OverTimes", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.OverTimeBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.OverTimeStartDate)
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.OverTimePeriod)
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.OverTimeEndDate)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.OverTimeStartDate, new { @class = "form-control TxtHijriPicker", @id = "txtOverTimeStartDate", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.OverTimeStartDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            <input type="number" id="txtOverTimePeriod" min="1" class="form-control" value="1" />
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.OverTimeEndDate, new { @class = "form-control", @id = "txtOverTimeEndDate", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.OverTimeEndDate, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.WeekWorkHoursAvg, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.FridayHoursAvg, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.SaturdayHoursAvg, new { @class = "control-label" })</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.WeekWorkHoursAvg, new { @class = "form-control", @id = "txtOverTimeWeekWorkHoursAvg", @min = "0", @value = "0" })
+                            @Html.ValidationMessageFor(model => model.WeekWorkHoursAvg, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.FridayHoursAvg, new { @class = "form-control", @id = "txtFridayHoursAvg", @min = "0", @value = "0" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.SaturdayHoursAvg, new { @class = "form-control", @id = "txtSaturdayHoursAvg", @min = "0", @value = "0" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.Requester, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.Requester, new { @class = "form-control", @id = "txtRequester" })  
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.Tasks, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            @Html.TextAreaFor(model => model.Tasks, new { @class = "form-control", @id = "txtTasks" })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+            <div class="row">
+                <div class="col-md-10">
+                </div>
+                <div class="col-md-2 text-right">
+                    <input id="btnAdd" type="button" class="btn btn-default" value="@Resources.Globalization.AddText" />
+                </div>
+            </div>
+            <table id="tblOverTimeEmployees" class="table table-responsive table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                        <td>@Resources.Globalization.EmployeeNameArText</td>
+                        <td></td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "OverTimes"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

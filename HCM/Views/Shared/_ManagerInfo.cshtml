@@ -1,0 +1,85 @@
+﻿
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+         GetUserIdentityInfo();
+    });
+
+    function GetUserIdentityInfo(BindOrg) {
+            $.ajax({
+                type: "GET"
+                 , url: "@Url.Content("/EmployeesPlacement/GetUserIdentityInfo")"
+                 , success: function (d) {
+                     if (d.data != '') {
+                         $("#divUserIdentityKnown").show();
+                         $("#divUserIdentityNotKnown").hide();
+                         $("#hdnFldUserCodeID").val(d.data.UserCodeID);
+                         $("#txtUserCodeNo").val(d.data.UserCodeNo);
+                         $("#txtUserName").val(d.data.UserName);
+                         $("#txtUserIDNo").val(d.data.UserIDNo);
+                         $("#txtUserOrganizationName").val(d.data.OrganizationName);
+                         document.getElementById("imgEmployeePicture").src = "data:image/jpg;base64," + d.data.UserPicture;
+                         if (BindOrg == "true")
+                             BindOrgTree();
+                     }
+                     else {
+                          $("#divUserIdentityKnown").hide();
+                          $("#divUserIdentityNotKnown").show();
+                     }
+                 }
+                 , error: function (xhr, status, error) {
+                    alert(error.error);
+                 }
+            });
+        }
+</script>
+
+<div id="divUserIdentityNotKnown" hidden>
+    <div class="row alert alert-danger bold text-center">
+        @Resources.Globalization.UserIdentityNotKnownText
+    </div>
+</div>
+<div id="divUserIdentityKnown" hidden>
+    <table class="table table-responsive table-condensed table-bordered">
+        <tbody>
+            <tr>
+                <td colspan="5" class="alert alert-warning">
+                    @Resources.Globalization.ManagerInfoText
+                </td>
+            </tr>
+            <tr>
+                <td style="width:13%;">
+                    <label class="control-label">@Resources.Globalization.EmployeeCodeNoText</label>
+                </td>
+                <td style="width:27%">
+                    <input type="text" class="form-control" id="txtUserCodeNo" readonly />
+                    <input type="hidden" id="hdnFldUserCodeID" />
+                </td>
+                <td style="width:13%">
+                    <label class="control-label">@Resources.Globalization.EmployeeIDNoText</label>
+                </td>
+                <td style="width:27%">
+                    <input type="text" class="form-control" id="txtUserIDNo" readonly />
+                </td>
+                <td rowspan="2" style="width:10%;text-align:center;vertical-align:middle" class="text-center">
+                    <img id="imgEmployeePicture" style="width:100px;height:100px" src="/Content/Images/anonymous.png" />
+                </td>
+            </tr>
+            <tr>
+                <td style="width:13%">
+                    <label class="control-label">@Resources.Globalization.NameText</label>
+                </td>
+                <td style="width:27%">
+                    <input type="text" class="form-control" id="txtUserName" readonly />
+                </td>
+                <td style="width:13%">
+                    <label class="control-label">@Resources.Globalization.OrganizationNameText</label>
+                </td>
+                <td style="width:27%">
+                    <input type="text" class="form-control" id="txtUserOrganizationName" readonly />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

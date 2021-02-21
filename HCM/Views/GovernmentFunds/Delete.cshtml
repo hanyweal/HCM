@@ -1,0 +1,176 @@
+﻿@model HCM.Models.GovernmentFundsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.DeleteGovernmentFundsText;
+}
+<script type="text/javascript">
+
+    function OkFunction() {
+        window.location.href = "/GovernmentFunds/Index";
+    }
+
+    $(document).ready(function () {
+        $("#BtnDelete").confirm({
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () { $("#BtnDelete").submit(); },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+    });
+
+    function OnSuccess() {
+        $("#BtnDelete").attr("disabled", "disabled");
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText),"OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.DeleteGovernmentFundsText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.DeleteGovernmentFundsDescText
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Delete", "GovernmentFunds", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            InsertionMode = InsertionMode.Replace,
+            HttpMethod = "DELETE",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            <span class="control-label">@Resources.Globalization.GovernmentFundsInfoText</span>
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.LoanNo, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.LoanNo)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.LoanDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.LoanDate)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.DeductionStartDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.DeductionStartDate)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.MonthlyDeductionAmount, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.MonthlyDeductionAmount)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.TotalDeductionAmount, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.TotalDeductionAmount)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.RemainingDeductionAmount, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.RemainingDeductionAmount)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.GovernmentFundType, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.GovernmentFundType.GovernmentFundTypeName)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.GovernmentDeductionType, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.GovernmentDeductionType.GovernmentDeductionTypeName)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.EmployeeVM.EmployeeCodeNo, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.EmployeeVM.EmployeeCodeNo)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.EmployeeVM.EmployeeNameAr, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.EmployeeVM.EmployeeNameAr)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" id="BtnDelete" name="BtnDelete" value="@Resources.Globalization.DeleteText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            @Html.HiddenFor(model => model.GovernmentFundID)
+        }
+
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "GovernmentFunds"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

@@ -1,0 +1,45 @@
+OnStart @ 26/05/42 08:13:45 م
+First Run after start @ 26/05/42 01:55:00 م
+OnStart @ 26/05/42 08:16:38 م
+First Run after start @ 26/05/42 08:18:00 م
+Timer started @ 26/05/42 08:18:00 م
+Exception: No connection string named 'HCMEntities' could be found in the application config file.
+OnStart @ 26/05/42 08:28:34 م
+First Run after start @ 26/05/42 08:30:00 م
+Timer started @ 26/05/42 08:30:00 م
+OnStart @ 26/05/42 08:31:17 م
+First Run after start @ 26/05/42 08:33:00 م
+Timer started @ 26/05/42 08:33:00 م
+OnStart @ 26/05/42 08:35:35 م
+First Run after start @ 26/05/42 08:37:00 م
+Timer started @ 26/05/42 08:37:00 م
+Timer completed and Task done @ 26/05/42 08:40:25 م
+Next Run @ 27/05/42 08:37:00 م
+OnStart @ 26/05/42 09:31:14 م
+First Run after start @ 26/05/42 08:37:00 م
+OnStart @ 27/05/42 06:30:31 م
+First Run after start @ 27/05/42 08:37:00 م
+OnStart @ 27/05/42 06:30:45 م
+First Run after start @ 27/05/42 08:37:00 م
+Timer started @ 27/05/42 08:37:00 م
+Timer completed and Task done @ 27/05/42 08:37:03 م
+Next Run @ 28/05/42 08:37:00 م
+Timer started @ 27/05/42 08:57:36 م
+Timer completed and Task done @ 27/05/42 08:57:38 م
+Next Run @ 27/05/42 08:37:00 م
+Timer started @ 27/05/42 10:43:28 م
+Timer completed and Task done @ 27/05/42 10:43:31 م
+Next Run @ 28/05/42 08:37:00 م
+Timer started @ 28/05/42 08:39:24 م
+Timer started @ 28/05/42 08:39:24 م
+Timer completed and Task done @ 28/05/42 08:39:24 م
+Next Run @ 29/05/42 08:37:00 م
+Timer started @ 28/05/42 09:00:02 م
+Timer completed and Task done @ 28/05/42 09:00:02 م
+Next Run @ 28/05/42 08:37:00 م
+Timer started @ 29/05/42 08:37:00 م
+Timer completed and Task done @ 29/05/42 08:37:00 م
+Next Run @ 01/06/42 08:37:00 م
+Timer started @ 29/05/42 08:57:36 م
+Timer completed and Task done @ 29/05/42 08:57:36 م
+Next Run @ 29/05/42 08:37:00 م

@@ -1,0 +1,147 @@
+﻿@model HCM.Models.EndOfServicesViewModel
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+
+@{
+    ViewBag.Title = Resources.Globalization.AddNewEndOfServicesText;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        insertSelectionOptionToDDL('ddlEndOfServicesCases', '-1');
+        insertSelectionOptionToDDL('ddlEndOfServicesReasons', '-1');
+
+        $('#ddlEndOfServicesCases').on('change', function (event) {
+            var ddlEndOfServiceCaseID = $('#ddlEndOfServicesCases').val();
+            $('#ddlEndOfServicesReasons').empty();
+            insertSelectionOptionToDDL('ddlEndOfServicesReasons', '-1');
+
+            if (ddlEndOfServiceCaseID) {
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Content("~/EndOfServices/GetEndOfServicesReasonsByCaseID/")" + ddlEndOfServiceCaseID,
+                    success: function (result) {
+                        $.each(result.data, function (i, data) {
+                            $("#ddlEndOfServicesReasons").append($('<option></option>').val(data.EndOfServiceReasonID).html(data.EndOfServiceReason));
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                    }
+                });
+            }
+
+        });
+
+    });
+
+
+
+    var EndOfServiceID = 0;
+    function OnSuccess(data) {
+        $('#EndOfServicesForm')[0].reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+        EndOfServiceID = data.EndOfServiceID;
+        ResetEmployee();
+    }
+
+    function OkFunction() {
+    var iframe = $("#divReportModal .modal-body #iframeReportContent");
+    iframe.attr('src', '@Url.Content("~/EndOfServices/PrintEndOfService/")' + EndOfServiceID);
+    ShowModal("#divReportModal");
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.AddNewEndOfServicesText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewEndOfServicesDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.EndOfServices })
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "EndOfServices", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }, new { id = "EndOfServicesForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            @*<span class="control-label">@Resources.Globalization.EndOfServicesInfoText</span><br />*@
+
+            //Employees Partial View
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.EndOfServiceDate, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.EndOfServiceDecisionNo, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.EndOfServiceDecisionDate, new { @class = "control-label" })</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.EndOfServiceDate, new { @class = "form-control TxtHijriPicker", @id = "txtEndOfServiceDate" })
+                            @Html.ValidationMessageFor(model => model.EndOfServiceDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.EndOfServiceDecisionNo, new { @class = "form-control", @id = "txtEndOfServiceDecisionNo" })
+                            @Html.ValidationMessageFor(model => model.EndOfServiceDecisionNo, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.EndOfServiceDecisionDate, new { @class = "form-control TxtHijriPicker", @id = "txtEndOfServiceDecisionDate" })
+                            @Html.ValidationMessageFor(model => model.EndOfServiceDecisionDate, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.EndOfServiceCaseID, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.EndOfServiceReasonID, new { @class = "control-label" })</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(model => model.EndOfServiceCaseID, new SelectList(new HCMBLL.EndOfServicesCasesBLL().GetEndOfServicesCases(), "EndOfServiceCaseID", "EndOfServiceCase"), new { @id = "ddlEndOfServicesCases", @style = "width:100%" })
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.EndOfServiceReasonID, new SelectList(Enumerable.Empty<SelectList>(), "EndOfServiceReasonID", "EndOfServiceReason"), new { @id = "ddlEndOfServicesReasons", @style = "width:100%" })
+                        </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" id="btnReset" class="btn btn-default" value="@Resources.Globalization.ResetText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "EndOfServices"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>

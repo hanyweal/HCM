@@ -1,0 +1,313 @@
+﻿@using HCM.Classes.Enums;
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        BindEmployees();
+
+        OpenEmployeesPopup();
+
+        $("#txtEmployeeCodeNo").keydown(function (e) {
+            var code = e.keyCode || e.which;
+            if (code === 13) { // user pressed on enterkey
+                e.preventDefault();
+                GetEmployee();
+            }
+        });
+
+        $("#txtEmployeeCodeNo").change(function () {
+            GetEmployee();
+        });
+
+        $("#OpenEmployeesPopup").click(function () {
+            ShowModal("#divEmployeesModal");
+        });
+
+        $("#btnSave").click(function () {
+            if ($("#hdnFldEmployeeCodeID").val() == '') {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.RequiredEmployeeText))');
+                return;   
+            }
+
+             if ($("#hdnFldOrganizationID").val() != '') { // that's mean assigning manager to organization
+                   var OrganizationStructure =
+                    {
+                        OrganizationID: $("#hdnFldOrganizationID").val(),
+                        ManagerCodeID: $("#hdnFldEmployeeCodeID").val(),
+                    };
+
+                    $.ajax({
+                        type: "POST"
+                        , contentType: "application/json; charset=utf-8"
+                        , url: "@Url.Content("~/EmployeesPlacement/AssignManagerToOrganization")"
+                        , data: JSON.stringify(OrganizationStructure)
+                        , success: function () {
+                            DestroyModal("#divAssigningManagerToOrgModal");
+                            BindManagers($("#hdnFldSelectedOrganizationID").val());
+                            $("#hdnFldOrganizationID").val('');
+                        }
+                    , error: function (xhr, status, error) {
+                         $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                    }
+                });
+             }
+             else { // that's mean assigning emplyee under manager
+                 if ($("#hdnFldJobID").val() == '') {
+                     $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.RequiredJobText))');
+                     return;
+                 }
+                 else {
+                      $.ajax({
+                        type: "POST"
+                        //, dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                        , contentType: "application/json; charset=utf-8"
+                        , url: "@Url.Content("~/EmployeesPlacement/AssignEmployeeUnderOrganizationManager/")" + $("#hdnFldEmployeeCodeID").val() + "/" + $("#hdnFldSelectedOrganizationID").val() + "/" + $("#hdnFldJobID").val()
+                        , success: function () {
+                            DestroyModal("#divAssigningManagerToOrgModal");
+                            BindEmployeesUnderManager($("#hdnFldSelectedOrganizationID").val());
+                            $("#hdnFldOrganizationID").val('');
+                        }
+                    , error: function (xhr, status, error) {
+                         $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                      }
+                  });
+                 }
+            }
+            ResetEmployee();
+        });
+    });
+
+    function OpenEmployeesPopup() {
+        $("#OpenEmployeesPopup").click(function () {
+            ShowModal("#divEmployeesModal");
+        });
+    }
+
+    function GetEmployee() {
+        var val = $("#txtEmployeeCodeNo").val();
+        if (val != '') {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                url: "/Employees/GetEmployeeByEmployeeCodeNo/" + val,
+                success: function (d) {
+                    if (d.EmployeeCodeID) {
+                        closeEmployeesPopup(d.EmployeeCodeID);
+                    }
+                    else {
+                        ResetEmployee();
+                        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Notice, Globals.Utilities.RemoveSpace(@Resources.Globalization.NoEmployeeFoundText))');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert(error.message);
+                }
+            });
+        }
+        else {
+            ResetEmployee();
+        }
+    }
+
+    function BindEmployees() {
+        var tblEmployees = $("#tblEmployees").DataTable({
+            "ajax": {
+                "url": "/Employees/GetEmployeesCodes",
+                "type": "get",
+                "datatype": "json",
+                "data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+            "serverSide": true,
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                //{
+                //    "data": "EmployeeIDNo",
+                //    "autowidth": true
+                //},
+                {
+                    "data": "EmployeeCodeID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        return '<a onClick="closeEmployeesPopup(' + data + ')"><span class="glyphicon glyphicon-thumbs-up" /></a>'
+                    }
+                },
+            ]
+        });
+    }
+
+    function ResetEmployee() {
+        $("#txtEmployeeCodeNo").val('');
+        $("#hdnFldEmployeeCodeID").val('');
+        $("#txtEmployeeNameAr").val('');
+        $("#txtEmployeeIDNo").val('');
+        $("#txtAssigningReason").val('');
+        $("#txtJobName").val('');
+        $("#hdnFldJobID").val('');
+        document.getElementById("imgEmployeePic").src = "/Content/Images/anonymous.png";
+
+        if (typeof extentedFuncForEmployeePopupReset !== 'undefined' && $.isFunction(window[extentedFuncForEmployeePopupReset])) {
+            window[extentedFuncForEmployeePopupReset]();
+        }
+    }
+
+    function GetEmployeeData(EmployeeCodeID) {
+
+        $.ajax({
+            type: "POST"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/Employees/GetByEmployeeCodeID"
+            , data: "{ 'id' : '" + EmployeeCodeID + "'}"
+            , success: function (d) {
+                DestroyModal("#divEmployeesModal");
+
+                $("#hdnFldEmployeeCodeID").val(d.data.EmployeeCodeID);
+                $("#txtEmployeeCodeNo").val(d.data.EmployeeCodeNo);
+                $("#txtEmployeeNameAr").val(d.data.Employee.EmployeeNameAr);
+                $("#txtEmployeeIDNo").val(d.data.Employee.EmployeeIDNo);
+                document.getElementById("imgEmployeePic").src = "data:image/jpg;base64," + d.data.Employee.EmployeePicture;
+
+                if (typeof extentedFuncForEmployeePopup !== 'undefined' && $.isFunction(window[extentedFuncForEmployeePopup])) {
+                    window[extentedFuncForEmployeePopup]();
+                }
+
+                // get assigning reason
+                 $.ajax({
+                    type: "GET"
+                    , dataType: "json"
+                    , contentType: "application/json; charset=utf-8"
+                    , url: "/Assignings/GetLastBrokenEmployeeAssigningByEmployeeCodeID/" + EmployeeCodeID
+                    //, data: "{ 'id' : '" + EmployeeCodeID + "'}"
+                     , success: function (d) {
+                         console.log(d);
+                        if(d.data != null)
+                            $("#txtAssigningReason").val(d.data.AssigningReasonName);
+                    }
+                    , error: function (xhr, status, error) {
+                        alert(error.message);
+                    }
+                 });
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+</script>
+
+<div class="modal fade" id="divAssigningManagerToOrgModal">
+    <div class="modal-dialog" style="width:500px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title text-center alert alert-warning">
+                    <label id="lblTitle" class="control-label"></label> 
+                </div>
+            </div>
+            <div class="modal-body" style="margin-bottom:0">
+
+                <table class="table table-responsive table-condensed table-striped" style="margin-bottom:0">
+                    <tr>
+                        <td colspan="2" class="col-md-12 text-center" style="text-align:center;vertical-align:middle">
+                            <div class="user-image">
+                                <img id="imgEmployeePic" style="width:100px;height:100px" src="/Content/Images/anonymous.png" />
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-12">
+                            <label class="control-label">@Resources.Globalization.EmployeeCodeNoText</label>
+                        </td>
+                        @*<td class="col-md-6">
+                            <label class="control-label">@Resources.Globalization.EmployeeIDNoText</label>
+                        </td>*@
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-12">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="txtEmployeeCodeNo" />
+                                <span id="OpenEmployeesPopup" class="input-group-addon clickable" title="@Resources.Globalization.SearchAboutEmployeeTooltip">
+                                    <i class="glyphicon glyphicon-search"></i>
+                                </span>
+                                <input type="hidden" class="form-control" id="hdnFldEmployeeCodeID" />
+                                <input type="hidden" class="form-control" id="hdnFldOrganizationID" />
+                            </div>
+                        </td>
+                        @*<td class="col-md-6">
+                            <input type="text" class="form-control" id="txtEmployeeIDNo" readonly />
+                        </td>*@
+                    </tr>
+
+                    <tr>
+                        <td colspan="2" class="col-md-12">
+                            <label class="control-label">@Resources.Globalization.EmployeeNameArText</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2" class="col-md-12">
+                            <input type="text" class="form-control" id="txtEmployeeNameAr" readonly />
+                        </td>
+                    </tr>
+
+                    <tr class="job">
+                        <td colspan="2" class="col-md-12">
+                            <label class="control-label">@Resources.Globalization.AssigningReasonText</label>
+                        </td>
+                    </tr>
+
+                    <tr class="job">
+                        <td colspan="2" class="col-md-12">
+                            <input type="text" class="form-control" id="txtAssigningReason" readonly />
+                        </td>
+                    </tr>
+
+                    <tr class="job">
+                        <td colspan="2" class="col-md-12">
+                            <label class="control-label">@Resources.Globalization.JobNameText</label>
+                        </td>
+                    </tr>
+
+                    <tr class="job">
+                        <td colspan="2" class="col-md-12">
+                            @Html.Partial("~/Views/Shared/_JobsToPlacementPopup.cshtml")
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2" class="col-md-12" style="text-align:center">
+                            <button class="btn btn-default" id="btnSave">@Resources.Globalization.SaveText</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

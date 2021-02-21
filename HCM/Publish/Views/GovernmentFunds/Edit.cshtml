@@ -1,0 +1,200 @@
+﻿@model HCM.Models.GovernmentFundsViewModel
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+@using HCM.Classes.Extensions
+
+@{
+    ViewBag.Title = Resources.Globalization.EditGovernmentFundsText;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        showSponserDependOnGovernmentDeductionType();
+
+        $('#ddlGovernmentDeductionsTypes').on('change', function (event) {
+            showSponserDependOnGovernmentDeductionType();
+        });
+
+    });
+
+    function showSponserDependOnGovernmentDeductionType() {
+        var GovernmentDeductionType = $('#ddlGovernmentDeductionsTypes').val();
+        if (GovernmentDeductionType == '@Convert.ToInt32(GovernmentDeductionsTypesEnum.Sponser)') {
+            $('.sponser').show();
+        }
+        else {
+            $('.sponser').hide();
+        }
+    }
+
+    var GovernmentFundID = 0;
+    function OnSuccess(data) {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText),"OkFunction")');
+        GovernmentFundID = data.GovernmentFundID;
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+    function OkFunction() {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/GovernmentFunds/PrintGovernmentFund/")' + GovernmentFundID);
+        ShowModal("#divReportModal");
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.EditGovernmentFundsText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EditGovernmentFundsDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.GovernmentFunds })
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Edit", "GovernmentFunds", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.GovernmentFundsInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.LoanNo, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.LoanDate, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.DeductionStartDate, new { @class = "control-label" })</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.LoanNo, new { @class = "form-control", @id = "txtLoanNo" })
+                            @Html.ValidationMessageFor(model => model.LoanNo, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.LoanDate,
+                            new
+                            {
+                                @class = "form-control TxtHijriPicker",
+                                @id = "txtLoanDate",
+                                @Value = Model.LoanDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                            })
+                            @Html.ValidationMessageFor(model => model.LoanDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.DeductionStartDate,
+                            new
+                            {
+                                @class = "form-control TxtHijriPicker",
+                                @id = "txtTasks",
+                                @Value = Model.LoanDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                            })
+                            @Html.ValidationMessageFor(model => model.DeductionStartDate, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.MonthlyDeductionAmount, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.TotalDeductionAmount, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.ContractNo, new { @class = "control-label" })</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.MonthlyDeductionAmount, new { @class = "form-control", @id = "txtMonthlyDeductionAmount", @min = "0", @value = "0" })
+                            @Html.ValidationMessageFor(model => model.MonthlyDeductionAmount, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.TotalDeductionAmount, new { @class = "form-control", @id = "txtTotalDeductionAmount", @min = "0", @value = "0" })
+                            @Html.ValidationMessageFor(model => model.TotalDeductionAmount, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.ContractNo, new { @class = "form-control", @id = "txtContactNo" })
+                            @Html.ValidationMessageFor(model => model.ContractNo, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.ContractDate, new { @class = "control-label" })</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.ContractDate,
+                            new
+                            {
+                                @class = "form-control TxtHijriPicker",
+                                @id = "txtContractDate",
+                                @Value = Model.ContractDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                            })
+                            @Html.ValidationMessageFor(model => model.ContractDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.GovernmentFundType, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.GovernmentDeductionType, new { @class = "control-label" })</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(model => model.GovernmentFundType.GovernmentFundTypeID, new SelectList(new HCMBLL.GovernmentFundsTypesBLL().GetGovernmentFundsTypes(), "GovernmentFundTypeID", "GovernmentFundTypeName"), new { @id = "ddlGovernmentFundsTypes", @style = "width:100%" })
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.GovernmentDeductionType.GovernmentDeductionTypeID, new SelectList(new HCMBLL.GovernmentDeductionsTypesBLL().GetGovernmentDeductionsTypes(), "GovernmentDeductionTypeID", "GovernmentDeductionTypeName"), new { @id = "ddlGovernmentDeductionsTypes", @style = "width:100%" })
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="sponser">
+                        <td>@Html.LabelFor(model => model.SponserToName, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.SponserToIDNo, new { @class = "control-label" })</td>
+                        <td></td>
+                    </tr>
+                    <tr class="sponser">
+                        <td>@Html.TextBoxFor(model => model.SponserToName, new { @class = "form-control", @id = "txtSponserToName" })</td>
+                        <td>@Html.TextBoxFor(model => model.SponserToIDNo, new { @class = "form-control", @id = "txtSponserToIDNo", @maxlength = "10" })</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            //Employees Partial View
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", Model.EmployeeVM.GetEmployee())
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            @Html.HiddenFor(model => model.GovernmentFundID)
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "GovernmentFunds"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

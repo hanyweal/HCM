@@ -1,0 +1,413 @@
+﻿@model HCM.Models.PassengerOrdersViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.AddNewPassengerOrderText;
+}
+
+<script type="text/javascript">
+
+    var PassengerOrderID = 0;
+    $(document).ready(function () {
+
+        $('#tblDelegation').show();
+        $('#tblInternshipScholarship').hide();
+
+        $('#ddlPassengerOrdersTypes').on('change', function (event) {
+            var PassengerOrderType = $('#ddlPassengerOrdersTypes').val();
+            if (PassengerOrderType == '@Convert.ToInt32(PassengerOrdersTypesEnum.Delegation)') {
+                $('#tblDelegation').show();
+                $('#tblInternshipScholarship').hide();
+            }
+            else if (PassengerOrderType == '@Convert.ToInt32(PassengerOrdersTypesEnum.InternshipScholarship)') {
+                $('#tblDelegation').hide();
+                $('#tblInternshipScholarship').show();
+            }
+        });
+
+
+        BindItinerary();
+        $("#btnAdd").click(function () {
+            var ObjToPassForAdd = {
+                PassengerOrderTypeID: $('#ddlPassengerOrdersTypes').val(),
+                DelegationDetailRequest: {
+                    DelegationDetailID: $('#hdnFldDelegationDetailID').val()
+                },
+                InternshipScholarshipDetailRequest: {
+                    InternshipScholarshipDetailID: $('#hdnFldInternshipScholarshipDetailID').val()
+                },
+                PassengerOrdersItineraryRequest: {
+                    FromCity: $('#txtFromCity').val(),
+                    ToCity: $('#txtToCity').val()
+                }
+            };
+            $.ajax({
+                type: "POST"
+                //, dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                , contentType: "application/json; charset=utf-8"
+                , url: "@Url.Content("~/PassengerOrders/CreatePassengerOrderItinerary")"
+                , data: JSON.stringify(ObjToPassForAdd)
+                , success: function () {
+                    AddingSuccess();
+                }
+                , error: function (xhr, status, error) {
+                    AddingFailure();
+                }
+            });
+        });
+
+
+
+    });
+
+    function AddingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText))');
+        BindItinerary();
+        $("#txtFromCity").val('');
+        $("#txtToCity").val('');
+    }
+
+    function AddingFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function BindItinerary() {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "/PassengerOrders/GetPassengerOrdersItineraries",
+            success: function (result) {
+                $("#tblItinerary").DataTable({
+                    destroy: true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "FromCity",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "ToCity",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "PassengerOrderID",
+                            "width": "5%",
+                            "sorting": false,
+                            "render": function (data, type, row) {
+                                Url = 'RemoveItineraryFromPassengerOrder(' + '\'' + row.FromCity + '\'' + ', ' + '\'' + row.ToCity + '\'' + ');';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                            }
+                        }
+                    ]
+                });
+            }
+        });
+
+    }
+
+    function RemoveItineraryFromPassengerOrder(FromCityData, ToCityData) {
+        $.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+                        var ObjToPassForRemove = {
+                            PassengerOrdersItineraryRequest: {
+                                PassengerOrdersItineraryID: 0,
+                                FromCity: FromCityData,
+                                ToCity: ToCityData
+                            }
+                        };
+
+                        $.ajax({
+                            type: "POST"
+                            , contentType: "application/json; charset=utf-8"
+                            , url: "@Url.Action("RemoveItineraryFromPassengerOrder", "PassengerOrders")"
+                            , data: JSON.stringify(ObjToPassForRemove)
+                            , success: function () {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+                                BindItinerary();
+                            }
+                        , error: function (xhr, status, error) {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                        }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    }
+
+    function OnSuccess(data) {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+        PassengerOrderID = data.PassengerOrderID;
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+
+        $("input:text").each(function (index, control) {
+            $(control).val('');
+        });
+
+        $("input:checkbox").each(function (index, control) {
+            $(control).prop('checked', false);
+        });
+
+        $("#hdnFldDelegationDetailID").val("");
+        ResetItineraryFromSession();
+        BindItinerary();
+    }
+
+    function ResetItineraryFromSession() {
+        $.ajax({
+            type: "POST"
+                , url: "@Url.Action("ResetItineraryFromSession", "PassengerOrders")"
+                , success: function () {
+                }
+            , error: function (xhr, status, error) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+            }
+        });
+    }
+
+    function OkFunction() {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/PassengerOrders/PrintPassengerOrder/")' + PassengerOrderID);
+        ShowModal("#divReportModal");
+    }
+
+    function getEmployeeOtherDetails(EmployeeCodeID) {
+        $.ajax({
+            type: "POST"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/Employees/GetByEmployeeCodeID"
+            , data: "{ 'id' : '" + EmployeeCodeID + "'}"
+            , success: function (d) {
+                if (d.data.EmployeeCurrentJob.OrganizationJob) {
+                    $("#txtRankName").val(d.data.EmployeeCurrentJob.OrganizationJob.Rank.RankName);
+                    $("#hdnFldRankID").val(d.data.EmployeeCurrentJob.OrganizationJob.Rank.RankID);
+                    getEmployeeTicketClass(d.data.EmployeeCurrentJob.OrganizationJob.Rank.RankID);
+                }
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function getEmployeeTicketClass(RankID) {
+        $.ajax({
+            type: "GET"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/RanksTicketsClasses/GetRanksTicketsClassesByRankID/" + RankID
+            , success: function (d) {
+                $("#txtTicketClassName").val(d.data.TicketClass.TicketClassName);
+                $("#hdnFldTicketClassID").val(d.data.TicketClass.TicketClassID);
+            }
+            , error: function (xhr, status, error) {
+                alert(xhr);
+                alert(status);
+                alert(error.message);
+            }
+        });
+    }
+
+    function resetEmployeeOtherDetails() {
+        $("#txtRankName").val('');
+        $("#txtTicketClassName").val('');
+        $("#hdnFldRankID").val('');
+        $("#hdnFldTicketClassID").val('');
+    }
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.AddNewPassengerOrderText</p>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewPassengerOrderDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.PassengerOrders })
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "PassengerOrders", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.PassengerOrderType, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4"></td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.PassengerOrderTypeID, new SelectList(new HCMBLL.PassengerOrdersTypesBLL().GetPassengerOrdersTypes(), "PassengerOrderTypeID", "PassengerOrderTypeName"), new { @id = "ddlPassengerOrdersTypes", @style = "width:100%" })
+                        </td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4"></td>
+                    </tr>
+                    <tr id="tblDelegation">
+                        <td colspan="3">
+                            <span class="control-label">@Resources.Globalization.DelegationBasicInfoText</span><br />
+                            @Html.Partial("~/Views/Shared/_DelegationDetailsPopup.cshtml", new DelegationsViewModel() { })
+                        </td>
+                    </tr>
+                    <tr id="tblInternshipScholarship">
+                        <td colspan="3">
+                            <span class="control-label">@Resources.Globalization.InternshipScholarshipBasicInfoText</span><br />
+                            @Html.Partial("~/Views/Shared/_InternshipScholarshipsDetailsPopup.cshtml", new InternshipScholarshipsViewModel() { })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <span class="control-label">@Resources.Globalization.PassengerOrderBasicInfoText</span>
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.TravellingDate, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.RankName, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.TicketsClasses, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.TravellingDate, new { @class = "TxtHijriPicker form-control", @id = "txtTravellingDate", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.TravellingDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.RankName, new { @class = "form-control", @id = "txtRankName", @readonly = "readonly" })
+                            @Html.HiddenFor(model => model.RankID, new { @id = "hdnFldRankID" })
+                            @Html.ValidationMessageFor(model => model.RankID, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.TicketClassName, new { @class = "form-control", @id = "txtTicketClassName", @readonly = "readonly" })
+                            @Html.HiddenFor(model => model.TicketClassID, new { @id = "hdnFldTicketClassID" })
+                            @Html.ValidationMessageFor(model => model.TicketClassID, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.Going, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.Returning, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.CheckBoxFor(model => model.Going)
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(model => model.Returning)
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="control-label">@Resources.Globalization.FromCityText</label>
+                        </td>
+                        <td>
+                            <label class="control-label">@Resources.Globalization.ToCityText</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.PassengerOrdersItineraryRequest.FromCity, new { @class = "form-control", @id = "txtFromCity" })
+                            @Html.ValidationMessageFor(model => model.PassengerOrdersItineraryRequest.FromCity, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.PassengerOrdersItineraryRequest.ToCity, new { @class = "form-control", @id = "txtToCity" })
+                            @Html.ValidationMessageFor(model => model.PassengerOrdersItineraryRequest.ToCity, "", new { @class = "text-danger" })
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:center">
+                            <input id="btnAdd" type="button" class="btn btn-default" value="@Resources.Globalization.AddText" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table id="tblItinerary" class="table table-responsive table-condensed table-striped dataTable">
+                <thead>
+                    <tr>
+                        <td>@Resources.Globalization.FromCityText</td>
+                        <td>@Resources.Globalization.ToCityText</td>
+                        <td></td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "PassengerOrders"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

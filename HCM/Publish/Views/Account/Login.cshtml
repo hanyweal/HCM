@@ -1,0 +1,117 @@
+﻿@model HCM.Models.AccountViewModel
+@using HCM.Classes.Enums
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@Resources.Globalization.LoginText - @Resources.Globalization.ApplicationNameText</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/javascript")
+    @Scripts.Render("~/bundles/jqueryval")
+</head>
+<body style="background-color:#E2ECFA">
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $(window).resize();
+            $("#divLoader").height($("#divLogIn").outerHeight());
+            $("#divLoader").width($("#divLogIn").outerWidth());
+            $("#txtUserName").focus();
+        });
+
+        $(window).resize(function () {
+            $("#divLogIn, #divLoader").css({
+                position: "absolute",
+                left: ($(window).width() - $("#divLogIn").outerWidth()) / 2,
+                top: ($(window).height() - $("#divLogIn").outerHeight()) / 2
+            });
+        });
+
+        function OnSuccess() {
+            var ReturnUrl = "/Home/Index";
+
+            var UrlParameter = getUrlParameter("ReturnUrl");
+            if (UrlParameter != null && UrlParameter != '') {
+                ReturnUrl = UrlParameter;
+            }
+            window.location.href = ReturnUrl;
+        }
+
+        function OnFailure() {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+        }
+    </script>
+    @using (Ajax.BeginForm("Login", "Account", new AjaxOptions()
+    {
+        OnSuccess = "OnSuccess",
+        OnFailure = "OnFailure",
+        HttpMethod = "POST",
+        LoadingElementId = "divLoader"
+    }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <div id="divLogIn" class="divLogIn" style="color:white">
+            <table class="table-condensed">
+                <tr>
+                    <td>
+                        <img src="@Url.Content("~/Content/Images/Logo.png")" style="Width: 230px; height:120px" />
+                    </td>
+                </tr>
+                <tr style="height: 60px;">
+                    <td>
+                        <span style="text-decoration:underline">@Resources.Globalization.WelcomeMessageText</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 2%">
+                        <div class="input-group" style="width:100%">
+                            <span class="glyphicon glyphicon-user input-group-addon" style="position:static;background-color:white"></span>
+                            @Html.TextBoxFor(model => model.UserName, new { @id = "txtUserName", @class = "form-control", Style = "text-align:center;", placeholder = @Resources.Globalization.UserNameText + " (" + @Resources.Globalization.EmployeeCodeNoText + ")" })
+                        </div>
+                        @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 2%">
+                        <div class="input-group" style="width:100%">
+                            <span class="glyphicon glyphicon-lock input-group-addon" style="position: static; background-color: white"></span>
+                            @Html.PasswordFor(model => model.Password, new { @class = "form-control", Style = "text-align:center;", placeholder = @Resources.Globalization.PasswordText })
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr style="text-align: center; height: 60px;">
+                    <td>
+                        @Html.CheckBoxFor(model => model.RememberMe) @Resources.Globalization.RememberMeText
+                    </td>
+                </tr>
+                <tr style="text-align: center; height: 60px;">
+                    <td>
+                        <input type="submit" value="@Resources.Globalization.LoginText" class="btn btn-default" style="width:100%" />
+                    </td>
+                </tr>
+                <tr style="text-align: center; height: 60px;">
+                    <td>
+                        <span>&copy;   @Resources.Globalization.OwnerNameText - @Globals.Calendar.GetUmAlQuraYear(@DateTime.Now) </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    }
+    <div id="divAlert"></div>
+    @Html.Partial("~/Views/Shared/_Spinner.cshtml")
+    @*<div id="divLoader" class="overlay" style="display:none;text-align:center;">
+        <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate loader"></span>
+    </div>*@
+    @Scripts.Render("~/bundles/bootstrap")
+</body>
+</html>

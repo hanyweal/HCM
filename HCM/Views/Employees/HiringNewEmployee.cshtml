@@ -1,0 +1,540 @@
+﻿@model HCM.Models.HiringNewEmployeesViewModel
+@using HCM.Classes.Enums;
+@using HCM.Models;
+@using HCM.Controllers;
+@using HCMBLL.Enums;
+@{
+    ViewBag.Title = Resources.Globalization.HiringNewEmployeeText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/font-awesome-5.7/css/all.min.css" rel="stylesheet" />
+<script type="text/javascript">
+    
+    $(document).ready(function () {
+    //--============  Dev 1 Start ===============
+        $("#btnNext1").click(function () {
+            $("#div1").animate({ right: "-100%" }, 1000);
+            $("#div2").show();
+            $("#div2").animate({ right: "-0px" }, 1000);
+            $("#i1").removeClass().addClass("fa fa-check");
+            $("#span1").removeClass().addClass("done");
+            $("#i2").addClass("fa fa-spinner");
+            $("#span2").addClass("processing");
+        });
+        insertSelectionOptionToDDL('ddlCountry'); 
+            $("#btnReset1").click(function () {
+            $('#EmployeeIDNo').val('');
+            $('#FirstNameAr').val('');
+            $('#MiddleNameAr').val('');
+            $('#GrandFatherNameAr').val('');
+            $('#LastNameAr').val('');
+            $('#FirstNameEn').val('');
+            $('#MiddleNameEn').val('');
+            $('#GrandFatherNameEn').val('');
+            $('#LastNameEn').val('');
+            $('#txtEmployeeBirthDate').val('');
+            $('#EmployeeBirthPlace').val('');
+            $('#EmployeeMobileNo').val('');
+            $('#EmployeePassportNo').val('');
+            $('#EmployeeEMail').val('');
+            $('#txtEmployeeIDIssueDate').val('');
+            $('#EmployeePassportSource').val('');
+            $('#txtEmployeePassportIssueDate').val('');
+            $('#txtEmployeePassportEndDate').val('');
+            $('#txtEmployeeIDExpiryDate').val('');
+            $('#EmployeeIDIssuePlace').val('');
+            $('#EmployeeIDCopyNo').val('');
+            $('#MaritalStatus').val('1');
+            $('#DependentCount').val('');
+            });
+        insertSelectionOptionToDDL('ddlCountry'); 
+    //--============  Dev 1 End ===============
+    //--============  Dev 2 Start ===============
+        $("#btnNext2").click(function () {
+            $("#div2").animate({ right: "-100%" }, 1000);
+            $("#div3").show();
+            $("#div3").animate({ right: "-0px" }, 1000);
+            $("#i2").removeClass().addClass("fa fa-check");
+            $("#span2").removeClass().addClass("done");
+            $("#i3").addClass("fa fa-spinner");
+            $("#span3").addClass("processing");
+        });
+       $("#btnBack2").click(function () {
+            $("#div2").animate({ right: "100%" }, 1000);
+            $("#div1").show();
+            $("#div1").animate({ right: "-0px" }, 1000);
+            $("#i2").removeClass();
+            $("#span2").removeClass();
+            $("#i1").addClass("fa fa-spinner");
+            $("#span1").addClass("processing");
+       });
+        $("#btnReset2").click(function () {
+            $('#EmployeeCodeNo').val('');
+            $('#ddlEmployeeTypes').val(0);
+        });
+
+
+     //--============  Dev 2 End ===============
+    //--============  Dev 3 Start ===============
+        $("#btnNext3").click(function () {
+            $("#div3").animate({ right: "-100%" }, 1000);
+            $("#div4").show();
+            $("#div4").animate({ right: "-0px" }, 1000);
+            $("#i3").removeClass().addClass("fa fa-check");
+            $("#span3").removeClass().addClass("done");
+            $("#i4").addClass("fa fa-spinner");
+            $("#span4").addClass("processing");
+        });
+       $("#btnBack3").click(function () {
+            $("#div3").animate({ right: "100%" }, 1000);
+            $("#div2").show();
+            $("#div2").animate({ right: "-0px" }, 1000);
+            $("#i3").removeClass();
+            $("#span3").removeClass();
+            $("#i2").addClass("fa fa-spinner");
+            $("#span2").addClass("processing");
+       });
+        //$("#ddlCareersHistoryTypes").attr('disabled',true);
+        //$("#ddlCareersHistoryTypes").val(1);
+        insertSelectionOptionToDDL('ddlQualificationDegree');
+        insertSelectionOptionToDDL('ddlQualification');
+        insertSelectionOptionToDDL('ddlGeneralSpecialization');
+        insertSelectionOptionToDDL('ddlExactSpecialization');
+        insertSelectionOptionToDDL('ddlQualificationType');
+        OpenQualificationPopup();
+     //--============  Dev 3 End ===============
+    //--============  Dev 4 Start ===============
+        $("#btnNext4").click(function () {
+            $("#div4").animate({ right: "-100%" }, 1000);
+            $("#div5").show();
+            $("#div5").animate({ right: "-0px" }, 1000);
+            $("#i4").removeClass().addClass("fa fa-check");
+            $("#span4").removeClass().addClass("done");
+            $("#i5").addClass("fa fa-spinner");
+            $("#span5").addClass("processing");
+        });
+        $("#btnBack4").click(function () {
+            $("#div4").animate({ right: "100%" }, 1000);
+            $("#div3").show();
+            $("#div3").animate({ right: "-0px" }, 1000);
+            $("#i4").removeClass();
+            $("#span4").removeClass();
+            $("#i3").addClass("fa fa-spinner");
+            $("#span3").addClass("processing");
+        });
+     //--============  Dev 4 End ===============
+    //--============  Dev 5 Start ===============
+        $("#btnNext5").click(function () {
+
+        });
+        $("#btnBack5").click(function () {
+            $("#div5").animate({ right: "100%" }, 1000);
+            $("#div4").show();
+            $("#div4").animate({ right: "-0px" }, 1000);
+            $("#i5").removeClass();
+            $("#span5").removeClass();
+            $("#i4").addClass("fa fa-spinner");
+            $("#span4").addClass("processing");
+        });
+     //--============  Dev 5 End ===============
+
+    });
+
+    function OnSuccess() {
+        console.log('Success');
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText),"OkFunction")');
+    }
+    
+    function OkFunction() {
+        window.location.href='@Url.Content("~/Employees/Index")';
+    }
+
+    function OnFailure() {
+        console.log('OnFailure');
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+
+    function OpenQualificationPopup() {
+
+            $("#ddlQualificationDegree").val("");
+            $("#ddlQualification").empty();
+            insertSelectionOptionToDDL('ddlQualification');
+            $("#ddlGeneralSpecialization").empty();
+            insertSelectionOptionToDDL('ddlGeneralSpecialization');
+            $("#ddlExactSpecialization").empty();
+            insertSelectionOptionToDDL('ddlExactSpecialization');
+            $("#ddlQualificationType").val("");
+    }
+        function GetQualifications() {
+        var QualificationID;
+        if ($("#ddlQualificationDegree").val() != "") {
+            var id = $("#ddlQualificationDegree").val();
+            $.ajax({
+                type: "get"
+                , dataType: "json"
+                , url: "/Qualifications/GetQualifications/" + id
+                , success: function (d) {
+                    $("#ddlQualification").html("");
+                    $("#ddlGeneralSpecialization").html("");
+                    $("#ddlExactSpecialization").html("");
+                    var Qualifications = d.data;
+                    $.each(Qualifications, function (i, Qualification) {
+                        $("#ddlQualification").append($('<option></option>').val(Qualification.QualificationID).html(Qualification.QualificationName));
+                    });
+                    if (QualificationID) {
+                        $("#ddlQualification").val(QualificationID);
+                        GetGeneralSpecialization(Row);
+                    }
+                    else {
+                        insertSelectionOptionToDDL('ddlQualification');
+                        insertSelectionOptionToDDL('ddlGeneralSpecialization');
+                        insertSelectionOptionToDDL('ddlExactSpecialization');
+                    }
+                }
+                , error: function (xhr, status, error) {
+                    alert(error.message);
+                }
+            });
+        }
+        else {
+            $("#ddlQualification").html("");
+            $("#ddlGeneralSpecialization").html("");
+            $("#ddlExactSpecialization").html("");
+            insertSelectionOptionToDDL('ddlQualification');
+            insertSelectionOptionToDDL('ddlGeneralSpecialization');
+            insertSelectionOptionToDDL('ddlExactSpecialization');
+        }
+    }
+
+        function GetGeneralSpecialization() {
+        var GeneralSpecializationID;
+        if ($("#ddlQualification").val() != "") {
+            var id = $("#ddlQualification").val();
+            $.ajax({
+                type: "get"
+                , dataType: "json"
+                , url: "/Qualifications/GetGeneralSpecializations/" + id
+                , success: function (d) {
+                    $("#ddlGeneralSpecialization").html("");
+                    $("#ddlExactSpecialization").html("");
+                    var GeneralSpecializations = d.data;
+                    $.each(GeneralSpecializations, function (i, GeneralSpecialization) {
+                        $("#ddlGeneralSpecialization").append($('<option></option>').val(GeneralSpecialization.GeneralSpecializationID).html(GeneralSpecialization.GeneralSpecializationName));
+                    });
+                    if (GeneralSpecializationID) {
+                        $("#ddlGeneralSpecialization").val(GeneralSpecializationID);
+                        GetExactSpecializations(Row);
+                    }
+                    else {
+                        insertSelectionOptionToDDL('ddlGeneralSpecialization');
+                        insertSelectionOptionToDDL('ddlExactSpecialization');
+                    }
+                }
+                , error: function (xhr, status, error) {
+                    alert(error.message);
+                }
+            });
+        }
+        else {
+            $("#ddlGeneralSpecialization").html("");
+            $("#ddlExactSpecialization").html("");
+            insertSelectionOptionToDDL('ddlGeneralSpecialization');
+            insertSelectionOptionToDDL('ddlExactSpecialization');
+        }
+    }
+
+        function GetExactSpecializations() {
+        var ExactSpecializationID;
+        if ($("#ddlGeneralSpecialization").val() != "") {
+            var id = $("#ddlGeneralSpecialization").val();
+            $.ajax({
+                type: "get"
+                , dataType: "json"
+                , url: "/Qualifications/GetExactSpecializations/" + id
+                , success: function (d) {
+                    $("#ddlExactSpecialization").html("");
+                    var ExactSpecializations = d.data;
+                    $.each(ExactSpecializations, function (i, ExactSpecialization) {
+                        $("#ddlExactSpecialization").append($('<option></option>').val(ExactSpecialization.ExactSpecializationID).html(ExactSpecialization.ExactSpecializationName));
+                    });
+                    if (ExactSpecializationID) {
+                        $("#ddlExactSpecialization").val(ExactSpecializationID);
+                    }
+                    else {
+                        insertSelectionOptionToDDL('ddlExactSpecialization');
+                    }
+                }
+                , error: function (xhr, status, error) {
+                    alert(error.message);
+                }
+            });
+        }
+        else {
+            $("#ddlExactSpecialization").html("");
+            insertSelectionOptionToDDL('ddlExactSpecialization');
+        }
+    }
+</script>
+
+
+<div class="modal-body" style="height:1120px;overflow:hidden;">
+    <div>
+        <div class="row" style="padding-bottom:10px;">
+            <section class="section">
+                <ul id="ulResetPasswordReset" class="breadcrumb">
+                    <li><span id="span1"><i id="i1"></i> @Resources.Globalization.AddNewEmployeeText </span></li>
+                    <li><span id="span2"><i id="i2"></i> @Resources.Globalization.CreateEmployeeCodeNoText </span></li>
+                    <li><span id="span3"><i id="i3"></i> @Resources.Globalization.EmployeeHistoryText </span></li>
+                    <li><span id="span4"><i id="i4"></i> @Resources.Globalization.EmployeeQualificationText </span></li>
+                    <li><span id="span5"><i id="i5"></i> @Resources.Globalization.FinancialAdvantagesText </span></li>
+                </ul>
+            </section>
+        </div>
+
+        <div class="row">
+            @using (Ajax.BeginForm("HiringNewEmployee", "Employees", new AjaxOptions()
+            {
+                OnSuccess = "OnSuccess",
+                OnFailure = "OnFailure",
+                HttpMethod = "POST",
+            }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <div id="div1" class="panel panel-default">
+                    <div class="panel-heading">
+                        @Resources.Globalization.AddNewEmployeeDescText
+                    </div>
+                    <div class="panel panel-body">
+
+                        <table class="table table-condensed">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            @Html.Partial("~/Views/Shared/_personalData.cshtml", new EmployeesViewModel())
+                                            <table class="table table-responsive table-condensed">
+                                                <tr>
+                                                    <td>
+                                                        <div class="form-group">
+                                                            <center>
+                                                                <input type="reset" id="btnReset1" class="btn btn-default" value="@Resources.Globalization.ResetText" />
+                                                            </center>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <div class="col-md-12 text-left">
+                                            <input type="button" id="btnNext1" class="btn btn-default" value="@Resources.Globalization.NextText" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
+                <div id="div2" class="panel panel-default" hidden>
+                    <div class="panel-heading">
+                        @Resources.Globalization.CreateEmployeeCodeNoSummaryDescText
+                    </div>
+                    <div class="panel panel-body">
+                        <table class="table table-condensed">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <table id="table" class="table table-responsive">
+                                                <tr>
+                                                    <td class="col-md-4">
+                                                        <label class="control-label">@Resources.Globalization.EmployeeCodeNoText</label>
+                                                    </td>
+                                                    <td class="col-md-4">
+                                                        @*<label class="control-label">@Resources.Globalization.EmployeeTypeText</label>*@
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-4">
+
+                                                        @Html.TextBoxFor(x => x.EmployeeCodeNo, new { @id = "EmployeeCodeNo", @class = "form-control", @maxlength = "8" })
+                                                    </td>
+                                                    <td class="col-md-4">
+                                                        @*@Html.DropDownListFor(model => model.EmployeeType.EmployeeTypeID, new SelectList(new HCMBLL.EmployeesTypesBLL().GetEmployeesTypes(), "EmployeeTypeID", "EmployeeTypeName"), new { @id = "ddlEmployeeTypes", @style = "width:100%" })*@
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <div class="form-group">
+                                                            <center>
+                                                                <input type="reset" id="btnReset2" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                                                            </center>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <div class="col-md-6 text-right">
+                                            <input type="button" id="btnBack2" class="btn btn-default" value="@Resources.Globalization.BackToPreviousText" />
+                                        </div>
+                                        <div class="col-md-6 text-left">
+                                            <input type="button" id="btnNext2" class="btn btn-default" value="@Resources.Globalization.NextText" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div id="div3" class="panel panel-default" hidden>
+                    <div class="panel-heading">
+                        @Resources.Globalization.CreateEmployeeHistoryText
+                    </div>
+                    <div class="panel panel-body">
+                        <table class="table table-condensed">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            @Html.Partial("~/Views/Shared/_RecordOfCareerHistoryData.cshtml",new CareerHistoryViewModel())
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <div class="col-md-6 text-right">
+                                            <input type="button" id="btnBack3" class="btn btn-default" value="@Resources.Globalization.BackToPreviousText" />
+                                        </div>
+                                        <div class="col-md-6 text-left">
+                                            <input type="button" id="btnNext3" class="btn btn-default" value="@Resources.Globalization.NextText" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div id="div4" class="panel panel-default" hidden>
+                    <div class="panel-heading">
+                        @Resources.Globalization.SearchEmployeeQualificationDescText
+                    </div>
+                    <div class="panel panel-body">
+                        <table class="table table-condensed">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            @Html.Partial("~/Views/Shared/_QualificationData.cshtml", new EmployeesQualificationsViewModel())
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <div class="col-md-6 text-right">
+                                            <input type="button" id="btnBack4" class="btn btn-default" value="@Resources.Globalization.BackToPreviousText" />
+                                        </div>
+                                        <div class="col-md-6 text-left">
+                                            <input type="button" id="btnNext4" class="btn btn-default" value="@Resources.Globalization.NextText" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div id="div5" class="panel panel-default" hidden>
+                    <div class="panel-heading">
+                        @Resources.Globalization.BasicSalaryForContractorsText
+                    </div>
+                    <div class="panel panel-body">
+                        <div class="alert alert-info col-md-12">
+                            @Resources.Globalization.FinancialAdvantagesAlertText
+                        </div>
+                        <table class="table table-condensed">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <table class="table table-responsive table-condensed table-striped">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>@Html.LabelFor(model => model.BasicSalary, new { @class = "control-label" })</td>
+                                                        <td>@Html.LabelFor(model => model.TransfareAllowance, new { @class = "control-label" })</td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            @Html.TextBoxFor(model => model.BasicSalary, new { @class = "form-control allownumericwithdecimal", @id = "txtBasicSalary", @value = "0" })
+                                                            @Html.ValidationMessageFor(model => model.BasicSalary, "", new { @class = "text-danger" })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(model => model.TransfareAllowance, new { @class = "form-control allownumericwithdecimal", @id = "txtTransfareAllowance", @value = "0" })
+                                                            @Html.ValidationMessageFor(model => model.TransfareAllowance, "", new { @class = "text-danger" })
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+
+                                                        <td>@Resources.Globalization.FinancialAdvantagesText</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    @for (int i = 0; i < Model.Allowances.Count; i++)
+                                                    {
+                                                    
+                                                            <tr>
+                                                                <td>
+                                                                    @Html.CheckBoxFor(model => Model.Allowances[i].IsSelected)
+                                                                    @Html.HiddenFor(model => Model.Allowances[i].AllowanceID)
+                                                                    @Html.LabelFor(model => Model.Allowances[i].IsSelected, Model.Allowances[i].AllowanceName)
+                                                                </td>
+                                                            </tr>
+                                                         
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <div class="col-md-6 text-right">
+                                            <input type="button" id="btnBack5" class="btn btn-default" value="@Resources.Globalization.BackToPreviousText" />
+                                        </div>
+                                        <div class="col-md-6 text-left">
+                                            <input type="submit" id="btnNext5" class="btn btn-default" value="@Resources.Globalization.SaveText" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+

@@ -1,0 +1,118 @@
+﻿@model HCM.Models.LendersViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.DetailsLenderText;
+}
+
+<p style="font-size:larger">@Resources.Globalization.DetailsLenderText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.DetailsLenderDescText
+    </div>
+    <div class="panel-body">
+        @Html.AntiForgeryToken()
+        <span class="control-label">@Resources.Globalization.LenderBasicInfoText</span>
+        <table class="table table-responsive table-condensed">
+            <tbody>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.LenderStartDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.LenderStartDate)
+                        @Html.HiddenFor(model => model.LenderID)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.LenderEndDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.LenderEndDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.LenderOrganization, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.LenderOrganization)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.KSACity, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.KSACity.KSACityName)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.IsFinished, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.IsFinished)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.LenderEndReason, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.LenderEndReason)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <span class="control-label">@Resources.Globalization.EmployeesText</span>
+        <table class="table table-responsive table-condensed">
+            <tbody>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.Employee.EmployeeCodeNo, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.Employee.EmployeeCodeNo)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.Employee.EmployeeNameAr, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.Employee.EmployeeNameAr)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.CreatedBy, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.CreatedBy)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.CreatedDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.CreatedDate)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Lenders"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+
+

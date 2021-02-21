@@ -1,0 +1,653 @@
+﻿@model HCM.Models.EmployeesEvaluationsViewModel
+@using HCM.Classes.Enums;
+
+@{
+    ViewBag.Title = Resources.Globalization.EmployeeEvaluationText;
+}
+
+@{
+    if (Model.HasCreatingAccess)
+    {
+        <p>
+            <a onclick="OpenEvaluationPopup(0, 0, 0, '' , 'Add' )"> @Resources.Globalization.CreateNewText</a>
+        </p>
+    }
+}
+
+<script>
+    var PageMode;
+    var EmpEvaluationID;
+    var YearID;
+
+    function CheckDecimal(event) {
+        $("#" + event.id + "").on("keypress keyup blur", function (event) {
+            $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+        insertSelectionOptionToDDL('ddlMaturityYears');
+        insertSelectionOptionToDDL('ddlEvaluationPoints');
+         
+        GetEmployeeEvaluation('@Model.EmployeeVM.EmployeeCodeID');
+
+        $("#BtnSave").click(function () {
+
+            var EmployeesEvaluations =
+           {
+               MaturityYearID: $('#ddlMaturityYears').val(),
+               EvaluationPointID: $('#ddlEvaluationPoints').val(),
+               EvaluationDegree: $('#txtEvaluationDegree').val(),
+               EmployeeVM: { EmployeeCodeID: '@Model.EmployeeVM.EmployeeCodeID' },
+               EmployeeEvaluationID: EmpEvaluationID,
+           };
+
+            if (PageMode == 'Add') {
+                $.ajax({
+                    type: "POST"
+                 , contentType: "application/json; charset=utf-8"
+                 , url: "@Url.Content("~/EmployeesEvaluations/Create")"
+                 , data: JSON.stringify(EmployeesEvaluations)
+                 , success: function (result) {
+                     $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+                     GetEmployeeEvaluation('@Model.EmployeeVM.EmployeeCodeID');
+                     DestroyModal("#divEmployeeEvaluationModal");
+                 }
+                , error: function (xhr, status, error) {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                }
+                });
+            }
+            else if (PageMode == 'Edit') {
+                $.ajax({
+                    type: "POST"
+                  , contentType: "application/json; charset=utf-8"
+                  , url: "@Url.Content("~/EmployeesEvaluations/Edit")"
+                  , data: JSON.stringify(EmployeesEvaluations)
+                  , success: function (result) {
+                      $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+                      GetEmployeeEvaluation('@Model.EmployeeVM.EmployeeCodeID');
+                      DestroyModal("#divEmployeeEvaluationModal");
+                  }
+                 , error: function (xhr, status, error) {
+                     $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                 }
+                });
+            }
+        });
+
+          $("#BtnAddEvalDetails").click(function () {
+
+            var EmpEvaluationDetails =
+           {
+               EvaluationQuarterID: $('#ddlEvaluationsQuarters').val(),
+               DirectManagerEvaluation: $('#Txt_DirectManagerEvaluation').val(),
+               TimeAttendanceEvaluation: $('#Txt_TimeAttendanceEvaluation').val(),
+               ViolationsEvaluation: $('#Txt_ViolationsEvaluation').val(),
+               EmployeeEvaluationID: EmpEvaluationID,
+               MaturityYearID:YearID,
+           };
+
+              $.ajax({
+                    type: "POST"
+                 , contentType: "application/json; charset=utf-8"
+                 , url: "@Url.Content("~/EmployeesEvaluations/CreateEmpEvaluationDetails")"
+                 , data: JSON.stringify(EmpEvaluationDetails)
+                 , success: function (result) {
+                     $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+                     BindEmployeesEvaluationsDetails(EmpEvaluationID);
+                     console.log('TEST',EmpEvaluationID);
+                     Reset();
+                 }
+                , error: function (xhr, status, error) {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                }
+                });
+        });
+
+    });
+
+    function OpenEvaluationPopup(EmployeeEvaluationID, MaturityYearID, EvaluationPointID, EvaluationDegree, Type) {
+
+        EmpEvaluationID = EmployeeEvaluationID;
+
+        if (!Type) {
+            Type = 'Edit';
+        }
+        else {
+            $("#ddlMaturityYears").val("");
+            $("#ddlEvaluationPoints").val("");
+            $("#txtEvaluationDegree").val("");
+        }
+
+        PageMode = Type;
+        if (MaturityYearID != "0") {
+            $('#ddlMaturityYears').val(0);
+            $('#ddlMaturityYears').val(MaturityYearID);
+        }
+        if (EvaluationPointID != "0") {
+            $('#ddlEvaluationPoints').val(0);
+            $('#ddlEvaluationPoints').val(EvaluationPointID);
+        }
+
+        if (EvaluationDegree != "") {
+            $("#txtEvaluationDegree").val(EvaluationDegree);
+        }
+        ShowModal("#divEmployeeEvaluationModal");
+    }
+
+    function OpenEvaluationsDetailsPopup(EmployeeEvaluationID, MaturityYearID) {
+        console.log(EmployeeEvaluationID,MaturityYearID);
+        EmpEvaluationID = EmployeeEvaluationID;
+        YearID = MaturityYearID;
+        BindEmployeesEvaluationsDetails(EmployeeEvaluationID);
+        ShowModal("#divEmployeeEvaluationDetailsModal");
+    }
+
+    function BindEmployeesEvaluationsDetails(EmployeeEvaluationID) {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/EmployeesEvaluations/GetEmployeeEvaluationDetailsByEmployeeEvaluationID/")" + EmployeeEvaluationID,
+            success: function (result) {
+                $("#tblEmployeeEvaluationDetails").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": true,
+                    //"order": [[1, "desc"]],
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "EvaluationQuarterName",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "DirectManagerEvaluation",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                var id = 'txtDirectManagerEvaluation' + row.EmployeeEvaluationDetailID;
+                                return '<input type="text" id=' + id + ' name=' + id + ' class="form-control" value=' + data + ' text=' + data + ' data-current=' + data + ' onInput="CheckDecimal(this);" onchange="ChangeEvaluation(this,' + row.TimeAttendanceEvaluation + ', ' + row.ViolationsEvaluation + ',' + row.EmployeeEvaluationDetailID + ') ">';
+                            }
+                        },
+                        {
+                            "data": "TimeAttendanceEvaluation",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                var id = 'txtTimeAttendanceEvaluation' + row.EmployeeEvaluationDetailID;
+                                return '<input type="text" id=' + id + ' class="form-control" value=' + data + ' text=' + data + ' data-current=' + data + ' onInput="CheckDecimal(this);" onchange="ChangeEvaluation(' + row.DirectManagerEvaluation + ', this , ' + row.ViolationsEvaluation + ',' + row.EmployeeEvaluationDetailID + ')">';
+                            }
+                        },
+                        {
+                            "data": "ViolationsEvaluation",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                var id = 'txtViolationsEvaluation' + row.EmployeeEvaluationDetailID;
+                                return '<input type="text" id=' + id + ' class="form-control" value=' + data + ' text=' + data + ' data-current=' + data + ' onInput="CheckDecimal(this);" onchange="ChangeEvaluation(' + row.DirectManagerEvaluation + ', ' + row.TimeAttendanceEvaluation + ' , this,' + row.EmployeeEvaluationDetailID + ')">';
+                            }
+                        },
+                    ]
+                });
+            }
+        });
+    }
+    function ChangeEvaluation(txtDirectManagerEvaluation, txtTimeAttendanceEvaluation, txtViolationsEvaluation, EmployeeEvaluationDetailID) {
+
+        if (!$('#txtDirectManagerEvaluation' + EmployeeEvaluationDetailID).val()) {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationDirectManagerEvaluationCannotBeEmptyText))');
+            $('#txtDirectManagerEvaluation' + EmployeeEvaluationDetailID).val($('#txtDirectManagerEvaluation' + EmployeeEvaluationDetailID).data('current'));
+            $('#txtDirectManagerEvaluation' + EmployeeEvaluationDetailID).focus();
+            return;
+        }
+
+        if ($('#txtDirectManagerEvaluation' + EmployeeEvaluationDetailID).val()) {
+            if (!(parseFloat($('#txtDirectManagerEvaluation' + EmployeeEvaluationDetailID).val()) <= 50 && parseFloat($('#txtDirectManagerEvaluation' + EmployeeEvaluationDetailID).val()) >= 0)) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationDirectManagerEvaluationShouldBeBetweenZeroAndFiftyText))');
+                $('#txtDirectManagerEvaluation' + EmployeeEvaluationDetailID).val($('#txtDirectManagerEvaluation' + EmployeeEvaluationDetailID).data('current'));
+                $('#txtDirectManagerEvaluation' + EmployeeEvaluationDetailID).focus();
+                return;
+            }
+        }
+
+        if (!$('#txtTimeAttendanceEvaluation' + EmployeeEvaluationDetailID).val()) {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationTimeAttendanceEvaluationCannotBeEmptyText))');
+            $('#txtTimeAttendanceEvaluation' + EmployeeEvaluationDetailID).val($('#txtTimeAttendanceEvaluation' + EmployeeEvaluationDetailID).data('current'));
+            $('#txtTimeAttendanceEvaluation' + EmployeeEvaluationDetailID).focus();
+            return;
+        }
+
+        if ($('#txtTimeAttendanceEvaluation' + EmployeeEvaluationDetailID).val()) {
+            if (!(parseFloat($('#txtTimeAttendanceEvaluation' + EmployeeEvaluationDetailID).val()) <= 35 && parseFloat($('#txtTimeAttendanceEvaluation' + EmployeeEvaluationDetailID).val()) >= 0)) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationTimeAttendanceEvaluationShouldBeBetweenZeroAndThirtyFiveText))');
+                $('#txtTimeAttendanceEvaluation' + EmployeeEvaluationDetailID).val($('#txtTimeAttendanceEvaluation' + EmployeeEvaluationDetailID).data('current'));
+                $('#txtTimeAttendanceEvaluation' + EmployeeEvaluationDetailID).focus();
+                return;
+            }
+        }
+
+        if (!$('#txtViolationsEvaluation' + EmployeeEvaluationDetailID).val()) {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationViolationsEvaluationCannotBeEmptyText))');
+            $('#txtViolationsEvaluation' + EmployeeEvaluationDetailID).val($('#txtViolationsEvaluation' + EmployeeEvaluationDetailID).data('current'));
+            $('#txtViolationsEvaluation' + EmployeeEvaluationDetailID).focus();
+            return;
+        }
+        if ($('#txtViolationsEvaluation' + EmployeeEvaluationDetailID).val()) {
+            if (!(parseFloat($('#txtViolationsEvaluation' + EmployeeEvaluationDetailID).val()) <= 15 && parseFloat($('#txtViolationsEvaluation' + EmployeeEvaluationDetailID).val()) >= 0)) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationViolationsEvaluationShouldBeBetweenZeroAndFifteenText))');
+                $('#txtViolationsEvaluation' + EmployeeEvaluationDetailID).val($('#txtViolationsEvaluation' + EmployeeEvaluationDetailID).data('current'));
+                $('#txtViolationsEvaluation' + EmployeeEvaluationDetailID).focus();
+                return;
+            }
+        }
+
+        var DirectManagerEvaluation = $('#txtDirectManagerEvaluation' + EmployeeEvaluationDetailID).val();
+        var TimeAttendanceEvaluation = $('#txtTimeAttendanceEvaluation' + EmployeeEvaluationDetailID).val();
+        var ViolationsEvaluation = $('#txtViolationsEvaluation' + EmployeeEvaluationDetailID).val();
+        //console.log(("~/EmployeesEvaluations/UpdateDirectManagerEvaluation/") + DirectManagerEvaluation + "/" + TimeAttendanceEvaluation + "/" + ViolationsEvaluation + "/" + EmployeeEvaluationDetailID);
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/EmployeesEvaluations/UpdateDirectManagerEvaluation/")" + DirectManagerEvaluation + "/" + TimeAttendanceEvaluation + "/" + ViolationsEvaluation + "/" + EmployeeEvaluationDetailID,
+
+            success: OnSuccessUpdate,
+            error: function () {
+                $('#txtDirectManagerEvaluation' + EmployeeEvaluationDetailID).val($('#txtDirectManagerEvaluation' + EmployeeEvaluationDetailID).data('current'));
+                $('#txtTimeAttendanceEvaluation' + EmployeeEvaluationDetailID).val($('#txtTimeAttendanceEvaluation' + EmployeeEvaluationDetailID).data('current'));
+                $('#txtViolationsEvaluation' + EmployeeEvaluationDetailID).val($('#txtViolationsEvaluation' + EmployeeEvaluationDetailID).data('current'));
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+            }
+        });
+    }
+
+    function OnSuccessUpdate(data) {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "")');
+        BindEmployeesEvaluationsDetails(EmpEvaluationID);
+    }
+
+
+    function RemoveEmployeeEvaluation(EmployeeEvaluationID) {
+
+        $.confirm({
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            animation: 'zoom',
+            boxWidth: '280px',
+            useBootstrap: false,
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $.ajax({
+                            type: 'POST',
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            url: "@Url.Content("~/EmployeesEvaluations/Delete/")" + EmployeeEvaluationID,
+                            success: function (result) {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+                                GetEmployeeEvaluation('@Model.EmployeeVM.EmployeeCodeID');
+                            }
+                        , error: function (xhr, status, error) {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                        }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+    }
+
+    function GetEmployeeEvaluation(EmployeeCodeID) {
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/EmployeesEvaluations/GetEmployeeEvaluationByEmployeeCodeID/")" + EmployeeCodeID,
+            success: function (result) {
+                $("#tblEmployeeEvaluation").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": true,
+                    //"order": [[1, "desc"]],
+                    "data": result.data,
+                    "columns": [
+                        //{
+                        //    "data": "EmployeeEvaluationID",
+                        //    "autowidth": true,
+                        //},
+                        {
+                            "data": "MaturityYearsBalances.MaturityYear",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "EvaluationPoints.Evaluation",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "EvaluationPoints.EvaluationPoint",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "EvaluationDegree",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        {
+                            "data": "EmployeeEvaluationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                if ('@Model.HasUpdatingAccess' == 'True') {
+                                    Url = 'OpenEvaluationsDetailsPopup(' + data + ',' + row.MaturityYearsBalances.MaturityYearID + ');';
+                                    return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>';
+                                }
+                                else
+                                    return '';
+                            }
+                        },
+                        {
+                            "data": "EmployeeEvaluationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                if ('@Model.HasUpdatingAccess' == 'True') {
+                                    var MaturityYearID = row.MaturityYearsBalances ? row.MaturityYearsBalances.MaturityYearID : "0";
+                                    var EvaluationPointID = row.EvaluationPoints ? row.EvaluationPoints.EvaluationPointID : "0";
+                                    var EvaluationDegree = row.EvaluationDegree;
+                                    Url = 'OpenEvaluationPopup(' + data + ',' + MaturityYearID + ',' + EvaluationPointID + ',' + EvaluationDegree + ');';
+                                    return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>';
+                                }
+                                else
+                                    return '';
+                            }
+                        },
+                        {
+                            "data": "EmployeeEvaluationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                if ('@Model.HasDeletingAccess' == 'True') {
+                                    Url = 'RemoveEmployeeEvaluation(' + data + ');';
+                                    return '<a id="btnRemove" onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>';
+                                }
+                                else
+                                    return '';
+                            }
+                        },
+                    ]
+                });
+            }
+        });
+    }
+
+    function Reset() {
+        $("#ddlMaturityYears").val("");
+        $("#ddlEvaluationPoints").val("");
+        $("#txtEvaluationDegree").val("");
+
+        $("#Txt_DirectManagerEvaluation").val("");
+        $("#Txt_TimeAttendanceEvaluation").val("");
+        $("#Txt_ViolationsEvaluation").val("");
+    }
+</script>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EmployeesText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-responsive table-condensed table-striped" style="text-align:right">
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeCodeNo, new { @class = "control-label" })
+                </td>
+                <td>@Html.LabelFor(model => model.EmployeeVM.EmployeeNameAr, new { @class = "control-label" })</td>
+                <td>@Html.LabelFor(model => model.EmployeeVM.EmployeeOrganizationName, new { @class = "control-label" })</td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeCodeNo, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.HiddenFor(model => model.EmployeeVM.EmployeeCodeID)
+                </td>
+                <td class="col-md-4">@Html.TextBoxFor(model => model.EmployeeVM.EmployeeNameAr, new { @class = "form-control", @readonly = "readonly" })</td>
+                <td class="col-md-4">@Html.TextBoxFor(model => model.EmployeeVM.EmployeeOrganizationName, new { @class = "form-control", @readonly = "readonly" })</td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeIDNo, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeJobName, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.HiringDate, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeIDNo, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeJobName, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.HiringDate, new
+                       {
+                           @class = "form-control",
+                           @id = "txtHiringDate",
+                           @readonly = "readonly",
+                           @Value = Model.EmployeeVM.HiringDate.HasValue ? Model.EmployeeVM.HiringDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                       })
+                </td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeRankName, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeJobNo, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4"></td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeRankName, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeJobNo, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.EmployeeEvaluationText
+    </div>
+    <div class="panel-body">
+        <table id="tblEmployeeEvaluation" class="table table-responsive table-hover dataTable">
+            <thead>
+                <tr>
+                    @*<td>
+                            @Resources.Globalization.SequenceNoText
+                        </td>*@
+                    <td>
+                        @Resources.Globalization.MaturityYearBalanceText
+                    </td>
+                    <td>
+                        @Resources.Globalization.EvaluationText
+                    </td>
+                    <td>
+                        @Resources.Globalization.EvaluationPointsText
+                    </td>
+                    <td>
+                        @Resources.Globalization.EvaluationDegreeText
+                    </td>
+                    <td>
+                        @Resources.Globalization.CreatedByText
+                    </td>
+                    <td>
+                        @Resources.Globalization.CreatedDateText
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "EmployeesEvaluations"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+<div class="modal fade" id="divEmployeeEvaluationModal">
+    <div class="modal-dialog" style="width:1100px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                </div>
+            </div>
+            <div class="modal-body">
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <div class="panel panel-default" style="padding:0px">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-9">
+                                @Resources.Globalization.EvaluationText
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-responsive table-condensed table-striped">
+                            <tbody>
+                                <tr>
+                                    <td class="col-md-4">@Html.LabelFor(model => model.MaturityYearID, new { @class = "control-label" })</td>
+                                    <td class="col-md-4">@Html.LabelFor(model => model.EvaluationPointID, new { @class = "control-label" })</td>
+                                    <td class="col-md-4">@Html.LabelFor(model => model.EvaluationDegree, new { @class = "control-label" })</td>
+                                    @Html.HiddenFor(model => model.EmployeeEvaluationID)
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">@Html.DropDownListFor(model => model.MaturityYearID, new SelectList(new HCMBLL.MaturityYearsBalancesBLL().GetMaturityYearsBalances(), "MaturityYearID", "MaturityYear"), new { @id = "ddlMaturityYears", @style = "width:100%" })</td>
+                                    <td class="col-md-4">@Html.DropDownListFor(model => model.EvaluationPointID, new SelectList(new HCMBLL.EvaluationPointsBLL().GetEvaluationPoints(), "EvaluationPointID", "Evaluation"), new { @id = "ddlEvaluationPoints", @style = "width:100%" })</td>
+                                    <td class="col-md-4">
+                                        @Html.TextBoxFor(model => model.EvaluationDegree, new { @class = "form-control allownumericwithdecimal", @id = "txtEvaluationDegree" })
+                                        @Html.ValidationMessageFor(model => model.EvaluationDegree, "", new { @class = "text-danger" })
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-responsive table-condensed">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <center>
+                                            <input type="submit" class="btn btn-default" id="BtnSave" value="@Resources.Globalization.SaveText" />
+                                            <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                                        </center>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divEmployeeEvaluationDetailsModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.EmployeesEvaluationsDetailsText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        @*New*@
+                        <table class="table table-responsive table-condensed table-striped">
+                            <tbody>
+                                <tr>
+                                    <td class="col-md-2">@Resources.Globalization.EvaluationQuarterText</td>
+                                    <td class="col-md-2">@Resources.Globalization.DirectManagerEvaluationText</td>
+                                    <td class="col-md-2">@Resources.Globalization.TimeAttendanceEvaluationText</td>
+                                    <td class="col-md-2">@Resources.Globalization.ViolationsEvaluationText</td>
+                                    <td class="col-md-2"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="col-md-2">@Html.DropDownListFor(model => model.EvaluationQuarterID, new SelectList(new HCMBLL.EvaluationsQuartersBLL().GetEvaluationsQuarters(), "EvaluationQuarterID", "EvaluationQuarterName"), new { @id = "ddlEvaluationsQuarters", @style = "width:100%" })</td>
+                                    <td class="col-md-2"><input type="text" class="form-control allownumericwithdecimal" id="Txt_DirectManagerEvaluation" name="Txt_DirectManagerEvaluation"></td>
+                                    <td class="col-md-2"><input type="text" class="form-control allownumericwithdecimal" id="Txt_TimeAttendanceEvaluation" name="Txt_TimeAttendanceEvaluation"></td>
+                                    <td class="col-md-2"><input type="text" class="form-control allownumericwithdecimal" id="Txt_ViolationsEvaluation" name="Txt_ViolationsEvaluation"></td>
+                                    <td class="col-md-2">
+                                        <input type="submit" class="btn btn-default" id="BtnAddEvalDetails" value="@Resources.Globalization.SaveText" />
+                                        <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        @*New*@
+                    </div>
+                </div>
+                <table id="tblEmployeeEvaluationDetails" class="table table-responsive table-hover dataTable font-12" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.EvaluationQuarterText</td>
+                            <td>@Resources.Globalization.DirectManagerEvaluationText</td>
+                            <td>@Resources.Globalization.TimeAttendanceEvaluationText</td>
+                            <td>@Resources.Globalization.ViolationsEvaluationText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

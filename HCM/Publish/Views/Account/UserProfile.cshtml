@@ -1,0 +1,184 @@
+﻿@model HCM.Models.AccountViewModel
+@{
+    ViewBag.Title = "UserProfile";
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+}
+
+<style>
+    td.details-control {
+        background: url('../Content/Images/plus.png') no-repeat center center;
+        cursor: pointer;
+        background-size: 16px;
+    }
+
+    tr.shown td.details-control {
+        background: url('../Content/Images/minus.png') no-repeat center center;
+        background-size: 16px;
+    }
+</style>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var table = $('#tblPrivilages').DataTable({
+            "autoWidth": false,
+            "destroy": true,
+            "searching": false,
+            "ordering": false,
+            "info": false,
+            "paging": false,
+            "ajax": {
+                "url": "/Account/GetUserGroups",
+                "type": "get",
+                "datatype": "json",
+            },
+            "columns": [
+                {
+                    "className": 'details-control',     // glyphicon glyphicon-plus-sign
+                    "orderable": false,
+                    "data": null,
+                    "defaultContent": ''
+                },
+                {
+                    "data": "Group.GroupName",
+                    "autowidth": true
+                },
+            ],
+        });
+
+        $('#tblPrivilages tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+
+            if (row.child.isShown()) {
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                row.child(format(row.data())).show();
+                tr.addClass('shown');
+            }
+        });
+
+    });
+
+    function format(d) {
+        var isData = false;
+        var detailTable = '<table class="table table-condensed table-responsive table-striped text-center">';    //<tr><td>Title 1</td><td>' + d.Group.Objects[0].Object.ObjectName + '</td></tr></table>';
+        d.Group.Objects.forEach(function (obj) {
+            //console.log(obj.Creating);
+            isData = true;
+            detailTable = detailTable + '<tr><td>@Resources.Globalization.ObjectNameText</td><td>@Resources.Globalization.CreatingText</td><td>@Resources.Globalization.ReadingText</td><td>@Resources.Globalization.UpdatingText</td><td>@Resources.Globalization.DeletingText</td></tr>'
+            detailTable = detailTable + '<tr><td>' + obj.Object.ObjectName + '</td><td>' + RenderCheckBox(obj.Creating) + '</td><td>' + RenderCheckBox(obj.Reading) + '</td><td>' + RenderCheckBox(obj.Updating) + '</td><td>' + RenderCheckBox(obj.Deleting) + '</td></tr>'
+        });
+
+        if (!isData) {
+            detailTable = detailTable + '<tr><td>@Resources.Globalization.NoRecordFoundText</td></tr>'
+        }
+
+        return detailTable + '</table>'
+    }
+
+</script>
+
+<div class="panel panel-default" style="padding: 0px; max-height: 500px">
+    <div class="panel-heading">
+        @Resources.Globalization.UserProfileText
+    </div>
+    <center>
+        <div class="panel-body">
+            <table class="table table-condensed table-responsive table-striped text-center">
+                <tr>
+                    <td rowspan="5">
+                        <div class="form-group">
+                            <div class="col-md-12 user-image">
+                                @RazorHelper.DisplayImage(Model.UserPic)
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group ">
+                            <div class="col-md-12">
+                                <span>
+                                    @*@ViewBag.CurrentTime
+                                    <br />*@
+                                    @Html.DisplayFor(model => model.UserName)
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <span>
+                                    @Html.DisplayFor(model => model.EmployeeName)
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <span>
+                                    @Html.DisplayFor(model => model.OrganizationName)
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <span>
+                                    @Html.DisplayFor(model => model.JobName)
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <span>
+                                    @Resources.Globalization.IsAdminText @Html.CheckBoxFor(model => model.IsAdmin, new { @disabled = "disabled" })
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="form-group">
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#TabPrivilages" data-toggle="tab">@Resources.Globalization.PrivilagesText</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content clearfix">
+                        <div id="TabPrivilages" class="tab-pane active padding-5">
+                            <table id="tblPrivilages" class="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>@Resources.Globalization.GroupNameText</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </center>
+</div>

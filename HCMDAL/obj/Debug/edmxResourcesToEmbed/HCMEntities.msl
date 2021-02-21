@@ -1,0 +1,1872 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="HCMModelStoreContainer" CdmEntityContainer="HCMEntities">
+    <EntitySetMapping Name="AssigningsTypes">
+      <EntityTypeMapping TypeName="HCMModel.AssigningsTypes">
+        <MappingFragment StoreEntitySet="AssigningsTypes">
+          <ScalarProperty Name="AssigningTypeName" ColumnName="AssigningTypeName" />
+          <ScalarProperty Name="AssigningTypID" ColumnName="AssigningTypID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeesCodes">
+      <EntityTypeMapping TypeName="HCMModel.EmployeesCodes">
+        <MappingFragment StoreEntitySet="EmployeesCodes">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="EmployeeTypeID" ColumnName="EmployeeTypeID" />
+          <ScalarProperty Name="EmployeeCodeNo" ColumnName="EmployeeCodeNo" />
+          <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Jobs">
+      <EntityTypeMapping TypeName="HCMModel.Jobs">
+        <MappingFragment StoreEntitySet="Jobs">
+          <ScalarProperty Name="IsHidden" ColumnName="IsHidden" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="JobCode" ColumnName="JobCode" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="JobName" ColumnName="JobName" />
+          <ScalarProperty Name="JobCategoryID" ColumnName="JobCategoryID" />
+          <ScalarProperty Name="JobID" ColumnName="JobID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="OrganizationsStructures">
+      <EntityTypeMapping TypeName="HCMModel.OrganizationsStructures">
+        <MappingFragment StoreEntitySet="OrganizationsStructures">
+          <ScalarProperty Name="AuthorizedToApproveOnEVacationsRequests" ColumnName="AuthorizedToApproveOnEVacationsRequests" />
+          <ScalarProperty Name="WorkingWithDigitalDecisionInECM" ColumnName="WorkingWithDigitalDecisionInECM" />
+          <ScalarProperty Name="ShowInECM" ColumnName="ShowInECM" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="BranchID" ColumnName="BranchID" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="OrganizationParentID" ColumnName="OrganizationParentID" />
+          <ScalarProperty Name="ManagerCodeID" ColumnName="ManagerCodeID" />
+          <ScalarProperty Name="OrganizationName" ColumnName="OrganizationName" />
+          <ScalarProperty Name="OrganizationCode" ColumnName="OrganizationCode" />
+          <ScalarProperty Name="OrganizationID" ColumnName="OrganizationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Employees">
+      <EntityTypeMapping TypeName="HCMModel.Employees">
+        <MappingFragment StoreEntitySet="Employees">
+          <ScalarProperty Name="FifthNameEn" ColumnName="FifthNameEn" />
+          <ScalarProperty Name="FifthNameAr" ColumnName="FifthNameAr" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="NationalityID" ColumnName="NationalityID" />
+          <ScalarProperty Name="GenderID" ColumnName="GenderID" />
+          <ScalarProperty Name="MaritalStatusID" ColumnName="MaritalStatusID" />
+          <ScalarProperty Name="DependentCount" ColumnName="DependentCount" />
+          <ScalarProperty Name="EmployeeIDIssuePlace" ColumnName="EmployeeIDIssuePlace" />
+          <ScalarProperty Name="EmployeeIDCopyNo" ColumnName="EmployeeIDCopyNo" />
+          <ScalarProperty Name="EmployeeIDExpiryDate" ColumnName="EmployeeIDExpiryDate" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="EmployeePassportEndDate" ColumnName="EmployeePassportEndDate" />
+          <ScalarProperty Name="EmployeePassportIssueDate" ColumnName="EmployeePassportIssueDate" />
+          <ScalarProperty Name="EmployeePassportSource" ColumnName="EmployeePassportSource" />
+          <ScalarProperty Name="EmployeePassportNo" ColumnName="EmployeePassportNo" />
+          <ScalarProperty Name="EmployeeIDIssueDate" ColumnName="EmployeeIDIssueDate" />
+          <ScalarProperty Name="EmployeeEMail" ColumnName="EmployeeEMail" />
+          <ScalarProperty Name="EmployeeBirthPlace" ColumnName="EmployeeBirthPlace" />
+          <ScalarProperty Name="EmployeeMobileNo" ColumnName="EmployeeMobileNo" />
+          <ScalarProperty Name="EmployeeBirthDate" ColumnName="EmployeeBirthDate" />
+          <ScalarProperty Name="LastNameEn" ColumnName="LastNameEn" />
+          <ScalarProperty Name="GrandFatherNameEn" ColumnName="GrandFatherNameEn" />
+          <ScalarProperty Name="MiddleNameEn" ColumnName="MiddleNameEn" />
+          <ScalarProperty Name="FirstNameEn" ColumnName="FirstNameEn" />
+          <ScalarProperty Name="LastNameAr" ColumnName="LastNameAr" />
+          <ScalarProperty Name="GrandFatherNameAr" ColumnName="GrandFatherNameAr" />
+          <ScalarProperty Name="MiddleNameAr" ColumnName="MiddleNameAr" />
+          <ScalarProperty Name="FirstNameAr" ColumnName="FirstNameAr" />
+          <ScalarProperty Name="EmployeeIDNo" ColumnName="EmployeeIDNo" />
+          <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Countries">
+      <EntityTypeMapping TypeName="HCMModel.Countries">
+        <MappingFragment StoreEntitySet="Countries">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CountryName" ColumnName="CountryName" />
+          <ScalarProperty Name="CountryID" ColumnName="CountryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="KSACities">
+      <EntityTypeMapping TypeName="HCMModel.KSACities">
+        <MappingFragment StoreEntitySet="KSACities">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="KSACityName" ColumnName="KSACityName" />
+          <ScalarProperty Name="KSARegionID" ColumnName="KSARegionID" />
+          <ScalarProperty Name="KSACityID" ColumnName="KSACityID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="KSARegions">
+      <EntityTypeMapping TypeName="HCMModel.KSARegions">
+        <MappingFragment StoreEntitySet="KSARegions">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="KSARegionName" ColumnName="KSARegionName" />
+          <ScalarProperty Name="KSARegionID" ColumnName="KSARegionID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Delegations">
+      <EntityTypeMapping TypeName="HCMModel.Delegations">
+        <MappingFragment StoreEntitySet="Delegations">
+          <ScalarProperty Name="Notes" ColumnName="Notes" />
+          <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
+          <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+          <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="DelegationDistancePeriod" ColumnName="DelegationDistancePeriod" />
+          <ScalarProperty Name="DelegationKindID" ColumnName="DelegationKindID" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="KSACityID" ColumnName="KSACityID" />
+          <ScalarProperty Name="CountryID" ColumnName="CountryID" />
+          <ScalarProperty Name="DelegationReason" ColumnName="DelegationReason" />
+          <ScalarProperty Name="DelegationEndDate" ColumnName="DelegationEndDate" />
+          <ScalarProperty Name="DelegationStartDate" ColumnName="DelegationStartDate" />
+          <ScalarProperty Name="DelegationTypeID" ColumnName="DelegationTypeID" />
+          <ScalarProperty Name="DelegationID" ColumnName="DelegationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DelegationsKinds">
+      <EntityTypeMapping TypeName="HCMModel.DelegationsKinds">
+        <MappingFragment StoreEntitySet="DelegationsKinds">
+          <ScalarProperty Name="IsIncludeInventory" ColumnName="IsIncludeInventory" />
+          <ScalarProperty Name="DelegationKindName" ColumnName="DelegationKindName" />
+          <ScalarProperty Name="DelegationKindID" ColumnName="DelegationKindID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PassengerOrdersItineraries">
+      <EntityTypeMapping TypeName="HCMModel.PassengerOrdersItineraries">
+        <MappingFragment StoreEntitySet="PassengerOrdersItineraries">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="ToCity" ColumnName="ToCity" />
+          <ScalarProperty Name="FromCity" ColumnName="FromCity" />
+          <ScalarProperty Name="PassengerOrderID" ColumnName="PassengerOrderID" />
+          <ScalarProperty Name="PassengerOrdersItineraryID" ColumnName="PassengerOrdersItineraryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="RanksCategories">
+      <EntityTypeMapping TypeName="HCMModel.RanksCategories">
+        <MappingFragment StoreEntitySet="RanksCategories">
+          <ScalarProperty Name="RetirementPercentage" ColumnName="RetirementPercentage" />
+          <ScalarProperty Name="RankCategoryNameEn" ColumnName="RankCategoryNameEn" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="RankCategoryName" ColumnName="RankCategoryName" />
+          <ScalarProperty Name="RankCategoryID" ColumnName="RankCategoryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="RanksTicketsClasses">
+      <EntityTypeMapping TypeName="HCMModel.RanksTicketsClasses">
+        <MappingFragment StoreEntitySet="RanksTicketsClasses">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="TicketClassID" ColumnName="TicketClassID" />
+          <ScalarProperty Name="RankID" ColumnName="RankID" />
+          <ScalarProperty Name="RankTicketClassID" ColumnName="RankTicketClassID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeesTypes">
+      <EntityTypeMapping TypeName="HCMModel.EmployeesTypes">
+        <MappingFragment StoreEntitySet="EmployeesTypes">
+          <ScalarProperty Name="EmployeeTypeName" ColumnName="EmployeeTypeName" />
+          <ScalarProperty Name="EmployeeTypeID" ColumnName="EmployeeTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="QualificationsTypes">
+      <EntityTypeMapping TypeName="HCMModel.QualificationsTypes">
+        <MappingFragment StoreEntitySet="QualificationsTypes">
+          <ScalarProperty Name="QualificationTypeName" ColumnName="QualificationTypeName" />
+          <ScalarProperty Name="QualificationTypeID" ColumnName="QualificationTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ScholarshipsTypes">
+      <EntityTypeMapping TypeName="HCMModel.ScholarshipsTypes">
+        <MappingFragment StoreEntitySet="ScholarshipsTypes">
+          <ScalarProperty Name="ScholarshipType" ColumnName="ScholarshipType" />
+          <ScalarProperty Name="ScholarshipTypeID" ColumnName="ScholarshipTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CareersHistoryTypes">
+      <EntityTypeMapping TypeName="HCMModel.CareersHistoryTypes">
+        <MappingFragment StoreEntitySet="CareersHistoryTypes">
+          <ScalarProperty Name="CareerHistoryTypeName" ColumnName="CareerHistoryTypeName" />
+          <ScalarProperty Name="CareerHistoryTypeID" ColumnName="CareerHistoryTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeesCareersHistory">
+      <EntityTypeMapping TypeName="HCMModel.EmployeesCareersHistory">
+        <MappingFragment StoreEntitySet="EmployeesCareersHistory">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="TransactionEndDate" ColumnName="TransactionEndDate" />
+          <ScalarProperty Name="TransactionStartDate" ColumnName="TransactionStartDate" />
+          <ScalarProperty Name="JoinDate" ColumnName="JoinDate" />
+          <ScalarProperty Name="CareerDegreeID" ColumnName="CareerDegreeID" />
+          <ScalarProperty Name="OrganizationJobID" ColumnName="OrganizationJobID" />
+          <ScalarProperty Name="CareerHistoryTypeID" ColumnName="CareerHistoryTypeID" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="BusinessCategories">
+      <EntityTypeMapping TypeName="HCMModel.BusinessCategories">
+        <MappingFragment StoreEntitySet="BusinessCategories">
+          <ScalarProperty Name="BusinessCategoryEn" ColumnName="BusinessCategoryEn" />
+          <ScalarProperty Name="BusinessCategoryAr" ColumnName="BusinessCategoryAr" />
+          <ScalarProperty Name="BusinessCategoryID" ColumnName="BusinessCategoryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="BusinessRules">
+      <EntityTypeMapping TypeName="HCMModel.BusinessRules">
+        <MappingFragment StoreEntitySet="BusinessRules">
+          <ScalarProperty Name="BusinessSubCategoryID" ColumnName="BusinessSubCategoryID" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="BusinessRuleEn" ColumnName="BusinessRuleEn" />
+          <ScalarProperty Name="BusinessRuleAr" ColumnName="BusinessRuleAr" />
+          <ScalarProperty Name="BusinessRuleID" ColumnName="BusinessRuleID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="BusinessSubCategories">
+      <EntityTypeMapping TypeName="HCMModel.BusinessSubCategories">
+        <MappingFragment StoreEntitySet="BusinessSubCategories">
+          <ScalarProperty Name="EntityName" ColumnName="EntityName" />
+          <ScalarProperty Name="BusinessCategoryID" ColumnName="BusinessCategoryID" />
+          <ScalarProperty Name="BusinessSubCategoryEn" ColumnName="BusinessSubCategoryEn" />
+          <ScalarProperty Name="BusinessSubCategoryAr" ColumnName="BusinessSubCategoryAr" />
+          <ScalarProperty Name="BusinssSubCategoryID" ColumnName="BusinssSubCategoryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Transfers">
+      <EntityTypeMapping TypeName="HCMModel.Transfers">
+        <MappingFragment StoreEntitySet="Transfers">
+          <ScalarProperty Name="IsProcessed" ColumnName="IsProcessed" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CareerDegreeName" ColumnName="CareerDegreeName" />
+          <ScalarProperty Name="OrganizationName" ColumnName="OrganizationName" />
+          <ScalarProperty Name="JobCode" ColumnName="JobCode" />
+          <ScalarProperty Name="RankName" ColumnName="RankName" />
+          <ScalarProperty Name="JobName" ColumnName="JobName" />
+          <ScalarProperty Name="KSACityID" ColumnName="KSACityID" />
+          <ScalarProperty Name="Destination" ColumnName="Destination" />
+          <ScalarProperty Name="TransferDate" ColumnName="TransferDate" />
+          <ScalarProperty Name="TransferTypeID" ColumnName="TransferTypeID" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="TransferID" ColumnName="TransferID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="TransfersTypes">
+      <EntityTypeMapping TypeName="HCMModel.TransfersTypes">
+        <MappingFragment StoreEntitySet="TransfersTypes">
+          <ScalarProperty Name="TransferTypeName" ColumnName="TransferTypeName" />
+          <ScalarProperty Name="TransferTypeID" ColumnName="TransferTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="GovernmentFundsTypes">
+      <EntityTypeMapping TypeName="HCMModel.GovernmentFundsTypes">
+        <MappingFragment StoreEntitySet="GovernmentFundsTypes">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="GovernmentFundTypeName" ColumnName="GovernmentFundTypeName" />
+          <ScalarProperty Name="GovernmentFundTypeID" ColumnName="GovernmentFundTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="GovernmentDeductionsTypes">
+      <EntityTypeMapping TypeName="HCMModel.GovernmentDeductionsTypes">
+        <MappingFragment StoreEntitySet="GovernmentDeductionsTypes">
+          <ScalarProperty Name="GovernmentDeductionTypeName" ColumnName="GovernmentDeductionTypeName" />
+          <ScalarProperty Name="GovernmentDeductionTypeID" ColumnName="GovernmentDeductionTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="TicketsClasses">
+      <EntityTypeMapping TypeName="HCMModel.TicketsClasses">
+        <MappingFragment StoreEntitySet="TicketsClasses">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="TicketClassName" ColumnName="TicketClassName" />
+          <ScalarProperty Name="TicketClassID" ColumnName="TicketClassID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Scholarships">
+      <EntityTypeMapping TypeName="HCMModel.Scholarships">
+        <MappingFragment StoreEntitySet="Scholarships">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="IsPassed" ColumnName="IsPassed" />
+          <ScalarProperty Name="ScholarshipJoinDate" ColumnName="ScholarshipJoinDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="IsCanceled" ColumnName="IsCanceled" />
+          <ScalarProperty Name="CountryID" ColumnName="CountryID" />
+          <ScalarProperty Name="KSACityID" ColumnName="KSACityID" />
+          <ScalarProperty Name="ScholarshipReason" ColumnName="ScholarshipReason" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="QualificationID" ColumnName="QualificationID" />
+          <ScalarProperty Name="ScholarshipEndDate" ColumnName="ScholarshipEndDate" />
+          <ScalarProperty Name="ScholarshipStartDate" ColumnName="ScholarshipStartDate" />
+          <ScalarProperty Name="Location" ColumnName="Location" />
+          <ScalarProperty Name="ScholarshipTypeID" ColumnName="ScholarshipTypeID" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="ScholarshipID" ColumnName="ScholarshipID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="AllowancesAmountTypes">
+      <EntityTypeMapping TypeName="HCMModel.AllowancesAmountTypes">
+        <MappingFragment StoreEntitySet="AllowancesAmountTypes">
+          <ScalarProperty Name="AllowanceAmountTypeName" ColumnName="AllowanceAmountTypeName" />
+          <ScalarProperty Name="AllowanceAmountTypeID" ColumnName="AllowanceAmountTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeesAllowances">
+      <EntityTypeMapping TypeName="HCMModel.EmployeesAllowances">
+        <MappingFragment StoreEntitySet="EmployeesAllowances">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="AllowanceStartDate" ColumnName="AllowanceStartDate" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="AllowanceID" ColumnName="AllowanceID" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="EmployeeAllowanceID" ColumnName="EmployeeAllowanceID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Ranks">
+      <EntityTypeMapping TypeName="HCMModel.Ranks">
+        <MappingFragment StoreEntitySet="Ranks">
+          <ScalarProperty Name="Sorting" ColumnName="Sorting" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="NextRankID" ColumnName="NextRankID" />
+          <ScalarProperty Name="IsActiveForPromotion" ColumnName="IsActiveForPromotion" />
+          <ScalarProperty Name="ExternalDelegation" ColumnName="ExternalDelegation" />
+          <ScalarProperty Name="InternalDelegation" ColumnName="InternalDelegation" />
+          <ScalarProperty Name="TransfareAllowance" ColumnName="TransfareAllowance" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="RankName" ColumnName="RankName" />
+          <ScalarProperty Name="RankCategoryID" ColumnName="RankCategoryID" />
+          <ScalarProperty Name="RankID" ColumnName="RankID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Allowances">
+      <EntityTypeMapping TypeName="HCMModel.Allowances">
+        <MappingFragment StoreEntitySet="Allowances">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="AllowanceCalculationTypeID" ColumnName="AllowanceCalculationTypeID" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="AllowanceAmount" ColumnName="AllowanceAmount" />
+          <ScalarProperty Name="AllowanceAmountTypeID" ColumnName="AllowanceAmountTypeID" />
+          <ScalarProperty Name="AllowanceName" ColumnName="AllowanceName" />
+          <ScalarProperty Name="AllowanceID" ColumnName="AllowanceID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="JobsAllowances">
+      <EntityTypeMapping TypeName="HCMModel.JobsAllowances">
+        <MappingFragment StoreEntitySet="JobsAllowances">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="AllowanceID" ColumnName="AllowanceID" />
+          <ScalarProperty Name="JobID" ColumnName="JobID" />
+          <ScalarProperty Name="JobAllowanceID" ColumnName="JobAllowanceID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="JobsCategories">
+      <EntityTypeMapping TypeName="HCMModel.JobsCategories">
+        <MappingFragment StoreEntitySet="JobsCategories">
+          <ScalarProperty Name="JobCategoryNo" ColumnName="JobCategoryNo" />
+          <ScalarProperty Name="MinGeneralSpecializationID" ColumnName="MinGeneralSpecializationID" />
+          <ScalarProperty Name="MinQualificationID" ColumnName="MinQualificationID" />
+          <ScalarProperty Name="MinQualificationDegreeID" ColumnName="MinQualificationDegreeID" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="JobCategoryName" ColumnName="JobCategoryName" />
+          <ScalarProperty Name="JobGroupID" ColumnName="JobGroupID" />
+          <ScalarProperty Name="JobCategoryID" ColumnName="JobCategoryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ChangeDetailsLogs">
+      <EntityTypeMapping TypeName="HCMModel.ChangeDetailsLogs">
+        <MappingFragment StoreEntitySet="ChangeDetailsLogs">
+          <ScalarProperty Name="NewValue" ColumnName="NewValue" />
+          <ScalarProperty Name="OldValue" ColumnName="OldValue" />
+          <ScalarProperty Name="PrimaryKeyValue" ColumnName="PrimaryKeyValue" />
+          <ScalarProperty Name="PropertyName" ColumnName="PropertyName" />
+          <ScalarProperty Name="ChangeLogID" ColumnName="ChangeLogID" />
+          <ScalarProperty Name="ChangeDetailLogID" ColumnName="ChangeDetailLogID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ChangeLogs">
+      <EntityTypeMapping TypeName="HCMModel.ChangeLogs">
+        <MappingFragment StoreEntitySet="ChangeLogs">
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="EventTypeID" ColumnName="EventTypeID" />
+          <ScalarProperty Name="DateChange" ColumnName="DateChange" />
+          <ScalarProperty Name="EntityName" ColumnName="EntityName" />
+          <ScalarProperty Name="ChangeLogID" ColumnName="ChangeLogID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EventTypes">
+      <EntityTypeMapping TypeName="HCMModel.EventTypes">
+        <MappingFragment StoreEntitySet="EventTypes">
+          <ScalarProperty Name="Type" ColumnName="Type" />
+          <ScalarProperty Name="EventTypeID" ColumnName="EventTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="FinancialYears">
+      <EntityTypeMapping TypeName="HCMModel.FinancialYears">
+        <MappingFragment StoreEntitySet="FinancialYears">
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="FinancialYear" ColumnName="FinancialYear" />
+          <ScalarProperty Name="FinancialYearID" ColumnName="FinancialYearID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CareersDegrees">
+      <EntityTypeMapping TypeName="HCMModel.CareersDegrees">
+        <MappingFragment StoreEntitySet="CareersDegrees">
+          <ScalarProperty Name="CareerDegreeName" ColumnName="CareerDegreeName" />
+          <ScalarProperty Name="CareerDegreeID" ColumnName="CareerDegreeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DelegationsDetails">
+      <EntityTypeMapping TypeName="HCMModel.DelegationsDetails">
+        <MappingFragment StoreEntitySet="DelegationsDetails">
+          <ScalarProperty Name="IsPassengerOrderCompensation" ColumnName="IsPassengerOrderCompensation" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="DelegationID" ColumnName="DelegationID" />
+          <ScalarProperty Name="DelegationDetailID" ColumnName="DelegationDetailID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="InternshipScholarshipsDetails">
+      <EntityTypeMapping TypeName="HCMModel.InternshipScholarshipsDetails">
+        <MappingFragment StoreEntitySet="InternshipScholarshipsDetails">
+          <ScalarProperty Name="IsPassengerOrderCompensation" ColumnName="IsPassengerOrderCompensation" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="InternshipScholarshipID" ColumnName="InternshipScholarshipID" />
+          <ScalarProperty Name="InternshipScholarshipDetailID" ColumnName="InternshipScholarshipDetailID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="InternshipScholarships">
+      <EntityTypeMapping TypeName="HCMModel.InternshipScholarships">
+        <MappingFragment StoreEntitySet="InternshipScholarships">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="KSACityID" ColumnName="KSACityID" />
+          <ScalarProperty Name="CountryID" ColumnName="CountryID" />
+          <ScalarProperty Name="InternshipScholarshipReason" ColumnName="InternshipScholarshipReason" />
+          <ScalarProperty Name="InternshipScholarshipLocation" ColumnName="InternshipScholarshipLocation" />
+          <ScalarProperty Name="InternshipScholarshipEndDate" ColumnName="InternshipScholarshipEndDate" />
+          <ScalarProperty Name="InternshipScholarshipStartDate" ColumnName="InternshipScholarshipStartDate" />
+          <ScalarProperty Name="InternshipScholarshipTypeID" ColumnName="InternshipScholarshipTypeID" />
+          <ScalarProperty Name="InternshipScholarshipID" ColumnName="InternshipScholarshipID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="InternshipScholarshipsTypes">
+      <EntityTypeMapping TypeName="HCMModel.InternshipScholarshipsTypes">
+        <MappingFragment StoreEntitySet="InternshipScholarshipsTypes">
+          <ScalarProperty Name="InternshipScholarshipTypeName" ColumnName="InternshipScholarshipTypeName" />
+          <ScalarProperty Name="InternshipScholarshipTypeID" ColumnName="InternshipScholarshipTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PassengerOrders">
+      <EntityTypeMapping TypeName="HCMModel.PassengerOrders">
+        <MappingFragment StoreEntitySet="PassengerOrders">
+          <ScalarProperty Name="TravelTo" ColumnName="TravelTo" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="Returning" ColumnName="Returning" />
+          <ScalarProperty Name="Going" ColumnName="Going" />
+          <ScalarProperty Name="TicketClassID" ColumnName="TicketClassID" />
+          <ScalarProperty Name="RankID" ColumnName="RankID" />
+          <ScalarProperty Name="TravellingDate" ColumnName="TravellingDate" />
+          <ScalarProperty Name="PassengerOrderID" ColumnName="PassengerOrderID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PassengerOrdersTypes">
+      <EntityTypeMapping TypeName="HCMModel.PassengerOrdersTypes">
+        <MappingFragment StoreEntitySet="PassengerOrdersTypes">
+          <ScalarProperty Name="PassengerOrderTypeName" ColumnName="PassengerOrderTypeName" />
+          <ScalarProperty Name="PassengerOrderTypeID" ColumnName="PassengerOrderTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="vwPassengerOrdersDetails">
+      <EntityTypeMapping TypeName="HCMModel.vwPassengerOrdersDetails">
+        <MappingFragment StoreEntitySet="vwPassengerOrdersDetails">
+          <ScalarProperty Name="Type" ColumnName="Type" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="DetailID" ColumnName="DetailID" />
+          <ScalarProperty Name="ID" ColumnName="ID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="OverTimes">
+      <EntityTypeMapping TypeName="HCMModel.OverTimes">
+        <MappingFragment StoreEntitySet="OverTimes">
+          <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
+          <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+          <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+          <ScalarProperty Name="Requester" ColumnName="Requester" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="Tasks" ColumnName="Tasks" />
+          <ScalarProperty Name="SaturdayHoursAvg" ColumnName="SaturdayHoursAvg" />
+          <ScalarProperty Name="FridayHoursAvg" ColumnName="FridayHoursAvg" />
+          <ScalarProperty Name="WeekWorkHoursAvg" ColumnName="WeekWorkHoursAvg" />
+          <ScalarProperty Name="OverTimeEndDate" ColumnName="OverTimeEndDate" />
+          <ScalarProperty Name="OverTimeStartDate" ColumnName="OverTimeStartDate" />
+          <ScalarProperty Name="OverTimeID" ColumnName="OverTimeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="OverTimesDetails">
+      <EntityTypeMapping TypeName="HCMModel.OverTimesDetails">
+        <MappingFragment StoreEntitySet="OverTimesDetails">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="OverTimeID" ColumnName="OverTimeID" />
+          <ScalarProperty Name="OverTimeDetailID" ColumnName="OverTimeDetailID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Branches">
+      <EntityTypeMapping TypeName="HCMModel.Branches">
+        <MappingFragment StoreEntitySet="Branches">
+          <ScalarProperty Name="BranchName" ColumnName="BranchName" />
+          <ScalarProperty Name="BranchID" ColumnName="BranchID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SMSLogs">
+      <EntityTypeMapping TypeName="HCMModel.SMSLogs">
+        <MappingFragment StoreEntitySet="SMSLogs">
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="MobileNo" ColumnName="MobileNo" />
+          <ScalarProperty Name="Message" ColumnName="Message" />
+          <ScalarProperty Name="DetailID" ColumnName="DetailID" />
+          <ScalarProperty Name="BusinssSubCategoryID" ColumnName="BusinssSubCategoryID" />
+          <ScalarProperty Name="SMSLogID" ColumnName="SMSLogID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="MaritalStatus">
+      <EntityTypeMapping TypeName="HCMModel.MaritalStatus">
+        <MappingFragment StoreEntitySet="MaritalStatus">
+          <ScalarProperty Name="MaritalStatusName" ColumnName="MaritalStatusName" />
+          <ScalarProperty Name="MaritalStatusID" ColumnName="MaritalStatusID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="AssigningsReasons">
+      <EntityTypeMapping TypeName="HCMModel.AssigningsReasons">
+        <MappingFragment StoreEntitySet="AssigningsReasons">
+          <ScalarProperty Name="AssigningReasonName" ColumnName="AssigningReasonName" />
+          <ScalarProperty Name="AssigningReasonID" ColumnName="AssigningReasonID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Vacations">
+      <EntityTypeMapping TypeName="HCMModel.Vacations">
+        <MappingFragment StoreEntitySet="Vacations">
+          <ScalarProperty Name="EVacationRequestID" ColumnName="EVacationRequestID" />
+          <ScalarProperty Name="IsSickLeaveAmountPaid" ColumnName="IsSickLeaveAmountPaid" />
+          <ScalarProperty Name="NormalVacationTypeID" ColumnName="NormalVacationTypeID" />
+          <ScalarProperty Name="SportsSeasonID" ColumnName="SportsSeasonID" />
+          <ScalarProperty Name="HolidayAttendanceDetailID" ColumnName="HolidayAttendanceDetailID" />
+          <ScalarProperty Name="StudiesVacationStartDate" ColumnName="StudiesVacationStartDate" />
+          <ScalarProperty Name="SickVacationTypeID" ColumnName="SickVacationTypeID" />
+          <ScalarProperty Name="InAdvConsumed" ColumnName="InAdvConsumed" />
+          <ScalarProperty Name="OldBalanceConsumed" ColumnName="OldBalanceConsumed" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="IsCanceled" ColumnName="IsCanceled" />
+          <ScalarProperty Name="VacationEndDate" ColumnName="VacationEndDate" />
+          <ScalarProperty Name="VacationStartDate" ColumnName="VacationStartDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="VacationTypeID" ColumnName="VacationTypeID" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="VacationID" ColumnName="VacationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="VacationsActions">
+      <EntityTypeMapping TypeName="HCMModel.VacationsActions">
+        <MappingFragment StoreEntitySet="VacationsActions">
+          <ScalarProperty Name="VacationActionName" ColumnName="VacationActionName" />
+          <ScalarProperty Name="VacationActionID" ColumnName="VacationActionID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="VacationsTypes">
+      <EntityTypeMapping TypeName="HCMModel.VacationsTypes">
+        <MappingFragment StoreEntitySet="VacationsTypes">
+          <ScalarProperty Name="IsPossibleTobeCreatedFromEVacationRequest" ColumnName="IsPossibleTobeCreatedFromEVacationRequest" />
+          <ScalarProperty Name="IsForFemaleOnly" ColumnName="IsForFemaleOnly" />
+          <ScalarProperty Name="VacationTypeName" ColumnName="VacationTypeName" />
+          <ScalarProperty Name="VacationTypeID" ColumnName="VacationTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="VacationsDetails">
+      <EntityTypeMapping TypeName="HCMModel.VacationsDetails">
+        <MappingFragment StoreEntitySet="VacationsDetails">
+          <ScalarProperty Name="MainframeNo" ColumnName="MainframeNo" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="Notes" ColumnName="Notes" />
+          <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
+          <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+          <ScalarProperty Name="VacationID" ColumnName="VacationID" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+          <ScalarProperty Name="ToDate" ColumnName="ToDate" />
+          <ScalarProperty Name="FromDate" ColumnName="FromDate" />
+          <ScalarProperty Name="VacationActionID" ColumnName="VacationActionID" />
+          <ScalarProperty Name="VacationDetailID" ColumnName="VacationDetailID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeesVacationsOpeningBalances">
+      <EntityTypeMapping TypeName="HCMModel.EmployeesVacationsOpeningBalances">
+        <MappingFragment StoreEntitySet="EmployeesVacationsOpeningBalances">
+          <ScalarProperty Name="OpeningBalance" ColumnName="OpeningBalance" />
+          <ScalarProperty Name="VacationTypeID" ColumnName="VacationTypeID" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="EmployeeVacationOpeningBalanceID" ColumnName="EmployeeVacationOpeningBalanceID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="MaturityYearsBalances">
+      <EntityTypeMapping TypeName="HCMModel.MaturityYearsBalances">
+        <MappingFragment StoreEntitySet="MaturityYearsBalances">
+          <ScalarProperty Name="Balance" ColumnName="Balance" />
+          <ScalarProperty Name="MaturityYear" ColumnName="MaturityYear" />
+          <ScalarProperty Name="MaturityYearID" ColumnName="MaturityYearID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="StopWorksCategories">
+      <EntityTypeMapping TypeName="HCMModel.StopWorksCategories">
+        <MappingFragment StoreEntitySet="StopWorksCategories">
+          <ScalarProperty Name="StopWorkCategoryName" ColumnName="StopWorkCategoryName" />
+          <ScalarProperty Name="StopWorkCategoryID" ColumnName="StopWorkCategoryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="StopWorksTypes">
+      <EntityTypeMapping TypeName="HCMModel.StopWorksTypes">
+        <MappingFragment StoreEntitySet="StopWorksTypes">
+          <ScalarProperty Name="StopWorkTypeName" ColumnName="StopWorkTypeName" />
+          <ScalarProperty Name="StopWorkCategoryID" ColumnName="StopWorkCategoryID" />
+          <ScalarProperty Name="StopWorkTypeID" ColumnName="StopWorkTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="BasicSalaries">
+      <EntityTypeMapping TypeName="HCMModel.BasicSalaries">
+        <MappingFragment StoreEntitySet="BasicSalaries">
+          <ScalarProperty Name="BasicSalary" ColumnName="BasicSalary" />
+          <ScalarProperty Name="RankID" ColumnName="RankID" />
+          <ScalarProperty Name="CareerDegreeID" ColumnName="CareerDegreeID" />
+          <ScalarProperty Name="BasicSalaryID" ColumnName="BasicSalaryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SickVacationsTypes">
+      <EntityTypeMapping TypeName="HCMModel.SickVacationsTypes">
+        <MappingFragment StoreEntitySet="SickVacationsTypes">
+          <ScalarProperty Name="SickVacationTypeName" ColumnName="SickVacationTypeName" />
+          <ScalarProperty Name="SickVacationTypeID" ColumnName="SickVacationTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="JobsGeneralGroups">
+      <EntityTypeMapping TypeName="HCMModel.JobsGeneralGroups">
+        <MappingFragment StoreEntitySet="JobsGeneralGroups">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="JobGeneralGroupName" ColumnName="JobGeneralGroupName" />
+          <ScalarProperty Name="JobGeneralGroupID" ColumnName="JobGeneralGroupID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="JobsGroups">
+      <EntityTypeMapping TypeName="HCMModel.JobsGroups">
+        <MappingFragment StoreEntitySet="JobsGroups">
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="JobGroupName" ColumnName="JobGroupName" />
+          <ScalarProperty Name="JobGeneralGroupID" ColumnName="JobGeneralGroupID" />
+          <ScalarProperty Name="JobGroupID" ColumnName="JobGroupID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Genders">
+      <EntityTypeMapping TypeName="HCMModel.Genders">
+        <MappingFragment StoreEntitySet="Genders">
+          <ScalarProperty Name="GenderName" ColumnName="GenderName" />
+          <ScalarProperty Name="GenderID" ColumnName="GenderID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="GovernmentFunds">
+      <EntityTypeMapping TypeName="HCMModel.GovernmentFunds">
+        <MappingFragment StoreEntitySet="GovernmentFunds">
+          <ScalarProperty Name="BankIPAN" ColumnName="BankIPAN" />
+          <ScalarProperty Name="GovernmentFundDeactiveReasonID" ColumnName="GovernmentFundDeactiveReasonID" />
+          <ScalarProperty Name="Notes" ColumnName="Notes" />
+          <ScalarProperty Name="LetterDate" ColumnName="LetterDate" />
+          <ScalarProperty Name="LetterNo" ColumnName="LetterNo" />
+          <ScalarProperty Name="DeactiveDate" ColumnName="DeactiveDate" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="KSACityID" ColumnName="KSACityID" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="SponserToIDNo" ColumnName="SponserToIDNo" />
+          <ScalarProperty Name="SponserToName" ColumnName="SponserToName" />
+          <ScalarProperty Name="ContractNo" ColumnName="ContractNo" />
+          <ScalarProperty Name="TotalDeductionAmount" ColumnName="TotalDeductionAmount" />
+          <ScalarProperty Name="MonthlyDeductionAmount" ColumnName="MonthlyDeductionAmount" />
+          <ScalarProperty Name="DeductionStartDate" ColumnName="DeductionStartDate" />
+          <ScalarProperty Name="LoanDate" ColumnName="LoanDate" />
+          <ScalarProperty Name="LoanNo" ColumnName="LoanNo" />
+          <ScalarProperty Name="GovernmentDeductionTypeID" ColumnName="GovernmentDeductionTypeID" />
+          <ScalarProperty Name="GovernmentFundTypeID" ColumnName="GovernmentFundTypeID" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="GovernmentFundID" ColumnName="GovernmentFundID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="OverTimesDays">
+      <EntityTypeMapping TypeName="HCMModel.OverTimesDays">
+        <MappingFragment StoreEntitySet="OverTimesDays">
+          <ScalarProperty Name="OverTimeDay" ColumnName="OverTimeDay" />
+          <ScalarProperty Name="OverTimeID" ColumnName="OverTimeID" />
+          <ScalarProperty Name="OverTimeDayID" ColumnName="OverTimeDayID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ScholarshipsActions">
+      <EntityTypeMapping TypeName="HCMModel.ScholarshipsActions">
+        <MappingFragment StoreEntitySet="ScholarshipsActions">
+          <ScalarProperty Name="ScholarshipActionName" ColumnName="ScholarshipActionName" />
+          <ScalarProperty Name="ScholarshipActionID" ColumnName="ScholarshipActionID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ScholarshipsDetails">
+      <EntityTypeMapping TypeName="HCMModel.ScholarshipsDetails">
+        <MappingFragment StoreEntitySet="ScholarshipsDetails">
+          <ScalarProperty Name="Notes" ColumnName="Notes" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ToDate" ColumnName="ToDate" />
+          <ScalarProperty Name="FromDate" ColumnName="FromDate" />
+          <ScalarProperty Name="ScholarshipID" ColumnName="ScholarshipID" />
+          <ScalarProperty Name="ScholarshipActionID" ColumnName="ScholarshipActionID" />
+          <ScalarProperty Name="ScholarshipDetailID" ColumnName="ScholarshipDetailID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="HolidaysSettings">
+      <EntityTypeMapping TypeName="HCMModel.HolidaysSettings">
+        <MappingFragment StoreEntitySet="HolidaysSettings">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="HolidaySettingEndDate" ColumnName="HolidaySettingEndDate" />
+          <ScalarProperty Name="HolidaySettingStartDate" ColumnName="HolidaySettingStartDate" />
+          <ScalarProperty Name="MaturityYearID" ColumnName="MaturityYearID" />
+          <ScalarProperty Name="HolidayTypeID" ColumnName="HolidayTypeID" />
+          <ScalarProperty Name="HolidaySettingID" ColumnName="HolidaySettingID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="HolidaysTypes">
+      <EntityTypeMapping TypeName="HCMModel.HolidaysTypes">
+        <MappingFragment StoreEntitySet="HolidaysTypes">
+          <ScalarProperty Name="HolidayTypeName" ColumnName="HolidayTypeName" />
+          <ScalarProperty Name="HolidayTypeID" ColumnName="HolidayTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="HolidaysAttendance">
+      <EntityTypeMapping TypeName="HCMModel.HolidaysAttendance">
+        <MappingFragment StoreEntitySet="HolidaysAttendance">
+          <ScalarProperty Name="OrganizationID" ColumnName="OrganizationID" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="HolidaySettingID" ColumnName="HolidaySettingID" />
+          <ScalarProperty Name="HolidayAttendanceID" ColumnName="HolidayAttendanceID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="HolidaysAttendanceDetails">
+      <EntityTypeMapping TypeName="HCMModel.HolidaysAttendanceDetails">
+        <MappingFragment StoreEntitySet="HolidaysAttendanceDetails">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+          <ScalarProperty Name="HolidayAttendanceID" ColumnName="HolidayAttendanceID" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="HolidayAttendanceDetailID" ColumnName="HolidayAttendanceDetailID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Assignings">
+      <EntityTypeMapping TypeName="HCMModel.Assignings">
+        <MappingFragment StoreEntitySet="Assignings">
+          <ScalarProperty Name="Notes" ColumnName="Notes" />
+          <ScalarProperty Name="EndAssigningReasonID" ColumnName="EndAssigningReasonID" />
+          <ScalarProperty Name="AssigningReasonOther" ColumnName="AssigningReasonOther" />
+          <ScalarProperty Name="ExternalKSACityID" ColumnName="ExternalKSACityID" />
+          <ScalarProperty Name="AssigningReasonID" ColumnName="AssigningReasonID" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IsFinished" ColumnName="IsFinished" />
+          <ScalarProperty Name="ExternalOrganization" ColumnName="ExternalOrganization" />
+          <ScalarProperty Name="ExternalCity" ColumnName="ExternalCity" />
+          <ScalarProperty Name="AssigningEndDate" ColumnName="AssigningEndDate" />
+          <ScalarProperty Name="AssigningStartDate" ColumnName="AssigningStartDate" />
+          <ScalarProperty Name="ManagerCodeID" ColumnName="ManagerCodeID" />
+          <ScalarProperty Name="JobID" ColumnName="JobID" />
+          <ScalarProperty Name="OrganizationID" ColumnName="OrganizationID" />
+          <ScalarProperty Name="AssigningTypID" ColumnName="AssigningTypID" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="AssigningID" ColumnName="AssigningID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SportsSeasons">
+      <EntityTypeMapping TypeName="HCMModel.SportsSeasons">
+        <MappingFragment StoreEntitySet="SportsSeasons">
+          <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+          <ScalarProperty Name="Updatedby" ColumnName="Updatedby" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="SportsSeasonEndDate" ColumnName="SportsSeasonEndDate" />
+          <ScalarProperty Name="SportsSeasonStartDate" ColumnName="SportsSeasonStartDate" />
+          <ScalarProperty Name="SportsSeasonDescription" ColumnName="SportsSeasonDescription" />
+          <ScalarProperty Name="MaturityYearID" ColumnName="MaturityYearID" />
+          <ScalarProperty Name="SportsSeasonID" ColumnName="SportsSeasonID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EndOfServices">
+      <EntityTypeMapping TypeName="HCMModel.EndOfServices">
+        <MappingFragment StoreEntitySet="EndOfServices">
+          <ScalarProperty Name="isProcessed" ColumnName="isProcessed" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="EndOfServiceReasonID" ColumnName="EndOfServiceReasonID" />
+          <ScalarProperty Name="EndOfServiceDecisionDate" ColumnName="EndOfServiceDecisionDate" />
+          <ScalarProperty Name="EndOfServiceDecisionNo" ColumnName="EndOfServiceDecisionNo" />
+          <ScalarProperty Name="EndOfServiceDate" ColumnName="EndOfServiceDate" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="EndOfServiceID" ColumnName="EndOfServiceID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EndOfServicesCases">
+      <EntityTypeMapping TypeName="HCMModel.EndOfServicesCases">
+        <MappingFragment StoreEntitySet="EndOfServicesCases">
+          <ScalarProperty Name="EndOfServiceCase" ColumnName="EndOfServiceCase" />
+          <ScalarProperty Name="EndOfServiceCaseID" ColumnName="EndOfServiceCaseID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EndOfServicesReasons">
+      <EntityTypeMapping TypeName="HCMModel.EndOfServicesReasons">
+        <MappingFragment StoreEntitySet="EndOfServicesReasons">
+          <ScalarProperty Name="EndOfServiceReason" ColumnName="EndOfServiceReason" />
+          <ScalarProperty Name="EndOfServiceCaseID" ColumnName="EndOfServiceCaseID" />
+          <ScalarProperty Name="EndOfServiceReasonID" ColumnName="EndOfServiceReasonID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Periods">
+      <EntityTypeMapping TypeName="HCMModel.Periods">
+        <MappingFragment StoreEntitySet="Periods">
+          <ScalarProperty Name="PeriodName" ColumnName="PeriodName" />
+          <ScalarProperty Name="PeriodID" ColumnName="PeriodID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsJobsCategories">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsJobsCategories">
+        <MappingFragment StoreEntitySet="PromotionsJobsCategories">
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="AssignedJobCategoryID" ColumnName="AssignedJobCategoryID" />
+          <ScalarProperty Name="JobCategoryID" ColumnName="JobCategoryID" />
+          <ScalarProperty Name="PromotionPeriodID" ColumnName="PromotionPeriodID" />
+          <ScalarProperty Name="PromotionJobCategoryID" ColumnName="PromotionJobCategoryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeesQualifications">
+      <EntityTypeMapping TypeName="HCMModel.EmployeesQualifications">
+        <MappingFragment StoreEntitySet="EmployeesQualifications">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="QualificationTypeID" ColumnName="QualificationTypeID" />
+          <ScalarProperty Name="Percentage" ColumnName="Percentage" />
+          <ScalarProperty Name="AttachFile" ColumnName="AttachFile" />
+          <ScalarProperty Name="GraduationYear" ColumnName="GraduationYear" />
+          <ScalarProperty Name="GraduationDate" ColumnName="GraduationDate" />
+          <ScalarProperty Name="StudyPlace" ColumnName="StudyPlace" />
+          <ScalarProperty Name="GPA" ColumnName="GPA" />
+          <ScalarProperty Name="FullGPA" ColumnName="FullGPA" />
+          <ScalarProperty Name="Department" ColumnName="Department" />
+          <ScalarProperty Name="UniSchName" ColumnName="UniSchName" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="ExactSpecializationID" ColumnName="ExactSpecializationID" />
+          <ScalarProperty Name="GeneralSpecializationID" ColumnName="GeneralSpecializationID" />
+          <ScalarProperty Name="QualificationID" ColumnName="QualificationID" />
+          <ScalarProperty Name="QualificationDegreeID" ColumnName="QualificationDegreeID" />
+          <ScalarProperty Name="EmployeeQualificationID" ColumnName="EmployeeQualificationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsRecords">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsRecords">
+        <MappingFragment StoreEntitySet="PromotionsRecords">
+          <ScalarProperty Name="PromotionDate" ColumnName="PromotionDate" />
+          <ScalarProperty Name="PreferenceBy" ColumnName="PreferenceBy" />
+          <ScalarProperty Name="PreferenceTime" ColumnName="PreferenceTime" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+          <ScalarProperty Name="ClosingBy" ColumnName="ClosingBy" />
+          <ScalarProperty Name="ClosingTime" ColumnName="ClosingTime" />
+          <ScalarProperty Name="InstallationBy" ColumnName="InstallationBy" />
+          <ScalarProperty Name="InstallationTime" ColumnName="InstallationTime" />
+          <ScalarProperty Name="OpeningBy" ColumnName="OpeningBy" />
+          <ScalarProperty Name="OpeningTime" ColumnName="OpeningTime" />
+          <ScalarProperty Name="PromotionRecordStatusID" ColumnName="PromotionRecordStatusID" />
+          <ScalarProperty Name="PromotionPeriodID" ColumnName="PromotionPeriodID" />
+          <ScalarProperty Name="JobCategoryID" ColumnName="JobCategoryID" />
+          <ScalarProperty Name="RankID" ColumnName="RankID" />
+          <ScalarProperty Name="PromotionRecordDate" ColumnName="PromotionRecordDate" />
+          <ScalarProperty Name="PromotionRecordNo" ColumnName="PromotionRecordNo" />
+          <ScalarProperty Name="PromotionRecordID" ColumnName="PromotionRecordID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsRecordsStatus">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsRecordsStatus">
+        <MappingFragment StoreEntitySet="PromotionsRecordsStatus">
+          <ScalarProperty Name="PromotionRecordStatusName" ColumnName="PromotionRecordStatusName" />
+          <ScalarProperty Name="PromotionRecordStatusID" ColumnName="PromotionRecordStatusID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsCandidatesAddedWays">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsCandidatesAddedWays">
+        <MappingFragment StoreEntitySet="PromotionsCandidatesAddedWays">
+          <ScalarProperty Name="PromotionCandidateAddedWayName" ColumnName="PromotionCandidateAddedWayName" />
+          <ScalarProperty Name="PromotionCandidateAddedWayID" ColumnName="PromotionCandidateAddedWayID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsRecordsJobsVacancies">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsRecordsJobsVacancies">
+        <MappingFragment StoreEntitySet="PromotionsRecordsJobsVacancies">
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="PromotionRecordID" ColumnName="PromotionRecordID" />
+          <ScalarProperty Name="OrganizationJobID" ColumnName="OrganizationJobID" />
+          <ScalarProperty Name="PromotionRecordJobVacancyID" ColumnName="PromotionRecordJobVacancyID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsRecordsQualificationsKinds">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsRecordsQualificationsKinds">
+        <MappingFragment StoreEntitySet="PromotionsRecordsQualificationsKinds">
+          <ScalarProperty Name="PromotionRecordQualificationKindName" ColumnName="PromotionRecordQualificationKindName" />
+          <ScalarProperty Name="PromotionRecordQualificationKindID" ColumnName="PromotionRecordQualificationKindID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeesExperiences">
+      <EntityTypeMapping TypeName="HCMModel.EmployeesExperiences">
+        <MappingFragment StoreEntitySet="EmployeesExperiences">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="TotalDays" ColumnName="TotalDays" />
+          <ScalarProperty Name="TotalMonths" ColumnName="TotalMonths" />
+          <ScalarProperty Name="TotalYears" ColumnName="TotalYears" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="EmployeeExperienceID" ColumnName="EmployeeExperienceID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="JobsCategoriesQualifications">
+      <EntityTypeMapping TypeName="HCMModel.JobsCategoriesQualifications">
+        <MappingFragment StoreEntitySet="JobsCategoriesQualifications">
+          <ScalarProperty Name="PromotionPeriodID" ColumnName="PromotionPeriodID" />
+          <ScalarProperty Name="IsMinQualification" ColumnName="IsMinQualification" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="GeneralSpecializationID" ColumnName="GeneralSpecializationID" />
+          <ScalarProperty Name="QualificationID" ColumnName="QualificationID" />
+          <ScalarProperty Name="QualificationDegreeID" ColumnName="QualificationDegreeID" />
+          <ScalarProperty Name="JobCategoryID" ColumnName="JobCategoryID" />
+          <ScalarProperty Name="JobCategoryQualificationID" ColumnName="JobCategoryQualificationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeesEvaluations">
+      <EntityTypeMapping TypeName="HCMModel.EmployeesEvaluations">
+        <MappingFragment StoreEntitySet="EmployeesEvaluations">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="EvaluationDegree" ColumnName="EvaluationDegree" />
+          <ScalarProperty Name="EvaluationPointID" ColumnName="EvaluationPointID" />
+          <ScalarProperty Name="MaturityYearID" ColumnName="MaturityYearID" />
+          <ScalarProperty Name="EmployeeEvaluationID" ColumnName="EmployeeEvaluationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EvaluationPoints">
+      <EntityTypeMapping TypeName="HCMModel.EvaluationPoints">
+        <MappingFragment StoreEntitySet="EvaluationPoints">
+          <ScalarProperty Name="IsExcludedFromPromotion" ColumnName="IsExcludedFromPromotion" />
+          <ScalarProperty Name="EvaluationPoint" ColumnName="EvaluationPoint" />
+          <ScalarProperty Name="Evaluation" ColumnName="Evaluation" />
+          <ScalarProperty Name="EvaluationPointID" ColumnName="EvaluationPointID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ExactSpecializations">
+      <EntityTypeMapping TypeName="HCMModel.ExactSpecializations">
+        <MappingFragment StoreEntitySet="ExactSpecializations">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="ExactSpecializationName" ColumnName="ExactSpecializationName" />
+          <ScalarProperty Name="GeneralSpecializationID" ColumnName="GeneralSpecializationID" />
+          <ScalarProperty Name="ExactSpecializationID" ColumnName="ExactSpecializationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EndOfServicesVacations">
+      <EntityTypeMapping TypeName="HCMModel.EndOfServicesVacations">
+        <MappingFragment StoreEntitySet="EndOfServicesVacations">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="VacationEndDate" ColumnName="VacationEndDate" />
+          <ScalarProperty Name="VacationStartDate" ColumnName="VacationStartDate" />
+          <ScalarProperty Name="VacationTypeID" ColumnName="VacationTypeID" />
+          <ScalarProperty Name="EndOfServiceID" ColumnName="EndOfServiceID" />
+          <ScalarProperty Name="EndOfServiceVacationID" ColumnName="EndOfServiceVacationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="GeneralSpecializations">
+      <EntityTypeMapping TypeName="HCMModel.GeneralSpecializations">
+        <MappingFragment StoreEntitySet="GeneralSpecializations">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IndirectPoints" ColumnName="IndirectPoints" />
+          <ScalarProperty Name="DirectPoints" ColumnName="DirectPoints" />
+          <ScalarProperty Name="GeneralSpecializationName" ColumnName="GeneralSpecializationName" />
+          <ScalarProperty Name="QualificationID" ColumnName="QualificationID" />
+          <ScalarProperty Name="GeneralSpecializationID" ColumnName="GeneralSpecializationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsRecordsQualificationsPoints">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsRecordsQualificationsPoints">
+        <MappingFragment StoreEntitySet="PromotionsRecordsQualificationsPoints">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="Points" ColumnName="Points" />
+          <ScalarProperty Name="PromotionRecordQualificationKindID" ColumnName="PromotionRecordQualificationKindID" />
+          <ScalarProperty Name="GeneralSpecializationID" ColumnName="GeneralSpecializationID" />
+          <ScalarProperty Name="QualificationID" ColumnName="QualificationID" />
+          <ScalarProperty Name="QualificationDegreeID" ColumnName="QualificationDegreeID" />
+          <ScalarProperty Name="PromotionRecordID" ColumnName="PromotionRecordID" />
+          <ScalarProperty Name="PromotionRecordQualificationPointID" ColumnName="PromotionRecordQualificationPointID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Qualifications">
+      <EntityTypeMapping TypeName="HCMModel.Qualifications">
+        <MappingFragment StoreEntitySet="Qualifications">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IndirectPoints" ColumnName="IndirectPoints" />
+          <ScalarProperty Name="DirectPoints" ColumnName="DirectPoints" />
+          <ScalarProperty Name="QualificationName" ColumnName="QualificationName" />
+          <ScalarProperty Name="QualificationDegreeID" ColumnName="QualificationDegreeID" />
+          <ScalarProperty Name="QualificationID" ColumnName="QualificationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="QualificationsDegrees">
+      <EntityTypeMapping TypeName="HCMModel.QualificationsDegrees">
+        <MappingFragment StoreEntitySet="QualificationsDegrees">
+          <ScalarProperty Name="Weight" ColumnName="Weight" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IndirectPoints" ColumnName="IndirectPoints" />
+          <ScalarProperty Name="DirectPoints" ColumnName="DirectPoints" />
+          <ScalarProperty Name="QualificationDegreeName" ColumnName="QualificationDegreeName" />
+          <ScalarProperty Name="QualificationDegreeID" ColumnName="QualificationDegreeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsDecisions">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsDecisions">
+        <MappingFragment StoreEntitySet="PromotionsDecisions">
+          <ScalarProperty Name="PromotionDecisionName" ColumnName="PromotionDecisionName" />
+          <ScalarProperty Name="PromotionDecisionID" ColumnName="PromotionDecisionID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsRecordsEmployees">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsRecordsEmployees">
+        <MappingFragment StoreEntitySet="PromotionsRecordsEmployees">
+          <ScalarProperty Name="PreviousJobJoinDate" ColumnName="PreviousJobJoinDate" />
+          <ScalarProperty Name="CurrentJobJoinDate" ColumnName="CurrentJobJoinDate" />
+          <ScalarProperty Name="ByExamResult" ColumnName="ByExamResult" />
+          <ScalarProperty Name="ActualTaskPerformancePoints" ColumnName="ActualTaskPerformancePoints" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+          <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
+          <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+          <ScalarProperty Name="PromotionDecisionID" ColumnName="PromotionDecisionID" />
+          <ScalarProperty Name="RemovingBy" ColumnName="RemovingBy" />
+          <ScalarProperty Name="RemovingReason" ColumnName="RemovingReason" />
+          <ScalarProperty Name="IsRemovedAfterIncluding" ColumnName="IsRemovedAfterIncluding" />
+          <ScalarProperty Name="IsDeserveExtraBonus" ColumnName="IsDeserveExtraBonus" />
+          <ScalarProperty Name="ManualAddedReason" ColumnName="ManualAddedReason" />
+          <ScalarProperty Name="PromotionCandidateAddedWayID" ColumnName="PromotionCandidateAddedWayID" />
+          <ScalarProperty Name="IsIncluded" ColumnName="IsIncluded" />
+          <ScalarProperty Name="EvaluationPoints" ColumnName="EvaluationPoints" />
+          <ScalarProperty Name="SeniorityPoints" ColumnName="SeniorityPoints" />
+          <ScalarProperty Name="EducationPoints" ColumnName="EducationPoints" />
+          <ScalarProperty Name="PriorServiceDaysCount" ColumnName="PriorServiceDaysCount" />
+          <ScalarProperty Name="OnGoingServiceDaysCount" ColumnName="OnGoingServiceDaysCount" />
+          <ScalarProperty Name="LastGeneralSpecializationID" ColumnName="LastGeneralSpecializationID" />
+          <ScalarProperty Name="LastQualificationID" ColumnName="LastQualificationID" />
+          <ScalarProperty Name="LastQualificationDegreeID" ColumnName="LastQualificationDegreeID" />
+          <ScalarProperty Name="PreviousJobDaysCount" ColumnName="PreviousJobDaysCount" />
+          <ScalarProperty Name="PreviousEmployeeCareerHistoryID" ColumnName="PreviousEmployeeCareerHistoryID" />
+          <ScalarProperty Name="CurrentJobDaysCount" ColumnName="CurrentJobDaysCount" />
+          <ScalarProperty Name="CurrentEmployeeCareerHistoryID" ColumnName="CurrentEmployeeCareerHistoryID" />
+          <ScalarProperty Name="NewEmployeeCareerHistoryID" ColumnName="NewEmployeeCareerHistoryID" />
+          <ScalarProperty Name="PromotionRecordJobVacancyID" ColumnName="PromotionRecordJobVacancyID" />
+          <ScalarProperty Name="PromotionRecordID" ColumnName="PromotionRecordID" />
+          <ScalarProperty Name="PromotionRecordEmployeeID" ColumnName="PromotionRecordEmployeeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsPeriods">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsPeriods">
+        <MappingFragment StoreEntitySet="PromotionsPeriods">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="PromotionEndDate" ColumnName="PromotionEndDate" />
+          <ScalarProperty Name="PromotionStartDate" ColumnName="PromotionStartDate" />
+          <ScalarProperty Name="YearID" ColumnName="YearID" />
+          <ScalarProperty Name="PeriodID" ColumnName="PeriodID" />
+          <ScalarProperty Name="PromotionPeriodID" ColumnName="PromotionPeriodID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SenioritysPointsDeclarations">
+      <EntityTypeMapping TypeName="HCMModel.SenioritysPointsDeclarations">
+        <MappingFragment StoreEntitySet="SenioritysPointsDeclarations">
+          <ScalarProperty Name="Points" ColumnName="Points" />
+          <ScalarProperty Name="Months" ColumnName="Months" />
+          <ScalarProperty Name="SeniorityPointDeclarationID" ColumnName="SeniorityPointDeclarationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="spGetDeservedEmployeesToBeIncludedPromotion" FunctionName="HCMModel.Store.spGetDeservedEmployeesToBeIncludedPromotion">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="HCMModel.spGetDeservedEmployeesToBeIncludedPromotion_Result">
+          <ScalarProperty Name="EmployeeCodeNo" ColumnName="EmployeeCodeNo" />
+          <ScalarProperty Name="EmployeeIDNo" ColumnName="EmployeeIDNo" />
+          <ScalarProperty Name="EmployeeNameAr" ColumnName="EmployeeNameAr" />
+          <ScalarProperty Name="OrganizationCode" ColumnName="OrganizationCode" />
+          <ScalarProperty Name="RankName" ColumnName="RankName" />
+          <ScalarProperty Name="JobName" ColumnName="JobName" />
+          <ScalarProperty Name="JobNo" ColumnName="JobNo" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="JoinDate" ColumnName="JoinDate" />
+          <ScalarProperty Name="JobCode" ColumnName="JobCode" />
+          <ScalarProperty Name="RankID" ColumnName="RankID" />
+          <ScalarProperty Name="JobCategoryID" ColumnName="JobCategoryID" />
+          <ScalarProperty Name="JobCategoryName" ColumnName="JobCategoryName" />
+          <ScalarProperty Name="HiringDate" ColumnName="HiringDate" />
+          <ScalarProperty Name="OrganizationName" ColumnName="OrganizationName" />
+          <ScalarProperty Name="PromotionCandidateAddedWayID" ColumnName="PromotionCandidateAddedWayID" />
+          <ScalarProperty Name="PromotionCandidateAddedWayName" ColumnName="PromotionCandidateAddedWayName" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <EntitySetMapping Name="OrganizationsJobsStatus">
+      <EntityTypeMapping TypeName="HCMModel.OrganizationsJobsStatus">
+        <MappingFragment StoreEntitySet="OrganizationsJobsStatus">
+          <ScalarProperty Name="OrganizationJobStatusName" ColumnName="OrganizationJobStatusName" />
+          <ScalarProperty Name="OrganizationJobStatusID" ColumnName="OrganizationJobStatusID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsRecordsEmployeesEducationsDetails">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsRecordsEmployeesEducationsDetails">
+        <MappingFragment StoreEntitySet="PromotionsRecordsEmployeesEducationsDetails">
+          <ScalarProperty Name="IsIncluded" ColumnName="IsIncluded" />
+          <ScalarProperty Name="Points" ColumnName="Points" />
+          <ScalarProperty Name="Weight" ColumnName="Weight" />
+          <ScalarProperty Name="GeneralSpecializationID" ColumnName="GeneralSpecializationID" />
+          <ScalarProperty Name="QualificationID" ColumnName="QualificationID" />
+          <ScalarProperty Name="QualificationDegreeID" ColumnName="QualificationDegreeID" />
+          <ScalarProperty Name="PromotionRecordEmployeeID" ColumnName="PromotionRecordEmployeeID" />
+          <ScalarProperty Name="PromotionRecordEmployeeEducationDetailID" ColumnName="PromotionRecordEmployeeEducationDetailID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsRecordsEmployeesEvaluationsDetails">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsRecordsEmployeesEvaluationsDetails">
+        <MappingFragment StoreEntitySet="PromotionsRecordsEmployeesEvaluationsDetails">
+          <ScalarProperty Name="Points" ColumnName="Points" />
+          <ScalarProperty Name="Evaluation" ColumnName="Evaluation" />
+          <ScalarProperty Name="EvaluationYear" ColumnName="EvaluationYear" />
+          <ScalarProperty Name="PromotionRecordEmployeeID" ColumnName="PromotionRecordEmployeeID" />
+          <ScalarProperty Name="PromotionRecordEmployeeEvaluationDetailID" ColumnName="PromotionRecordEmployeeEvaluationDetailID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsRecordsEmployeesSeniorityDetails">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsRecordsEmployeesSeniorityDetails">
+        <MappingFragment StoreEntitySet="PromotionsRecordsEmployeesSeniorityDetails">
+          <ScalarProperty Name="Points" ColumnName="Points" />
+          <ScalarProperty Name="Months" ColumnName="Months" />
+          <ScalarProperty Name="PromotionRecordEmployeeID" ColumnName="PromotionRecordEmployeeID" />
+          <ScalarProperty Name="PromotionRecordEmployeeSeniorityDetailID" ColumnName="PromotionRecordEmployeeSeniorityDetailID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsRecordsActionsTypes">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsRecordsActionsTypes">
+        <MappingFragment StoreEntitySet="PromotionsRecordsActionsTypes">
+          <ScalarProperty Name="PromotionActionTypeName" ColumnName="PromotionActionTypeName" />
+          <ScalarProperty Name="PromotionActionTypeID" ColumnName="PromotionActionTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionsRecordsLogs">
+      <EntityTypeMapping TypeName="HCMModel.PromotionsRecordsLogs">
+        <MappingFragment StoreEntitySet="PromotionsRecordsLogs">
+          <ScalarProperty Name="ActionDate" ColumnName="ActionDate" />
+          <ScalarProperty Name="ActionBy" ColumnName="ActionBy" />
+          <ScalarProperty Name="PromotionRecordActionTypeID" ColumnName="PromotionRecordActionTypeID" />
+          <ScalarProperty Name="ActionDescription" ColumnName="ActionDescription" />
+          <ScalarProperty Name="PromotionRecordNo" ColumnName="PromotionRecordNo" />
+          <ScalarProperty Name="PromotionRecordID" ColumnName="PromotionRecordID" />
+          <ScalarProperty Name="PromotionRecordLogID" ColumnName="PromotionRecordLogID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeesEvaluationsDetails">
+      <EntityTypeMapping TypeName="HCMModel.EmployeesEvaluationsDetails">
+        <MappingFragment StoreEntitySet="EmployeesEvaluationsDetails">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="EmployeeEvaluationID" ColumnName="EmployeeEvaluationID" />
+          <ScalarProperty Name="ViolationsEvaluation" ColumnName="ViolationsEvaluation" />
+          <ScalarProperty Name="TimeAttendanceEvaluation" ColumnName="TimeAttendanceEvaluation" />
+          <ScalarProperty Name="DirectManagerEvaluation" ColumnName="DirectManagerEvaluation" />
+          <ScalarProperty Name="EvaluationQuarterID" ColumnName="EvaluationQuarterID" />
+          <ScalarProperty Name="EmployeeEvaluationDetailID" ColumnName="EmployeeEvaluationDetailID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EvaluationsQuarters">
+      <EntityTypeMapping TypeName="HCMModel.EvaluationsQuarters">
+        <MappingFragment StoreEntitySet="EvaluationsQuarters">
+          <ScalarProperty Name="EvaluationQuarterName" ColumnName="EvaluationQuarterName" />
+          <ScalarProperty Name="EvaluationQuarterID" ColumnName="EvaluationQuarterID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DelegationsTypes">
+      <EntityTypeMapping TypeName="HCMModel.DelegationsTypes">
+        <MappingFragment StoreEntitySet="DelegationsTypes">
+          <ScalarProperty Name="DelegationTypeName" ColumnName="DelegationTypeName" />
+          <ScalarProperty Name="DelegationTypeID" ColumnName="DelegationTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="JobsKinds">
+      <EntityTypeMapping TypeName="HCMModel.JobsKinds">
+        <MappingFragment StoreEntitySet="JobsKinds">
+          <ScalarProperty Name="JobKindName" ColumnName="JobKindName" />
+          <ScalarProperty Name="JobKindID" ColumnName="JobKindID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="NormalVacationsTypes">
+      <EntityTypeMapping TypeName="HCMModel.NormalVacationsTypes">
+        <MappingFragment StoreEntitySet="NormalVacationsTypes">
+          <ScalarProperty Name="NormalVacationTypeName" ColumnName="NormalVacationTypeName" />
+          <ScalarProperty Name="NormalVacationTypeID" ColumnName="NormalVacationTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="OrganizationsJobs">
+      <EntityTypeMapping TypeName="HCMModel.OrganizationsJobs">
+        <MappingFragment StoreEntitySet="OrganizationsJobs">
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="JobOperationDate" ColumnName="JobOperationDate" />
+          <ScalarProperty Name="JobOperationTypeID" ColumnName="JobOperationTypeID" />
+          <ScalarProperty Name="OrganizationJobParentID" ColumnName="OrganizationJobParentID" />
+          <ScalarProperty Name="OrganizationJobStatusID" ColumnName="OrganizationJobStatusID" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IsReserved" ColumnName="IsReserved" />
+          <ScalarProperty Name="IsVacant" ColumnName="IsVacant" />
+          <ScalarProperty Name="JobKindID" ColumnName="JobKindID" />
+          <ScalarProperty Name="RankID" ColumnName="RankID" />
+          <ScalarProperty Name="JobID" ColumnName="JobID" />
+          <ScalarProperty Name="OrganizationID" ColumnName="OrganizationID" />
+          <ScalarProperty Name="JobNo" ColumnName="JobNo" />
+          <ScalarProperty Name="OrganizationJobID" ColumnName="OrganizationJobID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="RanksCategoriesVacationsBalances">
+      <EntityTypeMapping TypeName="HCMModel.RanksCategoriesVacationsBalances">
+        <MappingFragment StoreEntitySet="RanksCategoriesVacationsBalances">
+          <ScalarProperty Name="VacationBalance" ColumnName="VacationBalance" />
+          <ScalarProperty Name="VacationTypeID" ColumnName="VacationTypeID" />
+          <ScalarProperty Name="RankCategoryID" ColumnName="RankCategoryID" />
+          <ScalarProperty Name="RankCategoryVacationBalanceID" ColumnName="RankCategoryVacationBalanceID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="StopWorks">
+      <EntityTypeMapping TypeName="HCMModel.StopWorks">
+        <MappingFragment StoreEntitySet="StopWorks">
+          <ScalarProperty Name="EndStopWorkDecisionDate" ColumnName="EndStopWorkDecisionDate" />
+          <ScalarProperty Name="EndStopWorkDecisionNumber" ColumnName="EndStopWorkDecisionNumber" />
+          <ScalarProperty Name="StartStopWorkDecisionDate" ColumnName="StartStopWorkDecisionDate" />
+          <ScalarProperty Name="StartStopWorkDecisionNumber" ColumnName="StartStopWorkDecisionNumber" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="Note" ColumnName="Note" />
+          <ScalarProperty Name="IsConvicted" ColumnName="IsConvicted" />
+          <ScalarProperty Name="StopPoint" ColumnName="StopPoint" />
+          <ScalarProperty Name="StopWorkEndDate" ColumnName="StopWorkEndDate" />
+          <ScalarProperty Name="StopWorkStartDate" ColumnName="StopWorkStartDate" />
+          <ScalarProperty Name="StopWorkTypeID" ColumnName="StopWorkTypeID" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="StopWorkID" ColumnName="StopWorkID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeesDegreesUpgrades">
+      <EntityTypeMapping TypeName="HCMModel.EmployeesDegreesUpgrades">
+        <MappingFragment StoreEntitySet="EmployeesDegreesUpgrades">
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="EmployeeDegreeUpgradeYear" ColumnName="EmployeeDegreeUpgradeYear" />
+          <ScalarProperty Name="EmployeeDegreeUpgradeID" ColumnName="EmployeeDegreeUpgradeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Teachers">
+      <EntityTypeMapping TypeName="HCMModel.Teachers">
+        <MappingFragment StoreEntitySet="Teachers">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="TeacherID" ColumnName="TeacherID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PromotionCardsPrinting">
+      <EntityTypeMapping TypeName="HCMModel.PromotionCardsPrinting">
+        <MappingFragment StoreEntitySet="PromotionCardsPrinting">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="PromotionPeriodID" ColumnName="PromotionPeriodID" />
+          <ScalarProperty Name="PromotionCardPrintingID" ColumnName="PromotionCardPrintingID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="InsteadDeportations">
+      <EntityTypeMapping TypeName="HCMModel.InsteadDeportations">
+        <MappingFragment StoreEntitySet="InsteadDeportations">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="Amount" ColumnName="Amount" />
+          <ScalarProperty Name="Note" ColumnName="Note" />
+          <ScalarProperty Name="DeportationDate" ColumnName="DeportationDate" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="InsteadDeportationID" ColumnName="InsteadDeportationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="AllowancesCalculationTypes">
+      <EntityTypeMapping TypeName="HCMModel.AllowancesCalculationTypes">
+        <MappingFragment StoreEntitySet="AllowancesCalculationTypes">
+          <ScalarProperty Name="AllowanceCalculationTypeName" ColumnName="AllowanceCalculationTypeName" />
+          <ScalarProperty Name="AllowanceCalculationTypeID" ColumnName="AllowanceCalculationTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="vwQualificationsBasedOnAssignings">
+      <EntityTypeMapping TypeName="HCMModel.vwQualificationsBasedOnAssignings">
+        <MappingFragment StoreEntitySet="vwQualificationsBasedOnAssignings">
+          <ScalarProperty Name="GeneralSpecializationID" ColumnName="GeneralSpecializationID" />
+          <ScalarProperty Name="RankID" ColumnName="RankID" />
+          <ScalarProperty Name="RankCategoryID" ColumnName="RankCategoryID" />
+          <ScalarProperty Name="QualificationDegreeID" ColumnName="QualificationDegreeID" />
+          <ScalarProperty Name="QualificationID" ColumnName="QualificationID" />
+          <ScalarProperty Name="OrganizationName" ColumnName="OrganizationName" />
+          <ScalarProperty Name="OrganizationID" ColumnName="OrganizationID" />
+          <ScalarProperty Name="JobName" ColumnName="JobName" />
+          <ScalarProperty Name="RankName" ColumnName="RankName" />
+          <ScalarProperty Name="GeneralSpecializationName" ColumnName="GeneralSpecializationName" />
+          <ScalarProperty Name="QualificationName" ColumnName="QualificationName" />
+          <ScalarProperty Name="QualificationDegreeName" ColumnName="QualificationDegreeName" />
+          <ScalarProperty Name="EmployeeNameAr" ColumnName="EmployeeNameAr" />
+          <ScalarProperty Name="EmployeeIDNo" ColumnName="EmployeeIDNo" />
+          <ScalarProperty Name="EmployeeCodeNo" ColumnName="EmployeeCodeNo" />
+          <ScalarProperty Name="RankCategoryName" ColumnName="RankCategoryName" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="vwActualEmployeesBasedOnAssignings">
+      <EntityTypeMapping TypeName="HCMModel.vwActualEmployeesBasedOnAssignings">
+        <MappingFragment StoreEntitySet="vwActualEmployeesBasedOnAssignings">
+          <ScalarProperty Name="Sorting" ColumnName="Sorting" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="IsFinished" ColumnName="IsFinished" />
+          <ScalarProperty Name="AssigningEndDate" ColumnName="AssigningEndDate" />
+          <ScalarProperty Name="AssigningStartDate" ColumnName="AssigningStartDate" />
+          <ScalarProperty Name="Expr1" ColumnName="Expr1" />
+          <ScalarProperty Name="RankID" ColumnName="RankID" />
+          <ScalarProperty Name="RankCategoryName" ColumnName="RankCategoryName" />
+          <ScalarProperty Name="RankCategoryID" ColumnName="RankCategoryID" />
+          <ScalarProperty Name="OrganizationName" ColumnName="OrganizationName" />
+          <ScalarProperty Name="OrganizationID" ColumnName="OrganizationID" />
+          <ScalarProperty Name="JobName" ColumnName="JobName" />
+          <ScalarProperty Name="RankName" ColumnName="RankName" />
+          <ScalarProperty Name="EmployeeNameAr" ColumnName="EmployeeNameAr" />
+          <ScalarProperty Name="EmployeeIDNo" ColumnName="EmployeeIDNo" />
+          <ScalarProperty Name="EmployeeCodeNo" ColumnName="EmployeeCodeNo" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ContractorsBasicSalaries">
+      <EntityTypeMapping TypeName="HCMModel.ContractorsBasicSalaries">
+        <MappingFragment StoreEntitySet="ContractorsBasicSalaries">
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="TransfareAllowance" ColumnName="TransfareAllowance" />
+          <ScalarProperty Name="BasicSalary" ColumnName="BasicSalary" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="ContractorBasicSalaryID" ColumnName="ContractorBasicSalaryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeeExperiencesWithDetails">
+      <EntityTypeMapping TypeName="HCMModel.EmployeeExperiencesWithDetails">
+        <MappingFragment StoreEntitySet="EmployeeExperiencesWithDetails">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="JobName" ColumnName="JobName" />
+          <ScalarProperty Name="SectorName" ColumnName="SectorName" />
+          <ScalarProperty Name="SectorTypeID" ColumnName="SectorTypeID" />
+          <ScalarProperty Name="ToDate" ColumnName="ToDate" />
+          <ScalarProperty Name="FromDate" ColumnName="FromDate" />
+          <ScalarProperty Name="EmployeeExperienceWithDetailID" ColumnName="EmployeeExperienceWithDetailID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SectorsTypes">
+      <EntityTypeMapping TypeName="HCMModel.SectorsTypes">
+        <MappingFragment StoreEntitySet="SectorsTypes">
+          <ScalarProperty Name="SectorTypeName" ColumnName="SectorTypeName" />
+          <ScalarProperty Name="SectorTypeID" ColumnName="SectorTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="TempEmployeesBasicSalaries">
+      <EntityTypeMapping TypeName="HCMModel.TempEmployeesBasicSalaries">
+        <MappingFragment StoreEntitySet="TempEmployeesBasicSalaries">
+          <ScalarProperty Name="CreateOn" ColumnName="CreateOn" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="NetSalary" ColumnName="NetSalary" />
+          <ScalarProperty Name="BasicSalary" ColumnName="BasicSalary" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="ID" ColumnName="ID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeesNormalVacationsBalances">
+      <EntityTypeMapping TypeName="HCMModel.EmployeesNormalVacationsBalances">
+        <MappingFragment StoreEntitySet="EmployeesNormalVacationsBalances">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="TotalRemainingBalance" ColumnName="TotalRemainingBalance" />
+          <ScalarProperty Name="TotalConsumedBalance" ColumnName="TotalConsumedBalance" />
+          <ScalarProperty Name="TotalDeservedBalance" ColumnName="TotalDeservedBalance" />
+          <ScalarProperty Name="TotalAvailableVacationBalance" ColumnName="TotalAvailableVacationBalance" />
+          <ScalarProperty Name="InAdvConsumed" ColumnName="InAdvConsumed" />
+          <ScalarProperty Name="InAdvanceBalance" ColumnName="InAdvanceBalance" />
+          <ScalarProperty Name="RemainingCurrentBalance" ColumnName="RemainingCurrentBalance" />
+          <ScalarProperty Name="ExpiredCurrentBalance" ColumnName="ExpiredCurrentBalance" />
+          <ScalarProperty Name="ConsumedCurrentBalance" ColumnName="ConsumedCurrentBalance" />
+          <ScalarProperty Name="DeservedCurrentBalance" ColumnName="DeservedCurrentBalance" />
+          <ScalarProperty Name="ConsumedOldBalance" ColumnName="ConsumedOldBalance" />
+          <ScalarProperty Name="DeservedOldBalance" ColumnName="DeservedOldBalance" />
+          <ScalarProperty Name="RemainingOldBalance" ColumnName="RemainingOldBalance" />
+          <ScalarProperty Name="EmployeeCodeID" ColumnName="EmployeeCodeID" />
+          <ScalarProperty Name="EmployeeNormalVacationBalanceID" ColumnName="EmployeeNormalVacationBalanceID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmployeesUnderPrivateCompanies">
+      <EntityTypeMapping TypeName="HCMModel.EmployeesUnderPrivateCompanies">
+        <MappingFragment StoreEntitySet="EmployeesUnderPrivateCompanies">
+          <ScalarProperty Name="BirthDate" ColumnName="BirthDate" />
+          <ScalarProperty Name="Nationality" ColumnName="Nationality" />
+          <ScalarProperty Name="RemainingNormalVacationBalance" ColumnName="RemainingNormalVacationBalance" />
+          <ScalarProperty Name="HiringDate" ColumnName="HiringDate" />
+          <ScalarProperty Name="ExactSpecialization" ColumnName="ExactSpecialization" />
+          <ScalarProperty Name="QualificationName" ColumnName="QualificationName" />
+          <ScalarProperty Name="QualificationDegreeName" ColumnName="QualificationDegreeName" />
+          <ScalarProperty Name="TotalSalary" ColumnName="TotalSalary" />
+          <ScalarProperty Name="BasicSalary" ColumnName="BasicSalary" />
+          <ScalarProperty Name="Department" ColumnName="Department" />
+          <ScalarProperty Name="JobName" ColumnName="JobName" />
+          <ScalarProperty Name="RankName" ColumnName="RankName" />
+          <ScalarProperty Name="OrganizationName" ColumnName="OrganizationName" />
+          <ScalarProperty Name="GenderName" ColumnName="GenderName" />
+          <ScalarProperty Name="NameAr" ColumnName="NameAr" />
+          <ScalarProperty Name="EmployeeIDNo" ColumnName="EmployeeIDNo" />
+          <ScalarProperty Name="EmployeeCodeNo" ColumnName="EmployeeCodeNo" />
+          <ScalarProperty Name="EmployeeUnderPrivateCompanyID" ColumnName="EmployeeUnderPrivateCompanyID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EVacationsRequests">
+      <EntityTypeMapping TypeName="HCMModel.EVacationsRequests">
+        <MappingFragment StoreEntitySet="EVacationsRequests">
+          <ScalarProperty Name="CancellationReasonByHR" ColumnName="CancellationReasonByHR" />
+          <ScalarProperty Name="ActualJobID" ColumnName="ActualJobID" />
+          <ScalarProperty Name="ActualOrganizationID" ColumnName="ActualOrganizationID" />
+          <ScalarProperty Name="EVacationRequestStatusID" ColumnName="EVacationRequestStatusID" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="ApproverNotes" ColumnName="ApproverNotes" />
+          <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+          <ScalarProperty Name="ApprovalDateTime" ColumnName="ApprovalDateTime" />
+          <ScalarProperty Name="CreatorNotes" ColumnName="CreatorNotes" />
+          <ScalarProperty Name="OldBalanceConsumed" ColumnName="OldBalanceConsumed" />
+          <ScalarProperty Name="VacationTypeID" ColumnName="VacationTypeID" />
+          <ScalarProperty Name="VacationEndDate" ColumnName="VacationEndDate" />
+          <ScalarProperty Name="VacationStartDate" ColumnName="VacationStartDate" />
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="EVacationRequestNo" ColumnName="EVacationRequestNo" />
+          <ScalarProperty Name="EVacationRequestID" ColumnName="EVacationRequestID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EVacationRequestsStatus">
+      <EntityTypeMapping TypeName="HCMModel.EVacationRequestsStatus">
+        <MappingFragment StoreEntitySet="EVacationRequestsStatus">
+          <ScalarProperty Name="EVacationRequestStatusName" ColumnName="EVacationRequestStatusName" />
+          <ScalarProperty Name="EVacationRequestStatusID" ColumnName="EVacationRequestStatusID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Lenders">
+      <EntityTypeMapping TypeName="HCMModel.Lenders">
+        <MappingFragment StoreEntitySet="Lenders">
+          <ScalarProperty Name="EmployeeCareerHistoryID" ColumnName="EmployeeCareerHistoryID" />
+          <ScalarProperty Name="LenderEndReason" ColumnName="LenderEndReason" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IsFinished" ColumnName="IsFinished" />
+          <ScalarProperty Name="LenderOrganization" ColumnName="LenderOrganization" />
+          <ScalarProperty Name="KSACityID" ColumnName="KSACityID" />
+          <ScalarProperty Name="LenderEndDate" ColumnName="LenderEndDate" />
+          <ScalarProperty Name="LenderStartDate" ColumnName="LenderStartDate" />
+          <ScalarProperty Name="LenderID" ColumnName="LenderID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EServicesAuthorizations">
+      <EntityTypeMapping TypeName="HCMModel.EServicesAuthorizations">
+        <MappingFragment StoreEntitySet="EServicesAuthorizations">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="AuthorizedPersonCodeID" ColumnName="AuthorizedPersonCodeID" />
+          <ScalarProperty Name="EServiceTypeID" ColumnName="EServiceTypeID" />
+          <ScalarProperty Name="OrganizationID" ColumnName="OrganizationID" />
+          <ScalarProperty Name="EServiceAuthorizationID" ColumnName="EServiceAuthorizationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EServicesTypes">
+      <EntityTypeMapping TypeName="HCMModel.EServicesTypes">
+        <MappingFragment StoreEntitySet="EServicesTypes">
+          <ScalarProperty Name="EServiceTypeName" ColumnName="EServiceTypeName" />
+          <ScalarProperty Name="EServiceTypeID" ColumnName="EServiceTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="GovernmentFundsDeactiveReasons">
+      <EntityTypeMapping TypeName="HCMModel.GovernmentFundsDeactiveReasons">
+        <MappingFragment StoreEntitySet="GovernmentFundsDeactiveReasons">
+          <ScalarProperty Name="GovernmentFundDeactiveReasonName" ColumnName="GovernmentFundDeactiveReasonName" />
+          <ScalarProperty Name="GovernmentFundDeactiveReasonID" ColumnName="GovernmentFundDeactiveReasonID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PassengerOrdersEscorts">
+      <EntityTypeMapping TypeName="HCMModel.PassengerOrdersEscorts">
+        <MappingFragment StoreEntitySet="PassengerOrdersEscorts">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="EscortRelativeRelation" ColumnName="EscortRelativeRelation" />
+          <ScalarProperty Name="EscortAge" ColumnName="EscortAge" />
+          <ScalarProperty Name="EscortIDNo" ColumnName="EscortIDNo" />
+          <ScalarProperty Name="EscortName" ColumnName="EscortName" />
+          <ScalarProperty Name="PassengerOrderID" ColumnName="PassengerOrderID" />
+          <ScalarProperty Name="PassengerOrderEscortID" ColumnName="PassengerOrderEscortID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EServicesProxies">
+      <EntityTypeMapping TypeName="HCMModel.EServicesProxies">
+        <MappingFragment StoreEntitySet="EServicesProxies">
+          <ScalarProperty Name="CancellationReason" ColumnName="CancellationReason" />
+          <ScalarProperty Name="Notes" ColumnName="Notes" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="EServiceProxyStatusID" ColumnName="EServiceProxyStatusID" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="ToEmployeeCodeID" ColumnName="ToEmployeeCodeID" />
+          <ScalarProperty Name="FromEmployeeCodeID" ColumnName="FromEmployeeCodeID" />
+          <ScalarProperty Name="EServiceTypeID" ColumnName="EServiceTypeID" />
+          <ScalarProperty Name="EServiceProxyID" ColumnName="EServiceProxyID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EServicesProxiesStatus">
+      <EntityTypeMapping TypeName="HCMModel.EServicesProxiesStatus">
+        <MappingFragment StoreEntitySet="EServicesProxiesStatus">
+          <ScalarProperty Name="EServiceProxyStatus" ColumnName="EServiceProxyStatus" />
+          <ScalarProperty Name="EServiceProxyStatusID" ColumnName="EServiceProxyStatusID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="JobsOperationsTypes">
+      <EntityTypeMapping TypeName="HCMModel.JobsOperationsTypes">
+        <MappingFragment StoreEntitySet="JobsOperationsTypes">
+          <ScalarProperty Name="JobOperationTypeName" ColumnName="JobOperationTypeName" />
+          <ScalarProperty Name="JobOperationTypeID" ColumnName="JobOperationTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="OrganizationsManagers">
+      <EntityTypeMapping TypeName="HCMModel.OrganizationsManagers">
+        <MappingFragment StoreEntitySet="OrganizationsManagers">
+          <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+          <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="ToDate" ColumnName="ToDate" />
+          <ScalarProperty Name="FromDate" ColumnName="FromDate" />
+          <ScalarProperty Name="ManagerCodeID" ColumnName="ManagerCodeID" />
+          <ScalarProperty Name="OrganizationID" ColumnName="OrganizationID" />
+          <ScalarProperty Name="OrganizationManagerID" ColumnName="OrganizationManagerID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

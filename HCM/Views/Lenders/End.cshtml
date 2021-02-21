@@ -1,0 +1,192 @@
+﻿@model HCM.Models.LendersViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+@using HCM.Classes.Extensions
+
+@{
+    // ViewBag.Title = Resources.Globalization.EndLendersText;
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        
+        $("#BtnSave").confirm({
+            animation: 'zoom',
+            content: '@Resources.Globalization.EndLenderConfirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () { $("#BtnSave").submit(); },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+    });
+     
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.EndLendersText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EndLendersDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                <a id="OpenBusinessConditions">
+                    @*<span class="glyphicon glyphicon-print" title="اضغط لمعرفة الشروط الخاصة لتعديل تكليف"></span>*@
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("End", "Lenders", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+
+            @Html.AntiForgeryToken()
+            <span class="control-label">@Resources.Globalization.LenderBasicInfoText</span>
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.LenderStartDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.LenderStartDate)
+                            @Html.HiddenFor(model => model.LenderID)
+                            @Html.HiddenFor(model => model.IsFinished)
+                            @Html.HiddenFor(model => model.EmployeeCareerHistoryID)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.LenderEndDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.TextBoxFor(model => model.LenderEndDate, new
+                                                                              {
+                                                                                  @class = "TxtHijriPicker form-control",
+                                                                                  @id = "txtLenderEndDate",
+                                                                                  @readonly = "readonly",
+                                                                                  @Value = Model.LenderEndDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                                                              })
+                            @Html.ValidationMessageFor(model => model.LenderEndDate, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.LenderOrganization, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.LenderOrganization)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.KSACity, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.KSACity.KSACityName)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.Employee.EmployeeCodeNo, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.Employee.EmployeeCodeNo)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.Employee.EmployeeNameAr, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.Employee.EmployeeNameAr)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.CreatedBy, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.CreatedBy)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.CreatedDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.CreatedDate)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.LenderEndReason, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.TextAreaFor(model => model.LenderEndReason, new { @class = "form-control", @id = "txtLenderEndReason" })
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" id="BtnSave" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                @*<input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />*@
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Lenders"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+
+@*@section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }*@
+
+
+
+

@@ -1,0 +1,77 @@
+﻿
+@{
+    ViewBag.Title = @Resources.Globalization.EmployeesInPlacedText;
+}
+
+<script>
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblEmployeesInPlaced").DataTable({
+            //"destroy":true,
+               dom: 'Bfrtip',
+            "ajax": {
+                "url": "/EmployeesPlacement/GetEmployeesInPlaced" ,
+                "type": "get",
+                "datatype": "json"
+            },
+             "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": false
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": false
+                }, 
+                {
+                    "data": "EmployeeMobileNo",
+                    "autowidth": false
+                },
+                {
+                    "data": "Rank",
+                    "autowidth": false,                  
+                },
+                {
+                    "data": "JobName",
+                    "autowidth": false
+                },
+                {
+                    "data": "FullOrganizationName",
+                    "autowidth": false
+                }
+            ]
+        });
+    });
+
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchEmployeesInPlacedDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblEmployeesInPlaced" class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                    <td>@Resources.Globalization.EmployeeMobileNoText</td>
+                    <td>@Resources.Globalization.RankNameText</td>
+                    <td>@Resources.Globalization.JobNameText</td>
+                    <td>@Resources.Globalization.OrganizationNameText</td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,73 @@
+﻿
+@{
+    ViewBag.Title = @Resources.Globalization.RanksTicketsClassesText;
+}
+
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+
+<script>
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblRanksTicketsClasses").DataTable({
+            //"destroy":true,
+            "ajax": {
+                "url": "/RanksTicketsClasses/GetRanksTicketsClasses",
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "Rank.RankName",
+                    "autowidth": true
+                },
+                {
+                    "data": "TicketClass.TicketClassName",
+                    "autowidth": true
+                },               
+                {
+                    "data": "RankTicketClassID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "RanksTicketsClasses")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" /></a>'
+                    }
+                },
+                {
+                    "data": "RankTicketClassID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "RanksTicketsClasses")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                    }
+                }, 
+            ]
+        });
+    });
+     
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchRankTicketClassesDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblRanksTicketsClasses" class="table table-responsive table-hover">
+            <thead>
+                <tr> 
+                    <td>@Resources.Globalization.RankNameText</td>
+                    <td>@Resources.Globalization.TicketClassText</td> 
+                    <td></td>
+                    <td></td> 
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

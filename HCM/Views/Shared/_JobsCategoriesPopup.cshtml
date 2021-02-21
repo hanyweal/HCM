@@ -1,0 +1,341 @@
+﻿@model HCM.Models.JobsCategoriesViewModel
+@using HCM.Classes.Enums;
+
+<script type="text/javascript">
+
+    var extentedFuncForJobsCategoriesPopup;
+    var extentedFuncForJobsCategoriesPopupReset;
+    var errorFunc;
+
+    $(document).ready(function () {
+        BindJobsCategories@(Model.PartialName)();
+        OpenJobsCategoriesPopup@(Model.PartialName)();
+
+        $("#OpenJobsCategoriesPopup@(Model.PartialName)").click(function () {
+            ShowModal("#divJobsCategoriesModal@(Model.PartialName)");
+        });
+
+    });
+
+    function OpenJobsCategoriesPopup@(Model.PartialName)() {
+        $("#OpenJobsCategoriesPopup@(Model.PartialName)").click(function () {
+            ShowModal("#divJobsCategoriesModal@(Model.PartialName)");
+        });
+    }
+
+    function openAssignedJobCategoriesPopup@(Model.PartialName)(JobCategoryID) {
+        BindAssignedJobsCategories@(Model.PartialName)(JobCategoryID);
+        ShowModal("#divAssignedJobCategoryModal@(Model.PartialName)");
+    }
+
+    function openQualificationsJobCategoriesPopup@(Model.PartialName)(JobCategoryID) {
+        BindQualificationsJobsCategories@(Model.PartialName)(JobCategoryID);
+        ShowModal("#divQualificationsJobCategoryModal@(Model.PartialName)");
+    }
+
+    function BindJobsCategories@(Model.PartialName)() {
+        var tblJobsCategories = $("#tblJobsCategories@(Model.PartialName)").DataTable({
+            "ajax": {
+                "url": "/JobsCategories/GetJobsCategories",
+                "type": "get",
+                "datatype": "json",
+                "data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+            "serverSide": true,
+            "columns": [
+                {
+                    "data": "JobGeneralGroupName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobGroupName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobCategoryName",
+                    "autowidth": true
+                },
+                //{
+                //    "data": "QualificationDegreeName",
+                //    "autowidth": true
+                //},
+                //{
+                //    "data": "QualificationName",
+                //    "autowidth": true
+                //},
+                //{
+                //    "data": "GeneralSpecializationName",
+                //    "autowidth": true
+                //},
+                  {
+                      "data": "JobCategoryID",
+                      "autowidth": true,
+                      "render": function (data, type, row) {
+                          return '<a onClick="openQualificationsJobCategoriesPopup@(Model.PartialName)(' + data + ')"><span class="glyphicon glyphicon-education" title="' + '@Resources.Globalization.ClickToShowJobCategoryQualificationsListTooltip' + '"/></a>'
+                      }
+                  },
+                {
+                    "data": "JobCategoryID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        return '<a onClick="openAssignedJobCategoriesPopup@(Model.PartialName)(' + data + ')"><span class=" glyphicon glyphicon-list" title="' + '@Resources.Globalization.ClickToShowAssignedJobCategoryListTooltip' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "JobCategoryID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        return '<a onClick="closeJobsCategoriesPopup@(Model.PartialName)(' + data + ')"><span class="glyphicon glyphicon-thumbs-up" /></a>'
+                    }
+                },
+            ]
+        });
+    }
+
+    function BindAssignedJobsCategories@(Model.PartialName)(JobCategoryID) {
+        var tblAssignedJobCategories = $("#tblAssignedJobCategories@(Model.PartialName)").DataTable({
+            "ajax": {
+                "url": "/JobsCategories/GetAssignedJobCategoriesByJobCategoryID/" + JobCategoryID,
+                "type": "get",
+                "datatype": "json",
+            },
+            destroy: true,
+            "columns": [
+                {
+                    "data": "AssignedJobCategory.JobGroup.JobGeneralGroup.JobGeneralGroupName",
+                    "autowidth": true
+                },
+                {
+                    "data": "AssignedJobCategory.JobGroup.JobGroupName",
+                    "autowidth": true
+                },
+                {
+                    "data": "AssignedJobCategory.JobCategoryName",
+                    "autowidth": true
+                },
+            ]
+        });
+    }
+
+    function BindQualificationsJobsCategories@(Model.PartialName)(JobCategoryID) {
+        var tblQualificationsJobCategories = $("#tblQualificationsJobCategories@(Model.PartialName)").DataTable({
+            "ajax": {
+                "url": "/Jobs/GetJobsCategoriesQualificationsByJobCategoryID/" + JobCategoryID,
+                "type": "post",
+                "datatype": "json",
+            },
+            destroy: true,
+            "columns": [
+                {
+                    "data": "QualificationDegree.QualificationDegreeName",
+                    "autowidth": true
+                },
+                {
+                    "data": "Qualification.QualificationName",
+                    "autowidth": true
+                },
+                {
+                    "data": "GeneralSpecialization.GeneralSpecializationName",
+                    "autowidth": true
+                },
+                {
+                    "data": "IsMinQualification",
+                    "autowidth": false,
+                    "render": RenderCheckBox
+                },
+            ]
+        });
+    }
+
+    function ResetJobCategory@(Model.PartialName)() {
+        $("#txtJobCategoryName@(Model.PartialName)").val('');
+        $("#hdnFldJobCategoryID@(Model.PartialName)").val('');
+        $("#txtJobGroupName@(Model.PartialName)").val('');
+        $("#txtJobGeneralGroupName@(Model.PartialName)").val('');
+
+        if (typeof extentedFuncForJobsCategoriesPopupReset !== 'undefined' && $.isFunction(window[extentedFuncForJobsCategoriesPopupReset])) {
+            window[extentedFuncForJobsCategoriesPopupReset]();
+        }
+    }
+
+    function GetJobCategoryData@(Model.PartialName)(JobCategoryID) {
+
+        $.ajax({
+            type: "POST"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/JobsCategories/GetByJobCategoryID"
+            , data: "{ 'id' : '" + JobCategoryID + "'}"
+            , success: function (d) {
+                DestroyModal("#divJobsCategoriesModal@(Model.PartialName)");
+
+                $("#hdnFldJobCategoryID@(Model.PartialName)").val(d.data.JobCategoryID);
+                $("#txtJobCategoryName@(Model.PartialName)").val(d.data.JobCategoryName);
+                $("#txtJobGroupName@(Model.PartialName)").val(d.data.JobGroup.JobGroupName);
+                $("#txtJobGeneralGroupName@(Model.PartialName)").val(d.data.JobGroup.JobGeneralGroup.JobGeneralGroupName);
+
+                if (typeof extentedFuncForJobsCategoriesPopup !== 'undefined' && $.isFunction(window[extentedFuncForJobsCategoriesPopup])) {
+                    window[extentedFuncForJobsCategoriesPopup]();
+                }
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function closeJobsCategoriesPopup@(Model.PartialName)(JobCategoryID) {
+        GetJobCategoryData@(Model.PartialName)(JobCategoryID);
+    }
+
+    //function ReadOnlyModeJobsCategories() {
+    //    $('#OpenJobsCategoriesPopup').hide();
+    //}
+
+    function ReadOnlyModeJobsCategories() {
+        $("#OpenJobsCategoriesPopup"@(Model.PartialName)).hide();
+    }
+
+    function EditModeJobsCategories() {
+        $("#OpenJobsCategoriesPopup"@(Model.PartialName)).show();
+    }
+</script>
+
+
+<table class="table table-responsive table-condensed table-striped" style="text-align:right">
+    <tr>
+        <td>
+            @Html.Label(@Resources.Globalization.JobGeneralGroupNameText, new { @class = "control-label" })
+        </td>
+        <td>
+            @Html.Label(@Resources.Globalization.JobGroupNameText, new { @class = "control-label" })
+        </td>
+        <td>
+            @Html.Label(@Resources.Globalization.JobCategoryNameText, new { @class = "control-label" })
+        </td>
+    </tr>
+    <tr>
+        <td class="col-md-4">
+            @Html.TextBoxFor(model => model.JobGroup.JobGeneralGroup.JobGeneralGroupName, new { @class = "form-control", @id = "txtJobGeneralGroupName" + @Model.PartialName, @readonly = "readonly" })
+        </td>
+        <td class="col-md-4">
+            @Html.TextBoxFor(model => model.JobGroup.JobGroupName, new { @class = "form-control", @id = "txtJobGroupName" + @Model.PartialName, @readonly = "readonly" })
+        </td>
+        <td class="col-md-4">
+            <div class="input-group" style="width:100%">
+                @Html.TextBoxFor(model => model.JobCategoryName, new { @class = "form-control", @id = "txtJobCategoryName" + @Model.PartialName, @readonly = "readonly" })
+                <span id="OpenJobsCategoriesPopup@(Model.PartialName)" class="input-group-addon clickable" title="@Resources.Globalization.SearchAboutJobCategoryTooltipText">
+                    <i class="glyphicon glyphicon-search"></i>
+                </span>
+                @Html.HiddenFor(model => model.JobCategoryID, new { @id = "hdnFldJobCategoryID" + @Model.PartialName })
+                @Html.ValidationMessageFor(model => model.JobCategoryName, "", new { @class = "text-danger" })
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div class="modal fade" id="divJobsCategoriesModal@(Model.PartialName)">
+    <div class="modal-dialog" style="width:1200px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.JobsCategoriesListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                    </div>
+                </div>
+                <table id="tblJobsCategories@(Model.PartialName)" class="table table-responsive table-hover dataTable font-12" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.JobGeneralGroupNameText</td>
+                            <td>@Resources.Globalization.JobGroupNameText</td>
+                            <td>@Resources.Globalization.JobCategoryNameText</td>
+                            @*<td>@Resources.Globalization.QualificationDegreeNameText</td>
+                                <td>@Resources.Globalization.QualificationNameText</td>
+                                <td>@Resources.Globalization.GeneralSpecializationNameText</td>*@
+                            <td></td>
+                            <td></td>
+                            <td>@Resources.Globalization.SelectText</td>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divAssignedJobCategoryModal@(Model.PartialName)">
+    <div class="modal-dialog" style="width:800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.AssignedJobCategoryListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <table id="tblAssignedJobCategories@(Model.PartialName)" class="table table-responsive table-condensed table-striped dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.JobGeneralGroupNameText</td>
+                            <td>@Resources.Globalization.JobGroupNameText</td>
+                            <td>@Resources.Globalization.JobCategoryNameText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divQualificationsJobCategoryModal@(Model.PartialName)">
+    <div class="modal-dialog" style="width:800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.QualificationsListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <table id="tblQualificationsJobCategories@(Model.PartialName)" class="table table-responsive table-condensed table-striped dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.QualificationDegreeNameText</td>
+                            <td>@Resources.Globalization.QualificationsText</td>
+                            <td>@Resources.Globalization.GeneralSpecializationNameText</td>
+                            <td>@Resources.Globalization.IsMinQualificationText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

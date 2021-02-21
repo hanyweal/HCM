@@ -1,0 +1,139 @@
+﻿
+<script type="text/javascript">
+
+    $(document).ready(function () {
+         
+        $("#btnUndoPreferencePromotionRecord").click(function () {
+            var PromotionRecordID = $("#hdnFldPromotionRecordID").val() != '' ? $("#hdnFldPromotionRecordID").val() : 0;
+
+            $.confirm({
+                confirmButton: '@Resources.Globalization.ConfirmButtonText',
+                cancelButton: '@Resources.Globalization.CancelButtonText',
+                animation: 'zoom',
+                content: '@Resources.Globalization.UndoPreferenceCofirmationMessageText',
+                title: '@Resources.Globalization.CofirmationMessageTitle',
+                buttons: {
+                    confirm: {
+                        action: function () {
+
+                            var UndoPreferenceRequestObj = {
+                                PromotionRecordID: PromotionRecordID,
+                                JobCategoryID: $('#hdnFldJobCategoryID').val(),
+                                RankID: $('#hdnFldRankID').val(),
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                // dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage',
+                                contentType: "application/json; charset=utf-8",
+                                url: "/PromotionsRecords/UndoPreference",
+                                data: JSON.stringify(UndoPreferenceRequestObj),
+                                success: OnSuccessUndoPreference,
+                                error: function (xhr, status, error) {
+                                    OnFailure();
+                                }
+                            });
+                        },
+                        btnClass: 'btn-blue',
+                        text: '@Resources.Globalization.ConfirmButtonText',
+                    },
+                    cancel: {
+                        action: function () { },
+                        text: '@Resources.Globalization.CancelButtonText',
+                    },
+                },
+            });
+        });
+
+        $("#btnInstallPromotionRecord").click(function () {
+            var PromotionRecordID = $("#hdnFldPromotionRecordID").val() != '' ? $("#hdnFldPromotionRecordID").val() : 0;
+
+            $.confirm({
+                confirmButton: '@Resources.Globalization.ConfirmButtonText',
+                cancelButton: '@Resources.Globalization.CancelButtonText',
+                animation: 'zoom',
+                content: '@Resources.Globalization.InstallationCofirmationMessageText',
+                title: '@Resources.Globalization.CofirmationMessageTitle',
+                buttons: {
+                    confirm: {
+                        action: function () {
+
+                            var InstallRequestObj = {
+                                PromotionRecordID: PromotionRecordID,
+                                JobCategoryID: $('#hdnFldJobCategoryID').val(),
+                                RankID: $('#hdnFldRankID').val(),
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                // dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage',
+                                contentType: "application/json; charset=utf-8",
+                                url: "/PromotionsRecords/Install",
+                                data: JSON.stringify(InstallRequestObj),
+                                success: OnSuccessInstall,
+                                error: function (xhr, status, error) {
+                                    OnFailure();
+                                }
+                            });
+                        },
+                        btnClass: 'btn-blue',
+                        text: '@Resources.Globalization.ConfirmButtonText',
+                    },
+                    cancel: {
+                        action: function () { },
+                        text: '@Resources.Globalization.CancelButtonText',
+                    },
+                },
+            });
+        });
+
+    });
+
+    function OnSuccessUndoPreference(d) {
+
+        //console.log('d OnSuccessUndoPreference', d);
+
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.UndoPreferenceDoneAlertText), "")');
+        $('#hdnFldPromotionRecordStatusID').val(d.PromotionRecordStatus.PromotionRecordStatusID);
+        $('#txtPromotionRecordStatusName').val(d.PromotionRecordStatus.PromotionRecordStatusName);
+        $('#hdnFldPromotionRecordToolbarID').val(d.PromotionRecordToolbarID);
+
+        RenderPromotionRecordStatus();  // function defined in _promotionsRecordsStatus.cshtml
+        BindCandidates();               // function defined in Manage.cshtml
+        //$("#divToolbar").load('@RazorHelper.ShowPormotionToolbar(this, HCM.Classes.Enums.PromotionsRecordsToolbarEnum.Preference)', AppendToolbar('@Convert.ToInt32(HCM.Classes.Enums.PromotionsRecordsToolbarEnum.Preference)'));
+        $("#divToolbar").load('@RazorHelper.ShowPormotionToolbar(this, HCM.Classes.Enums.PromotionsRecordsToolbarEnum.Preference)', AppendToolbar);
+    }
+
+    function OnSuccessInstall(d) {
+
+        //console.log('OnSuccessInstall d', d);
+
+        //$("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.InstallPromotionRecordDoneAlertText), "")');
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "")'); 
+        $('#hdnFldPromotionRecordStatusID').val(d.PromotionRecordStatus.PromotionRecordStatusID);
+        $('#txtPromotionRecordStatusName').val(d.PromotionRecordStatus.PromotionRecordStatusName);
+        $('#hdnFldPromotionRecordToolbarID').val(d.PromotionRecordToolbarID);
+
+        RenderPromotionRecordStatus();  // function defined in _promotionsRecordsStatus.cshtml
+        BindCandidates();               // function defined in Manage.cshtml
+        $("#divToolbar").load('@RazorHelper.ShowPormotionToolbar(this, HCM.Classes.Enums.PromotionsRecordsToolbarEnum.Close)', AppendToolbar);
+    }
+
+</script>
+
+<div class="btn-group">
+    @Html.Partial("~/Views/Shared/_JobsVacanciesPopup.cshtml")
+    @Html.Partial("~/Views/PromotionsRecords/_EditPromotionRecordQualificationPoints.cshtml")
+    <button id="btnUndoPreferencePromotionRecord" class="btn btn-default" type="button" title="@Resources.Globalization.UndoPromotionRecordPreferencesText">
+        <span class="glyphicon glyphicon-erase"></span>
+        @Resources.Globalization.UndoPromotionRecordPreferencesText
+    </button>
+    @Html.Partial("~/Views/PromotionsRecords/_RedistributeJobs.cshtml")
+    @Html.Partial("~/Views/PromotionsRecords/_ByExamResults.cshtml")
+    <button id="btnInstallPromotionRecord" class="btn btn-default" type="button" title="@Resources.Globalization.InstallPromotionRecordText">
+        <span class="glyphicon glyphicon-flash"></span>
+        @Resources.Globalization.InstallPromotionRecordText
+    </button>
+    @Html.Partial("~/Views/PromotionsRecords/_PromotionRecordsLog.cshtml")
+</div>
+

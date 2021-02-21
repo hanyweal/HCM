@@ -1,0 +1,2146 @@
+﻿@using HCM.Classes.Enums;
+
+@{
+    ViewBag.Title = Resources.Globalization.EmployeeProfileText;
+}
+
+<script type="text/javascript">
+
+    var EmployeeCodeID = 0;
+    $(document).ready(function () {
+
+        OpenEmployeesNamePopup();
+        BindEmployeesName();
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        //$("#txtEmployeeNameAr").autocomplete({
+        //    source: function (request, response) {
+        //        // autocomplete starts from 5 char
+        //        var val = $("#txtEmployeeNameAr").val().trim();
+        //        if (val.length < 5) {
+        //            return;
+        //        }
+
+        //        $.ajax({
+        //            type: "get"
+        //            , dataType: "json"
+        //            , contentType: "application/json; charset=utf-8"
+        //            , url: "GetEmployeesByName/" + $("#txtEmployeeNameAr").val()
+        //            , success: function (data) {
+        //                response($.map(data.data, function (item) {
+        //                    return { label: item.EmployeeIDNo + ' - ' + item.EmployeeNameAr, value: item.EmployeeNameAr }
+        //                }));
+        //            }
+        //            , error: function (xhr, status, error) {
+        //                console.log(xhr, status, error);
+        //            }
+        //        });
+        //    }
+        //});
+
+        @*$("#txtEmployeeNameAr").on('blur', function (i) {
+            if ($("#txtEmployeeNameAr").val() != '') {
+                $.ajax({
+                    type: "POST"
+                        , dataType: "json"
+                        , contentType: "application/json; charset=utf-8"
+                        , url: "/Employees/GetEmployeeByEmployeeNameAr"
+                        , data: "{ 'EmployeeNameAr' : '" + $("#txtEmployeeNameAr").val() +
+                                "'}"
+                        , success: function (data) {
+                            if (data.EmployeeIDNo != null) {
+                                $("#txtEmployeeNameAr").val(data.EmployeeNameAr);
+                                $("#txtEmployeeNameEn").val(data.EmployeeNameEn);
+                                $("#txtEmployeeIDNo").val(data.EmployeeIDNo);
+                                $("#txtEmployeeEMail").val(data.EmployeeEMail);
+                                $("#txtEmployeeBirthDate").val(RenderDate(data.EmployeeBirthDate));
+                                $("#txtEmployeeBirthPlace").val(data.EmployeeBirthPlace);
+                                $("#txtEmployeeMobileNo").val(data.EmployeeMobileNo);
+                                $("#txtEmployeePassportNo").val(data.EmployeePassportNo);
+                                $("#txtEmployeeIDIssueDate").val(RenderDate(data.EmployeeIDIssueDate));
+                                $("#txtEmployeePassportSource").val(data.EmployeePassportSource);
+                                $("#txtEmployeePassportIssueDate").val(RenderDate(data.EmployeePassportIssueDate));
+                                $("#txtEmployeePassportEndDate").val(RenderDate(data.EmployeePassportEndDate));
+                                $("#txtEmployeeCodeNo").val(data.ActiveEmployeeCode.EmployeeCodeNo);
+                                $("#hdnFldEmployeeCodeID").val(data.ActiveEmployeeCode.EmployeeCodeID);
+                                document.getElementById("imgEmployeePicture").src = "data:image/jpg;base64," + data.EmployeePicture;
+                                EmployeeCodeID = data.ActiveEmployeeCode.EmployeeCodeID;
+                                BindCareerHistory();
+                                ResetDataTables();
+                            }
+                            else {
+                                Reset();
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Notice, Globals.Utilities.RemoveSpace(@Resources.Globalization.NoEmployeeFoundText))');
+                            }
+                        }
+                        , error: function (jqXHR, exception) {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                        }
+                });
+            }
+            else {
+
+                Reset();
+            }
+        });*@
+
+        $('a[data-toggle="tab"]').on("shown.bs.tab", function (e) {
+            var ActiveTab = $(e.target).attr("href");
+            var tblID = ActiveTab.replace("#Tab", "#tbl");
+            if (GetRowsCount(tblID) <= 0) {
+                var BindTab = ActiveTab.replace("#Tab", "Bind");
+                window[BindTab]();
+            }
+        });
+
+
+        //$("#txtEmployeeCodeNo").blur(function () {
+        $("#txtEmployeeCodeNo").on('change', function () {
+
+            if ($("#txtEmployeeCodeNo").val() != '') {
+                var EmployeeCodeNo = $("#txtEmployeeCodeNo").val();
+                GetByEmployeeCodeNo(EmployeeCodeNo);
+            }
+            else {
+
+                Reset();
+            }
+        })
+
+        $("#txtEmployeeIDNo").on('change', function () {
+            // $("#txtEmployeeIDNo").blur(function () {
+            if ($("#txtEmployeeIDNo").val() != '') {
+                $.ajax({
+                    type: "POST"
+                        , dataType: "json"
+                        , contentType: "application/json; charset=utf-8"
+                        , url: "/Employees/GetEmployeeByEmployeeIDNo"
+                        , data: "{ 'EmployeeIDNo' : '" + $("#txtEmployeeIDNo").val() +
+                                "'}"
+                        , success: function (data) {
+                            if (data.EmployeeIDNo != null) {
+                                $("#txtEmployeeNameAr").val(data.EmployeeNameAr);
+                                $("#txtEmployeeNameEn").val(data.EmployeeNameEn);
+                                $("#txtEmployeeIDNo").val(data.EmployeeIDNo);
+                                $("#txtEmployeeEMail").val(data.EmployeeEMail);
+                                $("#txtEmployeeBirthDate").val(formatDate(data.EmployeeBirthDate));
+                                $("#txtEmployeeBirthPlace").val(data.EmployeeBirthPlace);
+                                $("#txtEmployeeMobileNo").val(data.EmployeeMobileNo);
+                                $("#txtEmployeePassportNo").val(data.EmployeePassportNo);
+                                $("#txtEmployeeIDIssueDate").val(RenderDate(data.EmployeeIDIssueDate));
+                                $("#txtEmployeePassportSource").val(data.EmployeePassportSource);
+                                $("#txtEmployeePassportIssueDate").val(RenderDate(data.EmployeePassportIssueDate));
+                                $("#txtEmployeePassportEndDate").val(RenderDate(data.EmployeePassportEndDate));
+                                $("#txtEmployeeCodeNo").val(data.ActiveEmployeeCode.EmployeeCodeNo);
+                                $("#hdnFldEmployeeCodeID").val(data.ActiveEmployeeCode.EmployeeCodeID);
+                                document.getElementById("imgEmployeePicture").src = "data:image/jpg;base64," + data.EmployeePicture;
+                                EmployeeCodeID = data.ActiveEmployeeCode.EmployeeCodeID;
+                                BindCareerHistory();
+                                ResetDataTables();
+                            }
+                            else {
+                                Reset();
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Notice, Globals.Utilities.RemoveSpace(@Resources.Globalization.NoEmployeeFoundText))');
+                            }
+                        }
+                        , error: function (jqXHR, exception) {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                        }
+                });
+            }
+            else {
+                Reset();
+            }
+        })
+    });
+
+    function PrintVacationByVacationDetailsID(ID) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Vacations/PrintVacationByVacationDetailsID/")' + ID);
+        ShowModal("#divReportModal");
+    }
+
+    function PrintPromotionCardByEmployeeCodeID() {
+        var EmployeeCodeID = $("#hdnFldEmployeeCodeID").val();
+        if (EmployeeCodeID) {
+            var iframe = $("#divReportModal .modal-body #iframeReportContent");
+            iframe.attr('src', '@Url.Content("~/Employees/PrintPromotionCardByEmployeeCodeID/")' + EmployeeCodeID);
+            ShowModal("#divReportModal");
+        }
+    }
+
+    function PrintEmployeeQualificationByEmployeeCodeID() {
+        var EmployeeCodeID = $("#hdnFldEmployeeCodeID").val();
+        if (EmployeeCodeID) {
+            var iframe = $("#divReportModal .modal-body #iframeReportContent");
+            iframe.attr('src', '@Url.Content("~/Employees/PrintEmployeeQualificationByEmployeeCodeID/")' + EmployeeCodeID);
+            ShowModal("#divReportModal");
+        }
+    }
+
+    function Print(ID, BusinessSubCategories) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.Delegations") {
+            iframe.attr('src', '@Url.Content("~/Delegations/PrintDelegation/")' + ID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.OverTimes") {
+            iframe.attr('src', '@Url.Content("~/OverTimes/PrintOverTime/")' + ID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.PassengerOrders") {
+            iframe.attr('src', '@Url.Content("~/PassengerOrders/PrintPassengerOrder/")' + ID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.Assignings") {
+            iframe.attr('src', '@Url.Content("~/Assignings/PrintAssigning/")' + ID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.Lenders") {
+            iframe.attr('src', '@Url.Content("~/Lenders/PrintLender/")' + ID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.GovernmentFunds") {
+            iframe.attr('src', '@Url.Content("~/GovernmentFunds/PrintGovernmentFund/")' + ID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.EmployeesAllowances") {
+            iframe.attr('src', '@Url.Content("~/EmployeesAllowances/PrintEmployeeAllowance/")' + ID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.InternshipScholarships") {
+            iframe.attr('src', '@Url.Content("~/InternshipScholarships/PrintInternshipScholarship/")' + ID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.Vacations") {
+            iframe.attr('src', '@Url.Content("~/Vacations/PrintVacation/")' + ID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.Scholarships") {
+            iframe.attr('src', '@Url.Content("~/Scholarships/PrintScholarship/")' + ID);
+        }
+            @*else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.EmployeesQualifications") {
+            iframe.attr('src', '@Url.Content("~/Scholarships/PrintAllScholarshipByEmployeeCodeID/")' + ID);
+        }*@
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.EmployeesExperiences") {
+            iframe.attr('src', '@Url.Content("~/Scholarships/PrintAllScholarshipByEmployeeCodeID/")' + ID);
+        }
+        else { alert(''); }
+
+        ShowModal("#divReportModal");
+    }
+
+    function PrintAll(BusinessSubCategories) {
+        //debugger;
+        var EmployeeCodeID = $("#hdnFldEmployeeCodeID").val();
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.Delegations") {
+            iframe.attr('src', '@Url.Content("~/Delegations/PrintAllDelegationsByEmployeeCodeID/")' + EmployeeCodeID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.OverTimes") {
+            iframe.attr('src', '@Url.Content("~/OverTimes/PrintAllOverTimesByEmployeeCodeID/")' + EmployeeCodeID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.PassengerOrders") {
+            iframe.attr('src', '@Url.Content("~/PassengerOrders/PrintAllPassengerOrdersByEmployeeCodeID/")' + EmployeeCodeID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.Assignings") {
+            iframe.attr('src', '@Url.Content("~/Assignings/PrintAllAssigningsByEmployeeCodeID/")' + EmployeeCodeID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.Lenders") {
+            iframe.attr('src', '@Url.Content("~/Lenders/PrintAllLendersByEmployeeCodeID/")' + EmployeeCodeID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.EmployeesAllowances") {
+            iframe.attr('src', '@Url.Content("~/EmployeesAllowances/PrintAllAllowancesByEmployeeCodeID/")' + EmployeeCodeID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.GovernmentFunds") {
+            iframe.attr('src', '@Url.Content("~/GovernmentFunds/PrintAllGovernmentFundByEmployeeCodeID/")' + EmployeeCodeID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.InternshipScholarships") {
+            iframe.attr('src', '@Url.Content("~/InternshipScholarships/PrintAllInternshipScholarshipsByEmployeeCodeID/")' + EmployeeCodeID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.Vacations") {
+            iframe.attr('src', '@Url.Content("~/Vacations/PrintAllVacationsByEmployeeCodeID/")' + EmployeeCodeID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.Scholarships") {
+            iframe.attr('src', '@Url.Content("~/Scholarships/PrintAllScholarshipByEmployeeCodeID/")' + EmployeeCodeID);
+        }
+            @*else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.EmployeesQualifications") {
+            iframe.attr('src', '@Url.Content("~/Scholarships/PrintAllScholarshipByEmployeeCodeID/")' + EmployeeCodeID);
+        }*@
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.EmployeesQualifications") {
+            iframe.attr('src', '@Url.Content("~/Employees/PrintEmployeeQualificationByEmployeeCodeID/")' + EmployeeCodeID);
+        }
+        else if (BusinessSubCategories == "@HCMBLL.Enums.BusinessSubCategoriesEnum.EmployeesExperiencesDetails") {
+            iframe.attr('src', '@Url.Content("~/Employees/PrintEmployeeExperienceDetailByEmployeeCodeID/")' + EmployeeCodeID);
+        }
+        else { alert(''); }
+
+        ShowModal("#divReportModal");
+    }
+
+    function ResetPrintAll(dataTable) {
+        var tblID = "#" + dataTable.attr('id');
+        var RowsCount = GetRowsCount(tblID);
+        if (RowsCount > 0) {
+            $(tblID + " tfoot #aPrintAll").show();
+        }
+        else
+            $(tblID + " tfoot #aPrintAll").hide();
+    }
+
+    function BindCareerHistory() {
+        $('#tblCareerHistory').DataTable({
+            "autoWidth": false,
+            "ordering": false,
+            "ajax": {
+                "url": "/Employees/GetCareerHistoryByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "CareerHistoryType.CareerHistoryTypeName",
+                    "autoWidth": false,
+                },
+                {
+                    "data": "OrganizationJob.OrganizationStructure.OrganizationName",
+                    "autoWidth": false,
+                },
+                {
+                    "data": "OrganizationJob.Rank.RankName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "OrganizationJob.Job.JobName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "OrganizationJob.JobNo",
+                    "autoWidth": false
+                },
+                {
+                    "data": "CareerDegree.CareerDegreeName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "JoinDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "IsActive",
+                    "autowidth": false,
+                    "render": RenderCheckBox
+                }
+            ],
+            destroy: true,
+        });
+
+
+    }
+
+    function BindPassengerOrders() {
+        $('#tblPassengerOrders').DataTable({
+            "initComplete": function (settings, json) {
+                ResetPrintAll(this);
+            },
+            "autoWidth": true,
+            "ajax": {
+                "url": "/Employees/GetPassengerOrderByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "PassengerOrderID",
+                    "autoWidth": false
+                },
+                {
+                    "data": "TravellingDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "Going",
+                    "autoWidth": false,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "Returning",
+                    "autoWidth": false,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "PassengerOrderID",
+                    "autoWidth": false,
+                    "render": function (data, type, row) {
+                        Url = 'OpenPassengerOrdersItineraries(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-info-sign" /></a>'
+                    }
+                },
+                {
+                    "data": "PassengerOrderID",
+                    "autoWidth": false,
+                    "render": function (data, type, row) {
+                        Url = 'Print(' + data + ',' + "'@HCMBLL.Enums.BusinessSubCategoriesEnum.PassengerOrders'" + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" /></a>'
+                    }
+                },
+            ],
+            destroy: true,
+        });
+    }
+
+    function BindOverTimes() {
+        $('#tblOverTimes').DataTable({
+            "initComplete": function (settings, json) {
+                ResetPrintAll(this);
+            },
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetOverTimeByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "OverTimeStartDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "OverTimeEndDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "OverTimePeriod",
+                    "autoWidth": false
+                },
+                {
+                    "data": "Tasks",
+                    "autoWidth": false
+                },
+                {
+                    "data": "OverTimeID",
+                    "autoWidth": false,
+                    "render": function (data, type, row) {
+                        Url = 'Print(' + data + ',' + "'@HCMBLL.Enums.BusinessSubCategoriesEnum.OverTimes'" + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" /></a>'
+                    }
+                },
+            ],
+            destroy: true,
+        });
+    }
+
+    function BindAssignings() {
+        $('#tblAssignings').DataTable({
+            "initComplete": function (settings, json) {
+                ResetPrintAll(this);
+            },
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetAssigningByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                //{
+                //    "data": "AssigningTypeName",
+                //    "width": "10%",
+                //},
+                {
+                    "data": "Organization",
+                    "width": "30%",
+                },
+                {
+                    "data": "JobName",
+                    "width": "10%",
+                },
+                {
+                    "data": "AssigningStartDate",
+                    "autoWidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "AssigningEndDate",
+                    "autoWidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "IsFinished",
+                    "autoWidth": true,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "AssigningID",
+                    "autoWidth": false,
+                    "render": function (data, type, row) {
+                        Url = 'Print(' + data + ',' + "'@HCMBLL.Enums.BusinessSubCategoriesEnum.Assignings'" + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" /></a>'
+                    }
+                },
+            ],
+            destroy: true,
+        });
+
+    }
+
+    function BindLenders() {
+        $('#tblLenders').DataTable({
+            "initComplete": function (settings, json) {
+                ResetPrintAll(this);
+            },
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetLenderByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "LenderStartDate",
+                    "autowidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "LenderEndDate",
+                    "autowidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "LenderOrganization",
+                    "autowidth": true
+                },
+                {
+                    "data": "KSACity.KSACityName",
+                    "autowidth": true
+                },
+                {
+                    "data": "IsFinished",
+                    "autowidth": false,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "LenderID",
+                    "autowidth": false,
+                    "render": function (data, type, row) {
+                        Url = 'Print(' + data + ',' + "'@HCMBLL.Enums.BusinessSubCategoriesEnum.Lenders'" + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" /></a>'
+                    }
+                },
+            ],
+            destroy: true,
+        });
+    }
+
+    function BindEmployeeAllowances() {
+        $("#tblEmployeeAllowances").DataTable({
+            "initComplete": function (settings, json) {
+                ResetPrintAll(this);
+            },
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetAllowancesByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "Allowance.AllowanceName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "EmployeeCareerHistory.OrganizationJob.Job.JobName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "AllowanceStartDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "IsActive",
+                    "autoWidth": false,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "EmployeeAllowanceID",
+                    "autoWidth": false,
+                    "render": function (data, type, row) {
+                        Url = 'Print(' + data + ',' + "'@HCMBLL.Enums.BusinessSubCategoriesEnum.EmployeesAllowances'" + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" /></a>'
+                    }
+                },
+            ],
+            destroy: true,
+        });
+    }
+
+    function BindGovernmentFunds() {
+        $("#tblGovernmentFunds").DataTable({
+            "initComplete": function (settings, json) {
+                ResetPrintAll(this);
+            },
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetGovernmentFundsByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "GovernmentDeductionType.GovernmentDeductionTypeName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "GovernmentFundType.GovernmentFundTypeName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "MonthlyDeductionAmount",
+                    "autoWidth": false
+                },
+                {
+                    "data": "TotalDeductionAmount",
+                    "autoWidth": false
+                },
+                {
+                    "data": "DeductionStartDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "GovernmentFundID",
+                    "autoWidth": false,
+                    "render": function (data, type, row) {
+                        Url = 'Print(' + data + ',' + "'@HCMBLL.Enums.BusinessSubCategoriesEnum.GovernmentFunds'" + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" /></a>'
+                    }
+                },
+            ],
+            destroy: true,
+        });
+    }
+
+    function BindDelegations() {
+        $('#tblDelegations').DataTable({
+            "initComplete": function (settings, json) {
+                ResetPrintAll(this);
+            },
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetDelegationsByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "DelegationID",
+                    "autoWidth": false
+                },
+                {
+                    "data": "DelegationTypeName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "DelegationKindName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "DelegationStartDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "DelegationEndDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "DelegationPeriod",
+                    "autoWidth": false
+                },
+                {
+                    "data": "CountryOrCity",
+                    "autoWidth": false
+                },
+                {
+                    "data": "DelegationID",
+                    "autoWidth": false,
+                    "render": function (data, type, row) {
+                        Url = 'Print(' + data + ',' + "'@HCMBLL.Enums.BusinessSubCategoriesEnum.Delegations'" + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" /></a>'
+                    }
+                },
+            ],
+            destroy: true,
+        });
+
+        $('#tblDelegationBalance').DataTable({
+            "autoWidth": false,
+            "searching": false,
+            "ordering": false,
+            "paging": false,
+            "ajax": {
+                "url": "/Employees/GetEmployeeDelegationsBalanceForYears",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "DelegationFiscalYear",
+                    "autoWidth": false,
+                },
+                {
+                    "data": "DelegationBalance",
+                    "autoWidth": false
+                },
+                {
+                    "data": "DelegationConsumedBalance",
+                    "autoWidth": false,
+                },
+                {
+                    "data": "DelegationRemainingBalance",
+                    "autoWidth": false,
+                },
+            ],
+            destroy: true,
+        });
+    }
+
+    function BindVacations() {
+        $('#tblVacations').DataTable({
+            "initComplete": function (settings, json) {
+                ResetPrintAll(this);
+            },
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetVacationsByEmployeeCodeID/" + EmployeeCodeID,
+                "type": "get",
+                //"data": { id: EmployeeCodeID },
+                //"datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "VacationID",
+                    "autoWidth": false
+                },
+                {
+                    "data": "VacationTypeName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "FromDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "ToDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "VacationPeriod",
+                    "autoWidth": false
+                },
+                {
+                    "data": "VacationActionName",
+                    "autowidth": false,
+                },
+                {
+                    "data": "VacationDetailID",
+                    "autoWidth": false,
+                    "render": function (data, type, row) {
+                        @*Url = 'Print(' + data + ',' + "'@HCMBLL.Enums.BusinessSubCategoriesEnum.Vacations'" + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" /></a>'*@
+                        return '';
+                    }
+                },
+                {
+                    "data": "VacationDetailID",
+                    "autoWidth": false,
+                    "render": function (data, type, row) {
+                        Url = 'PrintVacationByVacationDetailsID(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" /></a>'
+
+                    }
+                },
+            ],
+            destroy: true,
+        });
+    }
+
+    function BindInternshipScholarships() {
+        $('#tblInternshipScholarships').DataTable({
+            "initComplete": function (settings, json) {
+                ResetPrintAll(this);
+            },
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetInternshipScholarshipsByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "InternshipScholarshipTypeName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "InternshipScholarshipStartDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "InternshipScholarshipEndDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "InternshipScholarshipPeriod",
+                    "autoWidth": false,
+                },
+                {
+                    "data": "InternshipScholarshipLocation",
+                    "autoWidth": false,
+                },
+                {
+                    "data": "CityOrCountry",
+                    "autoWidth": false,
+                },
+                {
+                    "data": "InternshipScholarshipID",
+                    "autoWidth": false,
+                    "render": function (data, type, row) {
+                        Url = 'Print(' + data + ',' + "'@HCMBLL.Enums.BusinessSubCategoriesEnum.InternshipScholarships'" + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" /></a>'
+                    }
+                },
+            ],
+            destroy: true,
+        });
+    }
+
+    function BindScholarships() {
+        $('#tblScholarships').DataTable({
+            "initComplete": function (settings, json) {
+                ResetPrintAll(this);
+            },
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetScholarshipsByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "ScholarshipTypeName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "ScholarshipStartDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "ScholarshipEndDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "ScholarshipPeriod",
+                    "autoWidth": false,
+                },
+                {
+                    "data": "ScholarshipLocation",
+                    "autoWidth": false
+                },
+                {
+                     "data": "IsPassed",
+                     "autoWidth": false,
+                     "render": function (data, type, row) {
+                         var checked = data ? "checked" : "";
+                         return '<input type="checkbox" disabled ' + checked + ' />';
+                     }
+                },
+                {
+                    "data": "CreatedDate",
+                    "autowidth": false,
+                    "render": RenderDateTime
+                },
+                {
+                    "data": "ScholarshipID",
+                    "autoWidth": false,
+                    "render": function (data, type, row) {
+                        Url = 'Print(' + data + ',' + "'@HCMBLL.Enums.BusinessSubCategoriesEnum.Scholarships'" + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" /></a>'
+                    }
+                },
+            ],
+            destroy: true,
+        });
+    }
+
+    function BindEmployeeExperiences() {
+        $('#tblEmployeeExperience').DataTable({
+            "initComplete": function (settings, json) {
+                ResetPrintAll(this);
+            },
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetEmployeesExperiencesWithDetailByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "JobName",
+                    "autowidth": true,
+                    "defaultContent": ""
+                },
+                {
+                    "data": "FromDate",
+                    "autowidth": true,
+                    "defaultContent": "",
+                    "render": RenderDate
+                },
+                {
+                    "data": "ToDate",
+                    "autowidth": true,
+                    "defaultContent": "",
+                    "render": RenderDate
+                },
+                {
+                    "data": "SectorName",
+                    "autowidth": true,
+                    "defaultContent": ""
+                },
+                {
+                    "data": "SectorTypeName",
+                    "autowidth": true,
+                    "defaultContent": ""
+                },
+                {
+                    "data": "ExperienceYears",
+                    "autowidth": false,
+                    "defaultContent": ""
+                },
+                {
+                    "data": "ExperienceMonths",
+                    "autowidth": false,
+                    "defaultContent": ""
+                },
+                {
+                    "data": "ExperienceDays",
+                    "autowidth": false,
+                    "defaultContent": ""
+                },
+                {
+                    "data": "CreatedBy",
+                    "autowidth": true,
+                },
+                {
+                    "data": "CreatedDate",
+                    "autowidth": true,
+                    "render": RenderDateTime
+                },
+
+            ],
+            destroy: true,
+        });
+
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/EmployeeExperiencesWithDetails/GetTotalEmployeeExperienceInYMD/")" + EmployeeCodeID,
+            success: function (result) {
+                //console.log('result', result);
+                $('#lblTotalExperiencesInYears').html(result.years);
+                $('#lblTotalExperiencesInMonths').html(result.months);
+                $('#lblTotalExperiencesInDays').html(result.days);
+            }
+        });
+        //EmployeeExperienceTotalExperiencesYMDText
+    }
+
+    function BindEmployeeQualifications() {
+        $('#tblEmployeeQualification').DataTable({
+            "initComplete": function (settings, json) {
+                ResetPrintAll(this);
+            },
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetEmployeeQualificationsByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                        {
+                            "data": "EmployeeQualificationID",
+                            "autoWidth": false,
+                        },
+                        {
+                            "data": "QualificationDegree.QualificationDegreeName",
+                            "autoWidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "Qualification.QualificationName",
+                            "autoWidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "GeneralSpecialization.GeneralSpecializationName",
+                            "autoWidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "ExactSpecialization.ExactSpecializationName",
+                            "autoWidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autoWidth": false,
+                            "render": RenderDateTime
+                        },
+
+            ],
+            destroy: true,
+        });
+    }
+
+    function BindPromotions() {
+        $('#tblPromotionsRecordEmployee').DataTable({
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetPromotionRecordsByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                        {
+                            "data": "Year",
+                            "autowidth": true,
+                        },
+                        {
+                            "data": "PeriodName",
+                            "autowidth": true,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "PromotionRecordNo",
+                            "autowidth": true,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "PromotionRecordDate",
+                            "autowidth": true,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "PromotionRecordStatusName",
+                            "autowidth": true,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "PromotionRecordRankName",
+                            "autowidth": true,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "PromotionRecordJobCategoryName",
+                            "autowidth": true,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "IsPromoted",
+                            "autowidth": true,
+                            "render": function (data, type, row) {
+                                var checked = data ? "checked" : "";
+                                return '<input type="checkbox" disabled ' + checked + ' />';
+                            }
+                        },
+                        {
+                            "data": "IsRemoval",
+                            "autowidth": true,
+                            "defaultContent": "",
+                            "render": RenderCheckBox
+                        },
+                        {
+                            "data": "PromotionCandidateAddedWayName",
+                            "autowidth": true,
+                            "defaultContent": ""
+                        },
+            ],
+            destroy: true,
+        });
+    }
+
+    function BindStopWorks() {
+        $('#tblStopWorks').DataTable({
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetEmployeeStopWorksByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                      {
+                    "data": "StopWorkStartDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                 {
+                     "data": "StopWorkEndDate",
+                     "autowidth": true,
+                     "render": RenderDate
+                 },
+                  {
+                      "data": "IsConvicted",
+                      "autowidth": true,
+                      "render": RenderCheckBox
+                  },
+            ],
+            destroy: true,
+        });
+    }
+
+    function BindEmployeeEvaluation() {
+
+         $("#tblEmployeeEvaluation").DataTable({
+             "autoWidth": false,
+             "ajax": {
+                "url": "/Employees/GetEmployeeEvaluationByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+             "columns": [
+                 {
+                     "data": "MaturityYearsBalances.MaturityYear",
+                     "autowidth": true,
+                     "defaultContent": ""
+                 },
+                 {
+                     "data": "EvaluationPoints.Evaluation",
+                     "autowidth": true,
+                     "defaultContent": ""
+                 },
+                 {
+                     "data": "EvaluationPoints.EvaluationPoint",
+                     "autowidth": true,
+                     "defaultContent": ""
+                 },
+                 {
+                     "data": "EvaluationDegree",
+                     "autowidth": true,
+                     "defaultContent": ""
+                 },
+                 {
+                     "data": "CreatedBy",
+                     "autowidth": true,
+                 },
+                 {
+                     "data": "CreatedDate",
+                     "autowidth": true,
+                     "render": RenderDateTime
+                 }
+             ],
+            destroy: true,
+        });
+    }
+
+    function BindOldJobs() {
+        $('#tblOldJobs').DataTable({
+            "initComplete": function (settings, json) {
+                ResetPrintAll(this);
+            },
+            "autoWidth": false,
+            "ajax": {
+                "url": "/Employees/GetOldJobsByEmployeeCodeID",
+                "type": "get",
+                "data": { id: EmployeeCodeID },
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "EmployeeOldJobStartDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                },
+                {
+                    "data": "EmployeeOldJobEndDate",
+                    "autoWidth": false,
+                    "render": RenderDate
+                }, 
+                {
+                    "data": "JobName",
+                    "autoWidth": false
+                },
+                {
+                    "data": "OrganizationName",
+                    "autoWidth": false
+                }, 
+                {
+                    "data": "RankName",
+                    "autoWidth": false
+                },
+                
+                 {
+                     "data": "CareerDegreeName",
+                    "autoWidth": false
+                },
+            ],
+            destroy: true,
+        });
+    }
+
+    function Reset(controlId) {
+        EmployeeCodeID = 0;
+        ResetDataTables();
+        //--==========================
+        $("input[type=text]:not(" + controlId + ")").val("");
+        $("input[type=hidden]").val("");
+        document.getElementById("imgEmployeePicture").src = "/Content/Images/anonymous.png";
+    }
+
+    function ResetDataTables() {
+        var tables = $('.dataTable').DataTable();
+        for (var i = 0; i < tables.context.length; i++) {
+            tables.table(i).clear().draw();
+            $("#" + tables.table(i).node().id + " tfoot #aPrintAll").hide();
+        }
+    }
+
+    function OpenEmployeesNamePopup() {
+           $("#OpenEmployeesNamePopup").click(function () {
+            ShowModal("#divEmployeesNameModal");
+        });
+    }
+
+    function BindEmployeesName() {
+        var tblEmployees = $("#tblEmployeesName").DataTable({
+            "ajax": {
+                "url": "/Employees/GetEmployeesCodes",
+                "type": "get",
+                "datatype": "json",
+                "data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+            "serverSide": true,
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        return '<a onClick="closeEmployeesNamePopup(' + data + ')"><span class="glyphicon glyphicon-thumbs-up" /></a>'
+                    }
+                },
+            ]
+        });
+    }
+
+    function closeEmployeesNamePopup(EmployeeCodeNo)
+    {
+        if (EmployeeCodeNo != '') {
+            GetByEmployeeCodeNo(EmployeeCodeNo);
+            DestroyModal("#divEmployeesNameModal");
+            }
+            else {
+
+                Reset();
+            }
+    }
+
+    function GetByEmployeeCodeNo(EmployeeCodeNo) {
+        $.ajax({
+            type: "POST"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/Employees/GetEmployeeByEmployeeCodeNo/" + EmployeeCodeNo
+            //, data: "{ 'EmployeeCodeNo' : '" + $("#txtEmployeeCodeNo").val() +
+            //        "'}"
+            , success: function (data) {
+                if (data.Employee != null) {
+                    $("#hdnFldEmployeeCodeID").val(data.EmployeeCodeID);
+                    $("#txtEmployeeCodeNo").val(data.EmployeeCodeNo)
+                    $("#txtEmployeeNameAr").val(data.Employee.EmployeeNameAr);
+                    $("#txtEmployeeNameEn").val(data.Employee.EmployeeNameEn);
+                    $("#txtEmployeeIDNo").val(data.Employee.EmployeeIDNo);
+                    $("#txtEmployeeEMail").val(data.Employee.EmployeeEMail);
+                    $("#txtEmployeeBirthDate").val(RenderDate(data.Employee.EmployeeBirthDate));
+                    $("#txtEmployeeBirthPlace").val(data.Employee.EmployeeBirthPlace);
+                    $("#txtEmployeeMobileNo").val(data.Employee.EmployeeMobileNo);
+                    $("#txtEmployeePassportNo").val(data.Employee.EmployeePassportNo);
+                    $("#txtEmployeeIDIssueDate").val(RenderDate(data.Employee.EmployeeIDIssueDate));
+                    $("#txtEmployeePassportSource").val(data.Employee.EmployeePassportSource);
+                    $("#txtEmployeePassportIssueDate").val(RenderDate(data.Employee.EmployeePassportIssueDate));
+                    $("#txtEmployeePassportEndDate").val(RenderDate(data.Employee.EmployeePassportEndDate));
+                    document.getElementById("imgEmployeePicture").src = "data:image/jpg;base64," + data.Employee.EmployeePicture;
+                    EmployeeCodeID = data.EmployeeCodeID;
+                    BindCareerHistory();
+                    ResetDataTables();
+                }
+                else {
+                    Reset();
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Notice, Globals.Utilities.RemoveSpace(@Resources.Globalization.NoEmployeeFoundText))');
+                }
+            }
+            , error: function (jqXHR, exception) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+            }
+        });
+    }
+
+    function BindPassengerOrdersItineraries(PassengerOrderID) {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "/PassengerOrders/GetPassengerOrdersItinerariesByPassengerOrderID/" + PassengerOrderID,
+            success: function (result) {
+                $("#tblPassengerOrdersItineraries").DataTable({
+                    destroy: true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "FromCity",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "ToCity",
+                            "autowidth": true
+                        }
+                    ]
+                });
+
+            }
+        });
+    }
+
+    function OpenPassengerOrdersItineraries(PassengerOrderID) {
+
+        BindPassengerOrdersItineraries(PassengerOrderID)
+        ShowModal("#divPassengerOrdersItinerariesModal");
+
+    }
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.EmployeeProfileText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.EmployeeProfileDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblEmployeeProfile" class="table table-responsive table-condensed table-striped">
+            <tbody>
+                <tr>
+                    <td>
+                        <label class="control-label">@Resources.Globalization.EmployeeCodeNoText</label>
+                    </td>
+                    <td>
+                        <label class="control-label">@Resources.Globalization.EmployeeIDNoText</label>
+                    </td>
+                    <td rowspan="4" style="text-align:center;vertical-align:middle">
+                        <img id="imgEmployeePicture" style="width:150px;height:150px" src="/Content/Images/anonymous.png" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="text" id="txtEmployeeCodeNo" class="form-control" maxlength="8" />
+                        <input type="hidden" id="hdnFldEmployeeCodeID" />
+                    </td>
+                    <td>
+                        <input type="text" id="txtEmployeeIDNo" class="form-control" maxlength="10" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label class="control-label">@Resources.Globalization.EmployeeNameArText</label>
+                    </td>
+                    <td>
+                        <label class="control-label">@Resources.Globalization.EmployeeNameEnText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" id="txtEmployeeNameAr" readonly="readonly" class="form-control col-md-10" />
+                            <span id="OpenEmployeesNamePopup" class="input-group-addon clickable" title="@Resources.Globalization.SearchAboutEmployeeTooltip">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" id="txtEmployeeNameEn" class="form-control" readonly />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <label class="control-label">@Resources.Globalization.EmployeeBirthDateText</label>
+                    </td>
+                    <td class="col-md-4">
+                        <label class="control-label">@Resources.Globalization.EmployeeBirthPlaceText</label>
+                    </td>
+                    <td class="col-md-4">
+                        <label class="control-label">@Resources.Globalization.EmployeeMobileNoText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <input type="text" id="txtEmployeeBirthDate" class="form-control" readonly />
+                    </td>
+                    <td class="col-md-4">
+                        <input type="text" id="txtEmployeeBirthPlace" class="form-control" readonly />
+                    </td>
+                    <td class="col-md-4">
+                        <input type="text" id="txtEmployeeMobileNo" class="form-control" readonly />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <label class="control-label">@Resources.Globalization.EmployeePassportNoText</label>
+                    </td>
+                    <td class="col-md-4">
+                        <label class="control-label">@Resources.Globalization.EmployeeEMailText</label>
+                    </td>
+                    <td class="col-md-4">
+                        <label class="control-label">@Resources.Globalization.EmployeeIDIssueDateText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <input type="text" id="txtEmployeePassportNo" class="form-control" readonly />
+                    </td>
+                    <td class="col-md-4">
+                        <input type="text" id="txtEmployeeEMail" class="form-control" readonly />
+                    </td>
+                    <td class="col-md-4">
+                        <input type="text" id="txtEmployeeIDIssueDate" class="form-control" readonly />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <label class="control-label">@Resources.Globalization.EmployeePassportSourceText</label>
+                    </td>
+                    <td class="col-md-4">
+                        <label class="control-label">@Resources.Globalization.EmployeePassportIssueDateText</label>
+                    </td>
+                    <td class="col-md-4">
+                        <label class="control-label">@Resources.Globalization.EmployeePassportEndDateText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <input type="text" id="txtEmployeePassportSource" class="form-control" readonly />
+                    </td>
+                    <td class="col-md-4">
+                        <input type="text" id="txtEmployeePassportIssueDate" class="form-control" readonly />
+                    </td>
+                    <td class="col-md-4">
+                        <input type="text" id="txtEmployeePassportEndDate" class="form-control" readonly />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#TabCareerHistory" data-toggle="tab">@Resources.Globalization.CareerHistoryText</a>
+                            </li>
+                            <li>
+                                <a href="#TabDelegations" data-toggle="tab">@Resources.Globalization.EmployeeDelegationText</a>
+                            </li>
+                            <li>
+                                <a href="#TabPassengerOrders" data-toggle="tab">@Resources.Globalization.EmployeePassengerOrdersText</a>
+                            </li>
+                            <li>
+                                <a href="#TabOverTimes" data-toggle="tab">@Resources.Globalization.EmployeeOverTimeText</a>
+                            </li>
+                            <li>
+                                <a href="#TabGovernmentFunds" data-toggle="tab">@Resources.Globalization.GovernmentFundsText</a>
+                            </li>
+                            <li>
+                                <a href="#TabEmployeeAllowances" data-toggle="tab">@Resources.Globalization.EmployeeAllowanceText</a>
+                            </li>
+                            <li>
+                                <a href="#TabAssignings" data-toggle="tab">@Resources.Globalization.EmployeeAssigningText</a>
+                            </li>
+                            <li>
+                                <a href="#TabLenders" data-toggle="tab">@Resources.Globalization.EmployeeLenderText</a>
+                            </li>
+                            <li>
+                                <a href="#TabInternshipScholarships" data-toggle="tab">@Resources.Globalization.InternshipScholarshipsText</a>
+                            </li>
+                            <li>
+                                <a href="#TabVacations" data-toggle="tab">@Resources.Globalization.EmployeeVacationText</a>
+                            </li>
+                            <li>
+                                <a href="#TabScholarships" data-toggle="tab">@Resources.Globalization.EmployeeScholarshipText</a>
+                            </li>
+                            <li>
+                                <a href="#TabEmployeeExperiences" data-toggle="tab">@Resources.Globalization.EmployeeExperienceText</a>
+                            </li>
+                            <li>
+                                <a href="#TabEmployeeQualifications" data-toggle="tab">@Resources.Globalization.EmployeeQualificationText</a>
+                            </li>
+                            <li>
+                                <a href="#TabPromotions" data-toggle="tab">@Resources.Globalization.EmployeePromotionsRecordText</a>
+                            </li>
+                            <li>
+                                <a href="#TabStopWorks" data-toggle="tab">@Resources.Globalization.EmployeeStopWorksText</a>
+                            </li>
+                            <li>
+                                <a href="#TabEmployeeEvaluation" data-toggle="tab">@Resources.Globalization.EmployeeEvaluationText</a>
+                            </li>
+                            <li>
+                                <a href="#TabOldJobs" data-toggle="tab">@Resources.Globalization.EmployeePreviousCareerDetailsText</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content clearfix">
+                            <div id="TabCareerHistory" class="tab-pane active padding-5">
+                                <table id="tblCareerHistory" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>@Resources.Globalization.CareerHistoryTypeNameText</td>
+                                            <td>@Resources.Globalization.OrganizationNameText</td>
+                                            <td>@Resources.Globalization.RankNameText</td>
+                                            <td>@Resources.Globalization.JobNameText</td>
+                                            <td>@Resources.Globalization.JobNoText</td>
+                                            <td>@Resources.Globalization.CareerDegreeNameText</td>
+                                            <td>@Resources.Globalization.JoinDateText</td>
+                                            <td>@Resources.Globalization.IsCurrentCareerHistoryText</td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>
+                                                @*<button class="btn btn-default" onclick="PrintPromotionCardByEmployeeCodeID()" hidden>
+                                @Resources.Globalization.PrintPromotionCardText
+                            </button>*@
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabDelegations" class="tab-pane padding-5">
+                                <div id="accordion" class="panel-group" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-info">
+                                        <div class="warning panel-heading" data-toggle="collapse" data-target="#divDelegations" data-parent="#accordion" aria-expanded="true" style="cursor:pointer">
+                                            <div class="panel-title">
+                                                <a data-toggle="collapse" data-target="#divDelegations" data-parent="#accordion" aria-expanded="true">
+                                                    @Resources.Globalization.DelegationsListText
+                                                </a>
+                                                <div style="float:left">
+                                                    @*<span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-down"></i></span>*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="divDelegations" class="panel-body collapse clickable" role="tabpanel">
+                                            <table id="tblDelegations" class="dataTable" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <td>@Resources.Globalization.SequenceNoText</td>
+                                                        <td>@Resources.Globalization.DelegationTypeText</td>
+                                                        <td>@Resources.Globalization.DelegationKindText</td>
+                                                        <td>@Resources.Globalization.DelegationStartDateText</td>
+                                                        <td>@Resources.Globalization.DelegationEndDateText</td>
+                                                        <td>@Resources.Globalization.DelegationPeriodText</td>
+                                                        <td>@Resources.Globalization.OrganizationText</td>
+                                                        <td></td>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th>
+                                                            <a id="aPrintAll" onclick="PrintAll('@HCMBLL.Enums.BusinessSubCategoriesEnum.Delegations')" title="@Resources.Globalization.PrintAllText" hidden>
+                                                                <span class="glyphicon glyphicon-print"></span>
+                                                            </a>
+                                                        </th>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-info">
+                                        <div class="panel-heading" data-toggle="collapse" data-target="#divDelegationBalance" data-parent="#accordion" aria-expanded="true" style="cursor:pointer">
+                                            <div class="panel-title">
+                                                <a>
+                                                    @Resources.Globalization.DelegationsYearsBalanceText
+                                                </a>
+                                                <div style="float:left">
+                                                    @*<span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-down"></i></span>*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="divDelegationBalance" class="panel-body collapse clickable" role="tabpanel">
+                                            <table id="tblDelegationBalance" class="dataTable" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <td>@Resources.Globalization.FinancialYearText</td>
+                                                        <td>@Resources.Globalization.DelegationBalanceText</td>
+                                                        <td>@Resources.Globalization.DelegationConsumedBalanceText</td>
+                                                        <td>@Resources.Globalization.DelegationRemainingBalanceText</td>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="TabPassengerOrders" class="tab-pane padding-5">
+                                <table id="tblPassengerOrders" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>@Resources.Globalization.SequenceNoText</td>
+                                            <td>@Resources.Globalization.TravellingDateText</td>
+                                            <td>@Resources.Globalization.GoingText</td>
+                                            <td>@Resources.Globalization.ReturningText</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>
+                                                <a id="aPrintAll" onclick="PrintAll('@HCMBLL.Enums.BusinessSubCategoriesEnum.PassengerOrders')" title="@Resources.Globalization.PrintAllText" hidden>
+                                                    <span class="glyphicon glyphicon-print"></span>
+                                                </a>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabOverTimes" class="tab-pane padding-5">
+                                <table id="tblOverTimes" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>@Resources.Globalization.OverTimeStartDateText</td>
+                                            <td>@Resources.Globalization.OverTimeEndDateText</td>
+                                            <td>@Resources.Globalization.OverTimePeriodText</td>
+                                            <td>@Resources.Globalization.OverTimeTaskText</td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>
+                                                <a id="aPrintAll" onclick="PrintAll('@HCMBLL.Enums.BusinessSubCategoriesEnum.OverTimes')" title="@Resources.Globalization.PrintAllText" hidden>
+                                                    <span class="glyphicon glyphicon-print"></span>
+                                                </a>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabGovernmentFunds" class="tab-pane padding-5">
+                                <table id="tblGovernmentFunds" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>@Resources.Globalization.GovernmentDeductionsTypesText</td>
+                                            <td>@Resources.Globalization.GovernmentFundsTypesText</td>
+                                            <td>@Resources.Globalization.MonthlyDeductionAmountText</td>
+                                            <td>@Resources.Globalization.TotalDeductionAmountText</td>
+                                            <td>@Resources.Globalization.DeductionStartDateText</td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>
+                                                <a id="aPrintAll" onclick="PrintAll('@HCMBLL.Enums.BusinessSubCategoriesEnum.GovernmentFunds')" title="@Resources.Globalization.PrintAllText" hidden>
+                                                    <span class="glyphicon glyphicon-print"></span>
+                                                </a>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabEmployeeAllowances" class="tab-pane padding-5">
+                                <table id="tblEmployeeAllowances" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>@Resources.Globalization.AllowanceNameText</td>
+                                            <td>@Resources.Globalization.JobNameText</td>
+                                            <td>@Resources.Globalization.AllowanceStartDateText</td>
+                                            <td>@Resources.Globalization.IsActiveText</td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>
+                                                <a id="aPrintAll" onclick="PrintAll('@HCMBLL.Enums.BusinessSubCategoriesEnum.EmployeesAllowances')" title="@Resources.Globalization.PrintAllText" hidden>
+                                                    <span class="glyphicon glyphicon-print"></span>
+                                                </a>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabAssignings" class="tab-pane padding-5">
+                                <table id="tblAssignings" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            @*<td>@Resources.Globalization.AssigningTypeText</td>*@
+                                            <td>@Resources.Globalization.OrganizationText</td>
+                                            <td>@Resources.Globalization.JobNameText</td>
+                                            <td>@Resources.Globalization.AssigningStartDateText</td>
+                                            <td>@Resources.Globalization.AssigningEndDateText</td>
+                                            <td>@Resources.Globalization.AssigningIsFinishedText</td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            @*<th></th>*@
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>
+                                                <a id="aPrintAll" onclick="PrintAll('@HCMBLL.Enums.BusinessSubCategoriesEnum.Assignings')" title="@Resources.Globalization.PrintAllText" hidden>
+                                                    <span class="glyphicon glyphicon-print"></span>
+                                                </a>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabLenders" class="tab-pane padding-5">
+                                <table id="tblLenders" class="dataTable" style="width:100%">
+
+                                    <thead>
+                                        <tr>
+                                            <td>@Resources.Globalization.LenderStartDateText</td>
+                                            <td>@Resources.Globalization.LenderEndDateText</td>
+                                            <td>@Resources.Globalization.LenderOrganizationText</td>
+                                            <td>@Resources.Globalization.KSACityText</td>
+                                            <td>@Resources.Globalization.LenderIsFinishedText</td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>
+                                                <a id="aPrintAll" onclick="PrintAll('@HCMBLL.Enums.BusinessSubCategoriesEnum.Lenders')" title="@Resources.Globalization.PrintAllText" hidden>
+                                                    <span class="glyphicon glyphicon-print"></span>
+                                                </a>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabInternshipScholarships" class="tab-pane padding-5">
+                                <table id="tblInternshipScholarships" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>@Resources.Globalization.InternshipScholarshipTypeText</td>
+                                            <td>@Resources.Globalization.InternshipScholarshipStartDateText</td>
+                                            <td>@Resources.Globalization.InternshipScholarshipEndDateText</td>
+                                            <td>@Resources.Globalization.InternshipScholarshipPeriodText</td>
+                                            <td>@Resources.Globalization.InternshipScholarshipLocationText</td>
+                                            <td>@Resources.Globalization.CountryOrCityText</td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>
+                                                <a id="aPrintAll" onclick="PrintAll('@HCMBLL.Enums.BusinessSubCategoriesEnum.InternshipScholarships')" title="@Resources.Globalization.PrintAllText" hidden>
+                                                    <span class="glyphicon glyphicon-print"></span>
+                                                </a>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabVacations" class="tab-pane padding-5">
+                                <table id="tblVacations" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>@Resources.Globalization.SequenceNoText</td>
+                                            <td>@Resources.Globalization.VacationTypeText</td>
+                                            <td>@Resources.Globalization.VacationStartDateText</td>
+                                            <td>@Resources.Globalization.VacationEndDateText</td>
+                                            <td>@Resources.Globalization.VacationPeriodText</td>
+                                            <td>@Resources.Globalization.VacationActionText</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>
+                                                <a id="aPrintAll" onclick="PrintAll('@HCMBLL.Enums.BusinessSubCategoriesEnum.Vacations')" title="@Resources.Globalization.PrintAllText" hidden>
+                                                    <span class="glyphicon glyphicon-print"></span>
+                                                </a>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabScholarships" class="tab-pane padding-5">
+                                <table id="tblScholarships" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>@Resources.Globalization.ScholarshipTypeText</td>
+                                            <td>@Resources.Globalization.ScholarshipStartDateText</td>
+                                            <td>@Resources.Globalization.ScholarshipEndDateText</td>
+                                            <td>@Resources.Globalization.ScholarshipPeriodText</td>
+                                            <td>@Resources.Globalization.ScholarshipLocationText</td>
+                                            <td>@Resources.Globalization.IsPassedText</td>
+                                            <td>@Resources.Globalization.CreatedDateText</td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>
+                                                <a id="aPrintAll" onclick="PrintAll('@HCMBLL.Enums.BusinessSubCategoriesEnum.Scholarships')" title="@Resources.Globalization.PrintAllText" hidden>
+                                                    <span class="glyphicon glyphicon-print"></span>
+                                                </a>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabEmployeeExperiences" class="tab-pane padding-5">
+                                <table id="tblEmployeeExperience" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>@Resources.Globalization.EmployeeJobNameText</td>
+                                            <td>@Resources.Globalization.FromDateText</td>
+                                            <td>@Resources.Globalization.ToDateText</td>
+                                            <td>@Resources.Globalization.SectorNameText</td>
+                                            <td>@Resources.Globalization.SectorTypeText</td>
+                                            <td>@Resources.Globalization.EmployeeExperienceInYearsText</td>
+                                            <td>@Resources.Globalization.EmployeeExperienceInMonthsText</td>
+                                            <td>@Resources.Globalization.EmployeeExperienceInDaysText</td>
+                                            <td>@Resources.Globalization.CreatedByText</td>
+                                            <td>@Resources.Globalization.CreatedDateText</td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>@Resources.Globalization.EmployeeExperienceTotalExperiencesTitleText</th>
+                                            <th colspan="3">
+                                                <span id="lblTotalExperiencesInYears"></span>  @Resources.Globalization.EmployeeExperienceInYearsText
+                                                <span id="lblTotalExperiencesInMonths"></span>  @Resources.Globalization.EmployeeExperienceInMonthsText
+                                                <span id="lblTotalExperiencesInDays"></span>  @Resources.Globalization.EmployeeExperienceInDaysText
+                                            </th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>
+                                                <a id="aPrintAll" onclick="PrintAll('@HCMBLL.Enums.BusinessSubCategoriesEnum.EmployeesExperiencesDetails')" title="@Resources.Globalization.PrintAllText" hidden>
+                                                    <span class="glyphicon glyphicon-print"></span>
+                                                </a>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabEmployeeQualifications" class="tab-pane padding-5">
+                                <table id="tblEmployeeQualification" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>@Resources.Globalization.SequenceNoText</td>
+                                            <td>@Resources.Globalization.QualificationDegreeNameText</td>
+                                            <td>@Resources.Globalization.QualificationNameText</td>
+                                            <td>@Resources.Globalization.GeneralSpecializationNameText</td>
+                                            <td>@Resources.Globalization.ExactSpecializationNameText</td>
+                                            <td>@Resources.Globalization.CreatedDateText</td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>
+                                                <a id="aPrintAll" onclick="PrintAll('@HCMBLL.Enums.BusinessSubCategoriesEnum.EmployeesQualifications')" title="@Resources.Globalization.PrintAllText" hidden>
+                                                    <span class="glyphicon glyphicon-print"></span>
+                                                </a>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabPromotions" class="tab-pane padding-5">
+                                <table id="tblPromotionsRecordEmployee" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>@Resources.Globalization.YearText</td>
+                                            <td>@Resources.Globalization.PromotionPeriodNameText</td>
+                                            <td>@Resources.Globalization.PromotionRecordNoText</td>
+                                            <td>@Resources.Globalization.PromotionRecordDateText</td>
+                                            <td>@Resources.Globalization.PromotionRecordStatusText</td>
+                                            <td>@Resources.Globalization.RankNameText</td>
+                                            <td>@Resources.Globalization.JobCategoryNameText</td>
+                                            <td>@Resources.Globalization.IsPromotedText</td>
+                                            <td>@Resources.Globalization.IsRemovedAfterIncludingText</td>
+                                            <td>@Resources.Globalization.PromotionCandidateAddedWayText</td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabStopWorks" class="tab-pane padding-5">
+                                <table id="tblStopWorks" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>@Resources.Globalization.StopWorkStartDateText</td>
+                                            <td>@Resources.Globalization.StopWorkEndDateText</td>
+                                            <td>@Resources.Globalization.IsConvictedText</td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabEmployeeEvaluation" class="tab-pane padding-5">
+                                <table id="tblEmployeeEvaluation" class="dataTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>
+                                                @Resources.Globalization.MaturityYearBalanceText
+                                            </td>
+                                            <td>
+                                                @Resources.Globalization.EvaluationText
+                                            </td>
+                                            <td>
+                                                @Resources.Globalization.EvaluationPointsText
+                                            </td>
+                                            <td>
+                                                @Resources.Globalization.EvaluationDegreeText
+                                            </td>
+                                            <td>
+                                                @Resources.Globalization.CreatedByText
+                                            </td>
+                                            <td>
+                                                @Resources.Globalization.CreatedDateText
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div id="TabOldJobs" class="tab-pane padding-5">
+                                 <table id="tblOldJobs" class="dataTable" style="width:100%">
+        <thead>
+            <tr>
+                <td>@Resources.Globalization.StartDateText</td>
+                <td>@Resources.Globalization.EndDateText</td>
+                <td>@Resources.Globalization.JobNameText</td>
+                <td>@Resources.Globalization.OrganizationNameText</td>
+                <td>@Resources.Globalization.RankNameText</td>
+                <td>@Resources.Globalization.CareerDegreeNameText</td>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th class="col-md-2"></th>
+                <th class="col-md-2"></th>
+                <th class="col-md-2"></th>
+                <th class="col-md-3"></th>
+                <th class="col-md-1"></th>
+                <th class="col-md-2"></th>
+            </tr>
+                                    </tfoot>
+                                </table>
+                                
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal fade" id="divEmployeesNameModal">
+        <div class="modal-dialog" style="width:800px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div style="float:left">
+                        <button data-dismiss="modal" class="close">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-title">
+                        @Resources.Globalization.EmployeesListText
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @*<div class="alert alert-danger" style="padding:6px">
+                                    <p>@Resources.Globalization.EmployeeMustBeCreatedFirstText</p>
+                                </div>*@
+                        </div>
+                    </div>
+                    <table id="tblEmployeesName" class="table table-responsive table-hover dataTable" style="width:100%">
+                        <thead>
+                            <tr>
+                                <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                                <td>@Resources.Globalization.EmployeeNameArText</td>
+                                <td>@Resources.Globalization.SelectText</td>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="modal-footer" style="margin:0">
+                    <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="divPassengerOrdersItinerariesModal">
+        <div class="modal-dialog" style="width:800px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div style="float:left">
+                        <button data-dismiss="modal" class="close">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-title">
+                        @Resources.Globalization.PassengerOrderItinerariesText
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @*<div class="alert alert-danger" style="padding:6px">
+                                <p>@Resources.Globalization.EmployeeMustBeCreatedFirstText</p>
+                            </div>*@
+                        </div>
+                    </div>
+                    <table id="tblPassengerOrdersItineraries" class="table table-responsive table-hover" style="width:100%">
+                        <thead>
+                            <tr>
+                                <td>@Resources.Globalization.FromCityText</td>
+                                <td>@Resources.Globalization.ToCityText</td>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="modal-footer" style="margin:0">
+                    <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

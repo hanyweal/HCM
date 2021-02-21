@@ -1,0 +1,147 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "HCMUML", "HCMUML\HCMUML.modelproj", "{2F6B602D-4E05-4E25-9FE0-32DA21A544E3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{832C5179-781E-4AE4-952F-95F73ED96DF2} = {832C5179-781E-4AE4-952F-95F73ED96DF2}
+		{EA9C07A4-3A04-44BC-BB41-821178B6217C} = {EA9C07A4-3A04-44BC-BB41-821178B6217C}
+		{6DEF05DA-E88D-4AE8-AA01-5B09FEDC969A} = {6DEF05DA-E88D-4AE8-AA01-5B09FEDC969A}
+	EndProjectSection
+EndProject
+Project("{F14B399A-7131-4C87-9E4B-1186C45EF12D}") = "HCMReporting", "HCMReporting\HCMReporting.rptproj", "{F8F0822D-C409-442A-806E-B66CFC0E4020}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCM", "HCM\HCM.csproj", "{55715215-29E1-46F1-8B93-90FFD1B365C5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EA9C07A4-3A04-44BC-BB41-821178B6217C} = {EA9C07A4-3A04-44BC-BB41-821178B6217C}
+		{6DEF05DA-E88D-4AE8-AA01-5B09FEDC969A} = {6DEF05DA-E88D-4AE8-AA01-5B09FEDC969A}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCMBLL", "HCMBLL\HCMBLL.csproj", "{832C5179-781E-4AE4-952F-95F73ED96DF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCMDAL", "HCMDAL\HCMDAL.csproj", "{6DEF05DA-E88D-4AE8-AA01-5B09FEDC969A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCMServices", "HCMServices\HCMServices.csproj", "{EA9C07A4-3A04-44BC-BB41-821178B6217C}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "HCMDB", "HCMDB\HCMDB.sqlproj", "{92B61498-16E1-440F-B7B9-D7183176EAB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCMWindowsService", "HCMWindowsService\HCMWindowsService.csproj", "{54DF461C-8C4E-46CA-AB88-BB3049569A0D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WindowsServices", "WindowsServices", "{136860E3-7F45-4D06-86A3-CB2FB451F6AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCMDisactiveEmployeeBasedOnBusinessProcess", "HCMDisableEmployeeBasedOnBuisnessProcess\HCMDisactiveEmployeeBasedOnBusinessProcess.csproj", "{1CFF3D8C-3475-4704-9A75-D361944CF2C1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		DebugLocal|Any CPU = DebugLocal|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F6B602D-4E05-4E25-9FE0-32DA21A544E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F6B602D-4E05-4E25-9FE0-32DA21A544E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F6B602D-4E05-4E25-9FE0-32DA21A544E3}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F6B602D-4E05-4E25-9FE0-32DA21A544E3}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{2F6B602D-4E05-4E25-9FE0-32DA21A544E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F6B602D-4E05-4E25-9FE0-32DA21A544E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8F0822D-C409-442A-806E-B66CFC0E4020}.Debug|Any CPU.ActiveCfg = Debug
+		{F8F0822D-C409-442A-806E-B66CFC0E4020}.Debug|Any CPU.Build.0 = Debug
+		{F8F0822D-C409-442A-806E-B66CFC0E4020}.Debug|Any CPU.Deploy.0 = Debug
+		{F8F0822D-C409-442A-806E-B66CFC0E4020}.DebugLocal|Any CPU.ActiveCfg = DebugLocal
+		{F8F0822D-C409-442A-806E-B66CFC0E4020}.DebugLocal|Any CPU.Build.0 = DebugLocal
+		{F8F0822D-C409-442A-806E-B66CFC0E4020}.Release|Any CPU.ActiveCfg = Release
+		{F8F0822D-C409-442A-806E-B66CFC0E4020}.Release|Any CPU.Build.0 = Release
+		{F8F0822D-C409-442A-806E-B66CFC0E4020}.Release|Any CPU.Deploy.0 = Release
+		{55715215-29E1-46F1-8B93-90FFD1B365C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55715215-29E1-46F1-8B93-90FFD1B365C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55715215-29E1-46F1-8B93-90FFD1B365C5}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{55715215-29E1-46F1-8B93-90FFD1B365C5}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{55715215-29E1-46F1-8B93-90FFD1B365C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55715215-29E1-46F1-8B93-90FFD1B365C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{832C5179-781E-4AE4-952F-95F73ED96DF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{832C5179-781E-4AE4-952F-95F73ED96DF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{832C5179-781E-4AE4-952F-95F73ED96DF2}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{832C5179-781E-4AE4-952F-95F73ED96DF2}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{832C5179-781E-4AE4-952F-95F73ED96DF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{832C5179-781E-4AE4-952F-95F73ED96DF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DEF05DA-E88D-4AE8-AA01-5B09FEDC969A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DEF05DA-E88D-4AE8-AA01-5B09FEDC969A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DEF05DA-E88D-4AE8-AA01-5B09FEDC969A}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DEF05DA-E88D-4AE8-AA01-5B09FEDC969A}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{6DEF05DA-E88D-4AE8-AA01-5B09FEDC969A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DEF05DA-E88D-4AE8-AA01-5B09FEDC969A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA9C07A4-3A04-44BC-BB41-821178B6217C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA9C07A4-3A04-44BC-BB41-821178B6217C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA9C07A4-3A04-44BC-BB41-821178B6217C}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA9C07A4-3A04-44BC-BB41-821178B6217C}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{EA9C07A4-3A04-44BC-BB41-821178B6217C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA9C07A4-3A04-44BC-BB41-821178B6217C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92B61498-16E1-440F-B7B9-D7183176EAB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92B61498-16E1-440F-B7B9-D7183176EAB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92B61498-16E1-440F-B7B9-D7183176EAB3}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{92B61498-16E1-440F-B7B9-D7183176EAB3}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{92B61498-16E1-440F-B7B9-D7183176EAB3}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{92B61498-16E1-440F-B7B9-D7183176EAB3}.DebugLocal|Any CPU.Deploy.0 = Debug|Any CPU
+		{92B61498-16E1-440F-B7B9-D7183176EAB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92B61498-16E1-440F-B7B9-D7183176EAB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92B61498-16E1-440F-B7B9-D7183176EAB3}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{54DF461C-8C4E-46CA-AB88-BB3049569A0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54DF461C-8C4E-46CA-AB88-BB3049569A0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54DF461C-8C4E-46CA-AB88-BB3049569A0D}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{54DF461C-8C4E-46CA-AB88-BB3049569A0D}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{54DF461C-8C4E-46CA-AB88-BB3049569A0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54DF461C-8C4E-46CA-AB88-BB3049569A0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CFF3D8C-3475-4704-9A75-D361944CF2C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CFF3D8C-3475-4704-9A75-D361944CF2C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CFF3D8C-3475-4704-9A75-D361944CF2C1}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CFF3D8C-3475-4704-9A75-D361944CF2C1}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{1CFF3D8C-3475-4704-9A75-D361944CF2C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CFF3D8C-3475-4704-9A75-D361944CF2C1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{54DF461C-8C4E-46CA-AB88-BB3049569A0D} = {136860E3-7F45-4D06-86A3-CB2FB451F6AE}
+		{1CFF3D8C-3475-4704-9A75-D361944CF2C1} = {136860E3-7F45-4D06-86A3-CB2FB451F6AE}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5D336C9B-6A31-4BC6-A31E-135AB79F1FB2}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 10
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://mic-azuredevops/humanresources
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = HCMUML\\HCMUML.modelproj
+		SccProjectName1 = HCMUML
+		SccLocalPath1 = HCMUML
+		SccProjectUniqueName2 = HCMReporting\\HCMReporting.rptproj
+		SccProjectName2 = HCMReporting
+		SccLocalPath2 = HCMReporting
+		SccProjectUniqueName3 = HCM\\HCM.csproj
+		SccProjectName3 = HCM
+		SccLocalPath3 = HCM
+		SccProjectUniqueName4 = HCMBLL\\HCMBLL.csproj
+		SccProjectName4 = HCMBLL
+		SccLocalPath4 = HCMBLL
+		SccProjectUniqueName5 = HCMDAL\\HCMDAL.csproj
+		SccProjectName5 = HCMDAL
+		SccLocalPath5 = HCMDAL
+		SccProjectUniqueName6 = HCMServices\\HCMServices.csproj
+		SccProjectName6 = HCMServices
+		SccLocalPath6 = HCMServices
+		SccProjectUniqueName7 = HCMDB\\HCMDB.sqlproj
+		SccProjectName7 = HCMDB
+		SccLocalPath7 = HCMDB
+		SccProjectUniqueName8 = HCMWindowsService\\HCMWindowsService.csproj
+		SccProjectTopLevelParentUniqueName8 = HCM.sln
+		SccProjectName8 = HCMWindowsService
+		SccLocalPath8 = HCMWindowsService
+		SccProjectUniqueName9 = HCMDisableEmployeeBasedOnBuisnessProcess\\HCMDisactiveEmployeeBasedOnBusinessProcess.csproj
+		SccProjectTopLevelParentUniqueName9 = HCM.sln
+		SccProjectName9 = HCMDisableEmployeeBasedOnBuisnessProcess
+		SccLocalPath9 = HCMDisableEmployeeBasedOnBuisnessProcess
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,646 @@
+﻿@model HCM.Models.EmployeeExperiencesWithDetailsViewModel
+@using HCM.Classes.Enums;
+
+@{
+    ViewBag.Title = Resources.Globalization.EmployeesExperiencesDetailsManageText;
+
+    if (Model.HasCreatingAccess)
+    {
+        <p>
+            <a onclick="OpenExperiencePopup(0)"> @Resources.Globalization.CreateNewText</a>
+        </p>
+    }
+}
+
+<script>
+    var PageMode;
+    var EmpExperienceWithDetailID;
+
+    $(document).ready(function () {
+
+        $('#txtToDate').on('focus', function () {
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            //onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+            onSelect: function (dates) {
+                GetGregToDate();
+            }
+        });
+
+        $('#txtFromDate').on('focus', function () {
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            //onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+            onSelect: function (dates) {
+                GetGregDate();
+            }
+        });
+
+        $('#txtGregFromDate').on('focus', function () {
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('gregorian', 'en'),
+            onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+            onSelect: function (dates) {
+                GetHijriDate();
+            }
+        });
+
+        $('#txtGregToDate').on('focus', function () {
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('gregorian', 'en'),
+            onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+            onSelect: function (dates) {
+                GetHijriToDate();
+            }
+        });
+
+        insertSelectionOptionToDDL('ddlSectorType', '-1');
+        GetEmployeeExperiences('@Model.EmployeeVM.EmployeeCodeID');
+
+        $("#BtnSave").click(function () {
+            var fromDate;
+            var ToDate;
+            var url;
+
+            if ($("#txtFromDate").val().length > 0 && $("#txtToDate").val().length > 0) {
+                fromDate = $("#txtFromDate").val();
+                ToDate = $("#txtToDate").val();
+            }
+            else if ($("#txtGregFromDate").val().length > 0 && $("#txtGregToDate").val().length > 0) {
+                fromDate = RenderDate($("#txtGregFromDate").val());
+                ToDate = RenderDate($("#txtGregToDate").val());
+            }
+
+            else if ($("#txtFromDate").val().length > 0 && $("#txtToDate").val().length == 0) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.PleaseSelectEitherGregHijriDateText))');
+                return;
+            }
+
+            else if ($("#txtFromDate").val().length == 0 && $("#txtToDate").val().length > 0) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.PleaseSelectEitherGregHijriDateText))');
+                return;
+            }
+
+            else if ($("#txtGregFromDate").val().length == 0 && $("#txtGregToDate").val().length == 0 && $("#txtFromDate").val().length == 0 && $("#txtToDate").val().length == 0) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.PleaseSelectEitherGregHijriDateText))');
+                return;
+            }
+
+            var EmployeesExperiencesObj =
+            {
+                JobName: $("#txtJobName").val(),
+                SectorName: $("#txtSectorName").val(),
+                FromDate: fromDate,
+                ToDate: ToDate,
+                SectorTypeID: $("#ddlSectorType").val(),
+                EmployeeVM: { EmployeeCodeID: '@Model.EmployeeVM.EmployeeCodeID' },
+                EmployeeExperienceWithDetailID: EmpExperienceWithDetailID,
+            };
+
+            //console.log('EmployeesExperiencesObj', EmployeesExperiencesObj);
+
+            if (PageMode == 'Add')
+                url = 'Create';
+            else
+                url = 'Edit';
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                url: "@Url.Content("~/EmployeeExperiencesWithDetails/")" + url,
+                data: JSON.stringify(EmployeesExperiencesObj),
+                success: function (result) {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+                    GetEmployeeExperiences('@Model.EmployeeVM.EmployeeCodeID');
+                    DestroyModal("#divEmployeeExperienceModal");
+                },
+                error: function (xhr, status, error) {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                }
+            });
+
+        });
+
+    });
+
+    function GetHijriDate() {
+        var FromDt = $("#txtGregFromDate").val();
+         if (FromDt != '') {
+             var fromDate = RenderDate($("#txtGregFromDate").val());
+             $('#txtFromDate').val(fromDate);
+        }
+        else
+            $('#txtFromDate').val('');
+    }
+
+    function GetHijriToDate() {
+        var FromDt = $("#txtGregToDate").val();
+         if (FromDt != '') {
+             var fromDate = RenderDate($("#txtGregToDate").val());
+             $('#txtToDate').val(fromDate);
+        }
+        else
+            $('#txtToDate').val('');
+    }
+
+    function GetGregDate() {
+        var FromDt = $("#txtFromDate").val();
+        if (FromDt != '' ) {
+            $.ajax({
+                type: "Get",
+                url: "@Url.Content("~/EmployeeExperiencesWithDetails/GetGregDate/")" + FromDt,
+                success: function (d) {
+                    $('#txtGregFromDate').val(d.Data.data);
+                },
+                error: function (xhr, status, error) {
+                    AddingFailure();
+                }
+            });
+        }
+        else
+            $('#txtGregFromDate').val('');
+    }
+
+    function GetGregToDate() {
+        var ToDt = $("#txtToDate").val();
+        if (ToDt != '' ) {
+            $.ajax({
+                type: "Get",
+                url: "@Url.Content("~/EmployeeExperiencesWithDetails/GetGregDate/")" + ToDt,
+                success: function (d) {
+                    $('#txtGregToDate').val(d.Data.data);
+                },
+                error: function (xhr, status, error) {
+                    AddingFailure();
+                }
+            });
+        }
+        else
+            $('#txtGregToDate').val('');
+    }
+
+    function OpenExperiencePopup(EmployeeExperienceWithDetailID) {
+        EmpExperienceWithDetailID = EmployeeExperienceWithDetailID;
+        if (EmployeeExperienceWithDetailID > 0)
+            Type = 'Edit';
+        else
+            Type = 'Add';
+
+        if (Type == 'Edit') {
+            Type = 'Edit';
+            $.ajax({
+                type: "Get",
+                contentType: "application/json; charset=utf-8",
+                url: "@Url.Content("~/EmployeeExperiencesWithDetails/GetByID/")" + EmpExperienceWithDetailID,
+                success: function (result) {
+                    $("#txtFromDate").val(RenderDate(result.FromDate));
+                    $("#txtToDate").val(RenderDate(result.ToDate));
+                    $("#txtGregFromDate").val(formatDate(result.FromDate));
+                    $("#txtGregToDate").val(formatDate(result.ToDate));
+                    $("#ddlSectorType").val(result.SectorTypeID);
+                    $("#txtSectorName").val(result.SectorName);
+                    $("#txtJobName").val(result.JobName);
+                },
+                error: function (xhr, status, error) {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                }
+            });
+        }
+        else {
+            $("#txtFromDate").val("");
+            $("#txtToDate").val("");
+            $("#txtSectorName").val("");
+            $("#txtJobName").val("");
+            $("#txtGregFromDate").val("");
+            $("#txtGregToDate").val("");
+        }
+
+        PageMode = Type;
+        ShowModal("#divEmployeeExperienceModal");
+    }
+
+    function RemoveEmployeeExperience(EmployeeExperienceWithDetailID) {
+        $.confirm({
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            animation: 'zoom',
+            boxWidth: '280px',
+            useBootstrap: false,
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $.ajax({
+                            type: 'POST',
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            url: "@Url.Content("~/EmployeeExperiencesWithDetails/Delete/")" + EmployeeExperienceWithDetailID,
+                            success: function (result) {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+                                GetEmployeeExperiences('@Model.EmployeeVM.EmployeeCodeID');
+                            },
+                            error: function (xhr, status, error) {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                            }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    }
+
+    function GetEmployeeExperiences(EmployeeCodeID) {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/EmployeeExperiencesWithDetails/GetEmployeesExperiencesWithDetailByEmployeeCodeID/")" + EmployeeCodeID,
+            success: function (result) {
+                $("#tblEmployeeExperience").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": true,
+                    //"order": [[1, "desc"]],
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "JobName",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "FromDate",
+                            "autowidth": false,
+                            "defaultContent": "",
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "ToDate",
+                            "autowidth": false,
+                            "defaultContent": "",
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "FromDate",
+                            "autowidth": false,
+                            "defaultContent": "",
+                            "render": formatDate
+                        },
+                        {
+                            "data": "ToDate",
+                            "autowidth": false,
+                            "defaultContent": "",
+                            "render": formatDate
+                        },
+                        {
+                            "data": "SectorName",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "SectorTypeName",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "ExperienceYears",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "ExperienceMonths",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "ExperienceDays",
+                            "autowidth": false,
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        {
+                            "data": "EmployeeExperienceWithDetailID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                if ('@Model.HasUpdatingAccess' == 'True') {
+                                    Url = 'OpenExperiencePopup(' + data + ')';
+                                    return '<a id="btnEdit" onclick="' + Url + '"><span Class="glyphicon glyphicon-edit"  title="' + '@Resources.Globalization.UpdatingText' + '"/></a>';
+                                }
+                                else
+                                    return '';
+                            }
+                        },
+                        {
+                            "data": "EmployeeExperienceWithDetailID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                if ('@Model.HasDeletingAccess' == 'True') {
+                                    Url = 'RemoveEmployeeExperience(' + data + ');';
+                                    return '<a id="btnRemove" onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>';
+                                }
+                                else
+                                    return '';
+                            }
+                        },
+                    ]
+                });
+            }
+        });
+    }
+
+    function Reset() {
+        $("#txtFromDate").val("");
+        $("#txtToDate").val("");
+        $("#txtSectorName").val("");
+        $("#txtJobName").val("");
+        $("#txtGregFromDate").val("");
+        $("#txtGregToDate").val("");
+    }
+</script>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EmployeesText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-responsive table-condensed table-striped" style="text-align:right">
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeCodeNo, new { @class = "control-label" })
+                </td>
+                <td>@Html.LabelFor(model => model.EmployeeVM.EmployeeNameAr, new { @class = "control-label" })</td>
+                <td>@Html.LabelFor(model => model.EmployeeVM.EmployeeOrganizationName, new { @class = "control-label" })</td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeCodeNo, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.HiddenFor(model => model.EmployeeVM.EmployeeCodeID)
+                </td>
+                <td class="col-md-4">@Html.TextBoxFor(model => model.EmployeeVM.EmployeeNameAr, new { @class = "form-control", @readonly = "readonly" })</td>
+                <td class="col-md-4">@Html.TextBoxFor(model => model.EmployeeVM.EmployeeOrganizationName, new { @class = "form-control", @readonly = "readonly" })</td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeIDNo, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeJobName, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.HiringDate, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeIDNo, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeJobName, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.HiringDate, new
+                       {
+                           @class = "form-control",
+                           @id = "txtHiringDate",
+                           @readonly = "readonly",
+                           @Value = Model.EmployeeVM.HiringDate.HasValue ? Model.EmployeeVM.HiringDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                       })
+                </td>
+
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeRankName, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.EmployeeVM.EmployeeJobNo, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4"></td>
+            </tr>
+            <tr class="ShowingFields">
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeRankName, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.EmployeeVM.EmployeeJobNo, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.EmployeeExperienceTotalExperiencesTitleText
+    </div>
+    <div class="panel-body">
+        <table class="table table-responsive table-condensed table-striped" style="text-align:right">
+            <tr>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.TotalYears, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.TotalMonths, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.TotalDays, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.TotalYears, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.TotalMonths, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.TotalDays, new { @class = "form-control", @readonly = "readonly" })
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.EmployeeExperienceText
+    </div>
+    <div class="panel-body">
+        <table id="tblEmployeeExperience" class="table table-responsive table-hover" style="width:100%">
+            <thead>
+                <tr>
+                    <td>
+                        @Resources.Globalization.EmployeeJobNameText
+                    </td>
+                    <td>
+                        @Resources.Globalization.FromDateText
+                    </td>
+                    <td>
+                        @Resources.Globalization.ToDateText
+                    </td>
+                    <td>
+                        @Resources.Globalization.FromGregDateText
+                    </td>
+                    <td>
+                        @Resources.Globalization.ToGregDateText
+                    </td>
+                    <td>
+                        @Resources.Globalization.SectorNameText
+                    </td>
+                    <td>
+                        @Resources.Globalization.SectorTypeText
+                    </td>
+                    <td>@Resources.Globalization.EmployeeExperienceInYearsText</td>
+                    <td>@Resources.Globalization.EmployeeExperienceInMonthsText</td>
+                    <td>@Resources.Globalization.EmployeeExperienceInDaysText</td>
+                    <td>
+                        @Resources.Globalization.CreatedByText
+                    </td>
+                    <td>
+                        @Resources.Globalization.CreatedDateText
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "EmployeeExperiencesWithDetails"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+<div class="modal fade" id="divEmployeeExperienceModal">
+    <div class="modal-dialog" style="width:1100px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                </div>
+            </div>
+            <div class="modal-body">
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <div class="panel panel-default" style="padding:0px">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-9">
+                                @Resources.Globalization.PreviousEmployeeExperienceText
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-responsive table-condensed table-striped">
+                            <tbody>
+                                <tr>
+                                    <td class="col-md-4">@Html.LabelFor(model => model.SectorTypeID, new { @class = "control-label" })</td>
+                                    @Html.HiddenFor(model => model.EmployeeExperienceWithDetailID, new { @id = "hdnEmployeeExperienceWithDetailID" })
+                                    <td class="col-md-4">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        @Html.DropDownListFor(model => model.SectorTypeID, new SelectList(new HCMBLL.SectorsTypesBLL().GetSectorsTypes(), "SectorTypeID", "SectorTypeName"), new { @id = "ddlSectorType", @style = "width:100%" })
+                                    </td>
+                                    <td class="col-md-4">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-6">@Html.LabelFor(model => model.FromDate, new { @class = "control-label" })</td>
+                                    <td class="col-md-6">@Html.LabelFor(model => model.ToDate, new { @class = "control-label" })</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-6">
+                                        @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control", @id = "txtFromDate", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                                    </td>
+                                    <td class="col-md-6">
+                                        @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtToDate", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.ToDate, "", new { @class = "text-danger" })
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td class="col-md-6">@Html.LabelFor(model => model.FromGregDate, new { @class = "control-label" })</td>
+                                    <td class="col-md-6">@Html.LabelFor(model => model.ToGregDate, new { @class = "control-label" })</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-6">
+                                        @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control", @id = "txtGregFromDate", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                                    </td>
+                                    <td class="col-md-6">
+                                        @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtGregToDate", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.ToDate, "", new { @class = "text-danger" })
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td class="col-md-6">@Html.LabelFor(model => model.SectorName, new { @class = "control-label" })</td>
+                                    <td class="col-md-6">@Html.LabelFor(model => model.JobName, new { @class = "control-label" })</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-6">
+                                        @Html.TextBoxFor(model => model.SectorName, new { @class = "form-control", @id = "txtSectorName" })
+
+                                        @Html.ValidationMessageFor(model => model.SectorName, "", new { @class = "text-danger" })
+                                    </td>
+                                    <td class="col-md-6">
+                                        @Html.TextBoxFor(model => model.JobName, new { @class = "form-control", @id = "txtJobName", })
+                                        @Html.ValidationMessageFor(model => model.JobName, "", new { @class = "text-danger" })
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-responsive table-condensed">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <center>
+                                            <input type="submit" class="btn btn-default" id="BtnSave" value="@Resources.Globalization.SaveText" />
+                                            <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                                        </center>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

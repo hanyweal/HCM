@@ -1,0 +1,97 @@
+﻿@model HCM.Models.PromotionsPeriodsViewModel
+@using HCMBLL
+
+<script type="text/javascript">
+
+    function GetPromotionPeriods() {
+        var YearID = $("#ddlYears").val();
+        $.ajax({
+            type: "get"
+            , dataType: "json"
+            , url: "/PromotionsPeriods/GetPromotionPeriodsByYear/" + YearID
+            , success: function (d) {
+                ResetPromotionPeriods();
+                var PromotionsPeriods = d.data;
+                if (PromotionsPeriods != "") {
+                    $.each(PromotionsPeriods, function (i, PromotionPeriod) {
+                        $("#ddlPromotionPeriod").append($('<option></option>').val(PromotionPeriod.PromotionPeriodID).html(PromotionPeriod.Period.PeriodName));
+                    });
+                    GetPromotionPeriodDetails();
+                }
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function GetPromotionPeriodDetails() {
+        var PromotionPeriodID = $("#ddlPromotionPeriod").val();
+        $.ajax({
+            type: "get"
+            , dataType: "json"
+            , url: "/PromotionsPeriods/GetPromotionPeriodDetails/" + PromotionPeriodID
+            , success: function (d) {
+                $("#txtPromotionPeriodStartDate").val(RenderDate(d.data.PromotionStartDate));
+                $("#txtPromotionPeriodEndDate").val(RenderDate(d.data.PromotionEndDate));
+                //ResetCandidates();
+
+                if (typeof extentedFuncForPromotionsPeriods !== 'undefined' && $.isFunction(window[extentedFuncForPromotionsPeriods])) {
+                    window[extentedFuncForPromotionsPeriods]();
+                }
+            }
+            , error: function (xhr, status, error) {
+                OnFailure();
+            }
+        });
+    }
+
+    function ResetPromotionPeriods() {
+        $("#ddlPromotionPeriod").html("");
+        $("#ddlPromotionPeriod").val("");
+        $("#txtPromotionPeriodStartDate").val("");
+        $("#txtPromotionPeriodEndDate").val("");
+        $("#txtPromotionPeriodNo").val("");
+    }
+
+    function ReadOnlyModePromotionsPeriods() {
+        $("#ddlYears").attr('disabled', true);
+        $("#ddlPromotionPeriod").attr('disabled', true);
+    }
+
+    function EditModePromotionsPeriods() {
+        $("#ddlYears").attr('disabled', false);
+        $("#ddlPromotionPeriod").attr('disabled', false);
+    }
+</script>
+
+<table class="table table-responsive table-condensed table-striped">
+    <tr>
+        <td class="col-md-3">
+            @Html.LabelFor(model => model.YearID, new { @class = "control-label" })
+        </td>
+        <td class="col-md-3">
+            @Html.LabelFor(model => model.PromotionPeriodID, new { @class = "control-label" })
+        </td>
+        <td class="col-md-3">
+            <label class="control-label">@Resources.Globalization.PromotionStartDateText</label>
+        </td>
+        <td class="col-md-3">
+            <label class="control-label">@Resources.Globalization.PromotionEndDateText</label>
+        </td>
+    </tr>
+    <tr>
+        <td class="col-md-3">
+            @Html.DropDownListFor(model => model.YearID, new SelectList(new MaturityYearsBalancesBLL().GetMaturityYearsBalances(), "MaturityYearID", "MaturityYear"), @Resources.Globalization.SelectFromDropDownText, new { @id = "ddlYears", @style = "width:100%", @onchange = "GetPromotionPeriods()" })
+        </td>
+        <td class="col-md-3">
+            @Html.DropDownListFor(model => model.PromotionPeriodID, new SelectList(new PromotionsPeriodsBLL().GetPeriodsByYear(0), "PromotionPeriodID", "Period.PeriodName"), @Resources.Globalization.SelectFromDropDownText, new { @id = "ddlPromotionPeriod", @style = "width:100%", @onchange = "GetPromotionPeriodDetails()" })
+        </td>
+        <td class="col-md-3">
+            <input type="text" id="txtPromotionPeriodStartDate" class="form-control" readonly />
+        </td>
+        <td class="col-md-3">
+            <input type="text" id="txtPromotionPeriodEndDate" class="form-control" readonly />
+        </td>
+    </tr>
+</table>

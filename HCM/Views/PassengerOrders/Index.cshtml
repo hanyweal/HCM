@@ -1,0 +1,141 @@
+﻿@{
+    ViewBag.Title = Resources.Globalization.PassengerOrdersText;
+}
+
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+
+<script>
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblPassengerOrders").DataTable({
+            //"destroy":true,
+             
+            "ajax": {
+                "url": "/PassengerOrders/GetPassengerOrders",
+                "type": "get",
+                "datatype": "json",
+                "data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+            
+            "serverSide": true,
+            "columns": [
+                  {
+                      "data": "PassengerOrderID",
+                      "autowidth": true,
+                  },
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "TravellingDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                 {
+                     "data": "Going",
+                     "autowidth": true,
+                     "render": RenderCheckBox
+                 },
+                {
+                    "data": "Returning",
+                    "autowidth": true,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "PassengerOrderID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Details", "PassengerOrders")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "PassengerOrderID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "PassengerOrders")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "PassengerOrderID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "PassengerOrders")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "PassengerOrderID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = 'PrintPassengerOrder(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" title="' + '@Resources.Globalization.PrintText' + '"/></a>'
+                    }
+                },
+            ]
+        });
+        $("#ExportExcelButton").click(function () {
+                 $.ajax({
+                     type: "GET"
+                      , contentType: "application/json;"
+                      , url: "/PassengerOrders/ExportExcel"
+                      , success: function (response)
+                      {
+                          var url = "/WebForms/Reports/FileDownload.aspx?fileName=" + response.DownLoadFile;
+                          window.location.href = url;
+                      }
+                      , error: function (xhr, status, error) {
+
+                      }
+                 });
+             });
+    });
+
+    function PrintPassengerOrder(PassengerOrderID) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/PassengerOrders/PrintPassengerOrder/")' + PassengerOrderID);
+        ShowModal("#divReportModal");
+    }
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchPassengerOrdersDescText
+    </div>
+    <input id="ExportExcelButton" type="button" style="float:left" value="@Resources.Globalization.ExportToExcelText" />
+    <div class="panel-body">
+        <table id="tblPassengerOrders" class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.SequenceNoText</td>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                    <td>@Resources.Globalization.TravellingDateText</td>
+                    <td>@Resources.Globalization.GoingText</td>
+                    <td>@Resources.Globalization.ReturningText</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+

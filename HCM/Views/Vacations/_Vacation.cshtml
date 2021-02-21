@@ -1,0 +1,1996 @@
+﻿@model HCM.Models.VacationsViewModel
+@using HCMBLL.Enums;
+@using HCM.Models;
+
+<script src="~/Scripts/jquery-inputmask/jquery.inputmask.bundle.min.js"></script>
+<script src="~/Scripts/jquery-inputmask/inputmask/inputmask.date.extensions.min.js"></script>
+
+<script type="text/javascript">
+
+    var VacationTypeID = $('#ddlVacationTypes').val() || '@Model.VacationType.VacationTypeID';
+    var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+
+    $(document).ready(function () {
+
+        //$("#txtVacationStartDate").inputmask({ mask: "y-1-2", placeholder: "yyyy-mm-dd", separator: "-", alias: "yyyy/mm/dd", yearrange: { minyear: 1350, maxyear: 2099 } });
+
+        //$('#txtVacationPeriod').val('');        // setting default value as empty (task # 254)
+        insertSelectionOptionToDDL('ddlSportsSeasonDescription');
+
+        $('#txtVacationPeriod,#txtDay,#txtMonth,#txtYear').on('blur', function () {
+            $('#txtVacationStartDate').val($('#txtYear').val() + '-' + $('#txtMonth').val() + '-' + $('#txtDay').val());
+            GetVacationEndDate("#txtVacationStartDate", "#txtVacationPeriod", "#txtVacationEndDate", "#txtWorkDate");
+        });
+
+        // $("#ddlSportsSeasonDescription").hide();
+
+        $('.divBalance').hide();        //used to hide all Divs for Balances on _vacation partial view
+
+        if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.Exceptional)') {
+            $('#divExceptionalBalance').show();
+        }
+        else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.Sick)') {
+            $('#divSickBalance').show();
+            $('#divSickDDL').show();
+        }
+        else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.AccompanimentSick)') {
+            $('#divAccompanimentSickBalance').show();
+            $('#divSickDDL').show();
+        }
+        else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.Accompaniment)') {
+            $('#divAccompanimentBalance').show();
+            //$('#divSickDDL').show();
+        }
+        else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.Sports)') {
+            //ResetSportsVacationType('ddlSportsSeasonDescription');
+            $('#divSportsBalance').show();
+        }
+        else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.Born)') {
+            $('#divBornBalance').show();
+        }
+        else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.Dead)') {
+            $('#divDeadBalance').show();
+        }
+        else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.MotherHood)') {
+            $('#divMotherHoodBalance').show();
+        }
+        else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.Birth)') {
+            $('#divBirthBalance').show();
+        }
+        else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.Studies)') {
+            $('#divStudiesBalance').show();
+        }
+        else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.Normal)') {
+            $('#divNormalBalance').show();
+        }
+        else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.Compensatory)') {
+            $('#divCompensatory').show();
+        }
+        else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.Emergency)') {
+            $('#divEmergencyBalance').show();
+        }
+        else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.Marriage)') {
+            $('#divMarriageBalance').show();
+        }
+        @*else if ('@Model.VacationType.VacationTypeID' == '@Convert.ToInt16(@VacationsTypesEnum.Exam)') {
+            $('#divExamBalance').show();
+        }*@
+        else {
+            $('#divExceptionalBalance').show();
+        }
+
+        $("#btnShowDeservedOldBalanceDetails").click(function () {
+            var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                url: "@Url.Content("~/Vacations/GetDeservedOldBalanceDetails/")" + EmployeeCodeID,
+                success: function (result) {
+                    ShowModal("#divShowDeservedOldBalanceDetailsModal");
+                    $("#tblDeservedOldBalanceDetails").DataTable({
+                        "destroy": true,
+                        "searching": false,
+                        "ordering": false,
+                        "paging": false,
+                        "data": result.data,
+                        "columns": [
+                            {
+                                "data": "ServiceYear",
+                                "autowidth": false,
+                            },
+                            {
+                                "data": "MaturityYearBalance",
+                                "autowidth": false,
+                            },
+                            {
+                                "data": "UnDeservedBalance",
+                                "autowidth": false,
+                            },
+                            {
+                                "data": "DeservedBalance",
+                                "autowidth": false,
+                            }
+                        ]
+                    });
+                }
+            });
+        });
+
+        $("#btnShowConsumedOldBalanceDetails").click(function () {
+            var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                url: "@Url.Content("~/Vacations/GetConsumedOldBalanceDetails/")" + EmployeeCodeID,
+                success: function (result) {
+                    ShowModal("#divShowConsumedOldBalanceDetailsModal");
+                    $("#tblConsumedOldBalanceDetails").DataTable({
+                        "destroy": true,
+                        "searching": false,
+                        "ordering": false,
+                        "paging": false,
+                        "data": result.data,
+                        "columns": [
+                            {
+                                "data": "VacationStartDate",
+                                "autowidth": false,
+                                "render": RenderDate
+                            },
+                            {
+                                "data": "VacationPeriod",
+                                "autowidth": false,
+                            }
+                        ]
+                    });
+                }
+            });
+        });
+
+        $("#btnShowDeservedCurrentBalanceDetails").click(function () {
+            var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                url: "@Url.Content("~/Vacations/GetDeservedCurrentBalanceDetails/")" + EmployeeCodeID,
+                success: function (result) {
+                    ShowModal("#divShowDeservedCurrentBalanceDetailsModal");
+                    $("#tblDeservedCurrentBalanceDetails").DataTable({
+                        "destroy": true,
+                        "searching": false,
+                        "ordering": false,
+                        "paging": false,
+                        "data": result.data,
+                        "columns": [
+                            {
+                                "data": "FromDate",
+                                "render": RenderDate,
+                                "width": "50%",
+                                "autowidth": true,
+                            },
+                            {
+                                "data": "ToDate",
+                                "render": RenderDate,
+                                "width": "30%",
+                                "autowidth": true,
+                            },
+                            {
+                                "data": "MaturityYearBalance",
+                                "width": "10%",
+                                "autowidth": true,
+                            },
+                            {
+                                "data": "UnDeservedBalance",
+                                "width": "10%",
+                                "autowidth": true,
+                            },
+                            {
+                                "data": "DeservedBalance",
+                                "width": "10%",
+                                "autowidth": true,
+                            }
+                        ]
+                    });
+                }
+            });
+        });
+
+        $("#btnShowConsumedCurrentBalanceDetails").click(function () {
+            var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                url: "@Url.Content("~/Vacations/GetConsumedCurrentBalanceDetails/")" + EmployeeCodeID,
+                success: function (result) {
+                    ShowModal("#divShowConsumedCurrentBalanceDetailsModal");
+                    $("#tblConsumedCurrentBalanceDetails").DataTable({
+                        "destroy": true,
+                        "searching": false,
+                        "ordering": false,
+                        "paging": false,
+                        "data": result.data,
+                        "columns": [
+                            {
+                                "data": "VacationStartDate",
+                                "autowidth": false,
+                                "render": RenderDate
+                            },
+                            {
+                                "data": "VacationPeriod",
+                                "autowidth": false,
+                            }
+                        ]
+                    });
+                }
+            });
+        });
+
+
+        $("#btnCheckExpiry").click(function () {
+
+            //var VacationTypeID = $('#ddlVacationTypes').val() || '@Model.VacationType.VacationTypeID';
+            var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                url: "@Url.Content("~/Vacations/GetBalanceExpiry/")" + EmployeeCodeID,
+                success: function (result) {
+                    ShowModal("#divCheckExpiryModal");
+                    $("#tblBalanceExpiry").DataTable({
+                        "destroy": true,
+                        "searching": false,
+                        "ordering": false,
+                        "paging": false,
+                        "data": result.data,
+                        "columns": [
+                            {
+                                "data": "ExpiryDate",
+                                "autowidth": false,
+                                "render": RenderDate
+                            },
+                            {
+                                "data": "Days",
+                                "autowidth": false,
+                            }
+                        ]
+                    });
+                }
+            });
+        });
+
+        $('#txtStudiesVacationStartDate').on('focus', function () {
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+        });
+
+        $('#txtVacationStartDate').on('focus', function () {
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+            onSelect: function (dates) {
+                GetVacationEndDate("#txtVacationStartDate", "#txtVacationPeriod", "#txtVacationEndDate", "#txtWorkDate");
+                $("#txtVacationPeriod").focus();
+
+                @*var VacationTypeID = $('#ddlVacationTypes').val() || '@Model.VacationType.VacationTypeID';
+                var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+                var VacationStartDate = $('#txtVacationStartDate').val();
+
+                if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Normal)') {
+                    GetVacationBalance(EmployeeCodeID, VacationTypeID, VacationStartDate);
+                    $('.divBalance').hide();                            //used to hide all Divs for Balances on _vacation partial view
+                    $('#divNormalBalance').show();
+                }*@
+            }
+        });
+
+        $('#txtVacationStartDate').keydown(function (e) {
+            var code = e.keyCode || e.which;
+            if (code === 9) {
+                e.preventDefault();
+                GetVacationEndDate("#txtVacationStartDate", "#txtVacationPeriod", "#txtVacationEndDate", "#txtWorkDate");
+                $("#txtVacationPeriod").focus();
+
+                @*var VacationTypeID = $('#ddlVacationTypes').val() || '@Model.VacationType.VacationTypeID';
+                var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+                var VacationStartDate = $('#txtVacationStartDate').val();
+                if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Normal)') {
+                    GetVacationBalance(EmployeeCodeID, VacationTypeID, VacationStartDate);
+                    $('.divBalance').hide();                            //used to hide all Divs for Balances on _vacation partial view
+                    $('#divNormalBalance').show();
+                }*@
+            }
+        });
+
+
+        var VacationTypeID = $('#ddlVacationTypes').val() || '@Model.VacationType.VacationTypeID';
+        var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+        var VacationStartDate = $('#txtVacationStartDate').val();
+        GetVacationBalance('@Model.EmployeeCodeID', '@Model.VacationType.VacationTypeID', VacationStartDate);
+
+        $("#ddlHolidayType").on('change', function (event) {
+            var MaturityYearID = $("#ddlMaturityYear").val();
+            var HolidayTypeID = $("#ddlHolidayType").val();
+            VacationTypeID = $('#ddlVacationTypes').val() || '@Model.VacationType.VacationTypeID';
+            EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+            if (HolidayTypeID != '') {
+                if (MaturityYearID != '') {
+                    $.ajax({
+                        type: "POST"
+                        , url: "@Url.Content("~/Vacations/GetCompensatoryVacationBalance/")" + EmployeeCodeID + "/" + VacationTypeID + "/" + MaturityYearID + "/" + HolidayTypeID
+                        , success: function (result) {
+                            $("#txtCompensatoryVacationBalance").val(result.data.VacationBalance);
+                            $("#txtCompensatoryVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+                            $("#txtCompensatoryVacationRemainingBalance").val(result.data.VacationRemainingBalance);
+                            $("#txtCompensatoryVacationExpiryDateText").val(RenderDate(result.data.VacationExpiredDate) == '1355-12-NaN' ? '' : RenderDate(result.data.VacationExpiredDate));
+                        }
+                    , error: function (xhr, status, error) {
+                        ResetCompensatoryVacationType();
+                    }
+                    });
+                }
+                else {
+                    ResetCompensatoryVacationType();
+                }
+            }
+            else {
+                ResetCompensatoryVacationType();
+            }
+        });
+
+        $("#ddlMaturityYear").on('change', function (event) {
+            ResetCompensatoryVacationType();
+        });
+
+        $("#ddlSportsSeasonMaturityYearID").on('change', function (event) {
+            ResetSportsVacationType();
+
+            var SportsSeasonMaturityYearID = $("#ddlSportsSeasonMaturityYearID").val();
+            if (SportsSeasonMaturityYearID != '') {
+                $.ajax({
+                    type: "POST"
+                    , url: "@Url.Content("~/Vacations/GetSportsSeasonDescription/")" + SportsSeasonMaturityYearID
+                    , success: function (result) {
+                        $("#ddlSportsSeasonDescription").html("");
+                        var SportsSeasonDescriptionTypes = result.data;
+                        $.each(SportsSeasonDescriptionTypes, function (i, data) {
+                            $("#ddlSportsSeasonDescription").append($('<option></option>').val(data.SportsSeasonID).html(data.SportsSeasonDescription));
+                        });
+                        insertSelectionOptionToDDL('ddlSportsSeasonDescription');
+                    }
+                , error: function (xhr, status, error) {
+                    ResetSportsVacationType();
+                }
+                });
+            }
+            else {
+                ResetSportsVacationType();
+            }
+        });
+
+        $("#ddlSportsSeasonDescription").on('change', function (event) {
+            var SportsSeasonID = $("#ddlSportsSeasonDescription").val();
+            VacationTypeID = $('#ddlVacationTypes').val() || '@Model.VacationType.VacationTypeID';
+            EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+            if (SportsSeasonID != '' && SportsSeasonID != '0') {
+                $.ajax({
+                    type: "POST"
+                    , url: "@Url.Content("~/Vacations/GetBySportsSeasonID/")" + SportsSeasonID
+                    , success: function (result) {
+                        $("#txtSportsSeasonStartDate").val(RenderDate(result.data.SportsSeasonStartDate));
+                        $("#txtSportsSeasonEndDate").val(RenderDate(result.data.SportsSeasonEndDate));
+                        @*console.log('url', "@Url.Content("~/Vacations/GetSportsVacationBalance/")" + EmployeeCodeID + "/" + VacationTypeID + "/" + SportsSeasonID);*@
+                        $.ajax({
+                            type: "POST"
+                            , url: "@Url.Content("~/Vacations/GetSportsVacationBalance/")" + EmployeeCodeID + "/" + VacationTypeID + "/" + SportsSeasonID
+                            , success: function (result) {
+
+                                // console.log(result);
+                                $("#txtSportsVacationBalance").val(result.data.VacationBalance);
+                                $("#txtSportsVacationRemainingBalance").val(result.data.VacationRemainingBalance);
+                                $("#txtSportsVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+                            }
+                        , error: function (xhr, status, error) {
+                            ResetSportsVacationType();
+                        }
+                        });
+                    }
+                , error: function (xhr, status, error) {
+                    ResetSportsVacationType();
+                }
+                });
+            }
+            else {
+                ResetSportsVacationType();
+            }
+        });
+
+    });
+
+    function GetVacationBalance(EmployeeCodeID, VacationTypeID, VacationStartDate) {
+
+        // some basic validation to call service with wrong parameter or empty parameters.
+        if (!EmployeeCodeID) {
+            ResetVacationBalance();
+            return;
+        }
+
+        if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Normal)') {
+            VacationStartDate = '@DateTime.Now.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])'  //formatDate(new Date()); //new Date();
+        }
+
+        var url = "@Url.Content("~/Vacations/GetVacationBalance/")" + EmployeeCodeID + "/" + VacationTypeID;
+
+        //no need to pass userinput date in getBalance, now it based on current date, we are passing dummy date
+        VacationStartDate = '1441-01-01';
+        url = url + "/" + VacationStartDate;
+
+        /*
+        if (VacationStartDate)
+            url = url + "/" + VacationStartDate;
+        else
+            url = url + "/01-01-1318";
+        */
+
+        if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Compensatory)') {
+            var MaturityYearID = $("#ddlMaturityYear").val();
+            var HolidayTypeID = $("#ddlHolidayType").val();
+            url = "@Url.Content("~/Vacations/GetCompensatoryVacationBalance/")" + EmployeeCodeID + "/" + VacationTypeID + "/" + MaturityYearID + "/" + HolidayTypeID;
+        }
+        if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Sports)') {
+            var SportsSeasonID;
+            if ('@Model.SportsSeasonID' == 0) {
+                // console.log('Model', '@Model.SportsSeasonID');
+                SportsSeasonID = $("#ddlSportsSeasonDescription").val();
+            }
+            else {
+                //console.log('Model', '@Model.SportsSeasonID');
+                $("#ddlSportsSeasonDescription").val('@Model.SportsSeasonID');
+
+                SportsSeasonID = '@Model.SportsSeasonID';
+            }
+            url = "@Url.Content("~/Vacations/GetSportsVacationBalance/")" + EmployeeCodeID + "/" + VacationTypeID + "/" + SportsSeasonID;
+        }
+        //console.log('top', url);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: url,
+            success: function (result) {
+                if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Exceptional)') {
+                    //$("#txtExceptionalVacationBalance").val(result.data.VacationBalance);
+                    //$("#txtExceptionalVacationRemainingBalance").val(result.data.VacationRemainingBalance);
+                    //$("#txtExceptionalVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+
+                    GetBalanceTableByVacationType();
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Sick)') {
+                    //$("#txtSickVacationBalance").val(result.data.VacationBalance);
+                    //$("#txtSickVacationRemainingBalance").val(result.data.VacationRemainingBalance);
+                    //$("#txtSickVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+
+                    GetBalanceTableByVacationType();
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.AccompanimentSick)') {
+                    //$("#txtAccompanimentVacationBalance").val(result.data.VacationBalance);
+                    //$("#txtAccompanimentVacationRemainingBalance").val(result.data.VacationRemainingBalance);
+                    //$("#txtAccompanimentVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+
+                    GetBalanceTableByVacationType();
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Accompaniment)') {
+                    //$("#txtAccompanimentVacationBalance").val(result.data.VacationBalance);
+                    //$("#txtAccompanimentVacationRemainingBalance").val(result.data.VacationRemainingBalance);
+                    //$("#txtAccompanimentVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+
+                    GetBalanceTableByVacationTypeForAccompaniment();
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Sports)') {
+                    //console.log('this inside', result.data.VacationConsumedBalance);
+                    // console.log('this inside', result.data);
+                    if (result.data.SportsSeason != null) {
+                        $("#txtSportsVacationBalance").val(result.data.VacationBalance);
+                        $("#txtSportsVacationRemainingBalance").val(result.data.VacationRemainingBalance);
+                        $("#txtSportsVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+                        $("#txtSportsSeasonStartDate").val(RenderDate(result.data.SportsSeason.SportsSeasonStartDate));
+                        $("#txtSportsSeasonEndDate").val(RenderDate(result.data.SportsSeason.SportsSeasonEndDate));
+                    }
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Born)') {
+                    $("#txtBornVacationBalance").val(result.data.VacationBalance);
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Emergency)') {
+                    $("#txtEmergencyVacationBalance").val(result.data.VacationBalance);
+                    $("#txtEmergencyVacationRemainingBalance").val(result.data.VacationRemainingBalance);
+                    $("#txtEmergencyVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Dead)') {
+                    $("#txtDeadVacationBalance").val(result.data.VacationBalance);
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.MotherHood)') {
+                    $("#txtMotherHoodVacationBalance").val(result.data.VacationBalance);
+                    $("#txtMotherHoodVacationRemainingBalance").val(result.data.VacationRemainingBalance);
+                    $("#txtMotherHoodVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Birth)') {
+
+                    $("#txtBirthVacationBalance").val(result.data.VacationBalance);
+                    //$("#txtBirthVacationRemainingBalance").val(result.data.VacationRemainingBalance);
+                    //$("#txtBirthVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Studies)') {
+
+                    //$("#txtStudiesVacationBalance").val(result.data.VacationBalance);
+                    //$("#txtStudiesVacationRemainingBalance").val(result.data.VacationRemainingBalance);
+                    //$("#txtStudiesVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Compensatory)') {
+                    $("#txtCompensatoryVacationBalance").val(result.data.VacationBalance);
+                    $("#txtCompensatoryVacationRemainingBalance").val(result.data.VacationRemainingBalance);
+                    $("#txtCompensatoryVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+                    $("#txtCompensatoryVacationExpiryDateText").val(RenderDate(result.data.VacationExpiredDate) == '1355-12-NaN' ? '' : RenderDate(result.data.VacationExpiredDate));
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Normal)') {
+
+                    $("#txtNormalDeservedOldBalance").val(result.data.DeservedOldBalance);
+                    $("#txtNormalRemainingOldBalance").val(result.data.RemainingOldBalance);
+                    $("#txtNormalConsumedOldBalance").val(result.data.ConsumedOldBalance);
+
+                    $("#txtNormalDeservedCurrentBalance").val(result.data.DeservedCurrentBalance);
+                    $("#txtNormalConsumedCurrentBalance").val(result.data.ConsumedCurrentBalance);
+                    $("#txtNormalExpiredCurrentBalance").val(result.data.ExpiredCurrentBalance);
+                    $("#txtNormalRemainingCurrentBalance").val(result.data.RemainingCurrentBalance);
+
+                    $("#txtNormalVacationInAdvanceBalance").val(result.data.InAdvanceBalance);
+
+                    $("#txtNormalVacationTotalVacationBalance").val(result.data.TotalAvailableVacationBalance);
+
+                    $("#txtNormalVacationTotalConsumedSeparatedDays").val(result.data.TotalConsumedSeparatedDays);
+
+                    $("#txtNormalTotalDeservedBalance").val(result.data.TotalDeservedBalance);
+                    $("#txtNormalTotalConsumedBalance").val(result.data.TotalConsumedBalance);
+                    $("#txtNormalTotalRemainingBalance").val(result.data.TotalRemainingBalance);
+
+                    if (result.data.CurrentBalance)
+                        $('#btnCheckExpiry').removeAttr('disabled');
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Marriage)') {
+                    $("#txtMarriageVacationBalance").val(result.data.VacationBalance);
+                    $("#txtMarriageVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+                    $("#txtMarriageVacationRemainingBalance").val(result.data.VacationRemainingBalance);
+                }
+                else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Exam)') {
+                    //$("#txtExamVacationConsumedBalance").val(result.data.VacationConsumedBalance);
+                }
+                else {
+                    ResetVacationBalance();
+                }
+            }
+        });
+    }
+
+    function ResetVacationBalance() {
+
+        $('#tblVacation').hide();        //used to hide all Divs for Balances on _vacation partial view
+        ResetVacationBalancefields();
+    }
+
+    function ResetVacationBalancefields() {
+        $("#txtNormalDeservedOldBalance").val('');
+        $("#txtNormalRemainingOldBalance").val('');
+        $("#txtNormalConsumedOldBalance").val('');
+        $("#txtNormalDeservedCurrentBalance").val('');
+        $("#txtNormalRemainingCurrentBalance").val('');
+        $("#txtNormalConsumedCurrentBalance").val('');
+        $("#txtNormalVacationInAdvanceBalance").val('');
+        $("#txtNormalVacationTotalVacationBalance").val('');
+        $("#txtNormalVacationTotalConsumedSeparatedDays").val('');
+
+        $('#btnCheckExpiry').attr('disabled', 'true');
+
+        $("#txtExceptionalVacationBalance").val('');
+        $("#txtExceptionalVacationRemainingBalance").val('');
+        $("#txtExceptionalVacationConsumedBalance").val('');
+
+        $("#txtSickVacationBalance").val('');
+        $("#txtSickVacationRemainingBalance").val('');
+        $("#txtSickVacationConsumedBalance").val('');
+
+        $("#txtSportsVacationBalance").val('');
+        $("#txtSportsVacationRemainingBalance").val('');
+        $("#txtSportsVacationConsumedBalance").val('');
+
+        $("#txtSportsSeasonStartDate").val('');
+        $("#txtSportsSeasonEndDate").val('');
+
+        $("#txtBornVacationBalance").val('');
+
+        $("#txtDeadVacationBalance").val('');
+
+        $("#txtMotherHoodVacationBalance").val('');
+        $("#txtMotherHoodVacationRemainingBalance").val('');
+        $("#txtMotherHoodVacationConsumedBalance").val('');
+
+        $("#txtBirthVacationBalance").val('');
+        $("#txtMarriageVacationBalance").val('');
+        $("#txtMarriageVacationConsumedBalance").val('');
+        $("#txtMarriageVacationRemainingBalance").val('');
+        //$("#txtExamVacationConsumedBalance").val('');
+        ResetCompensatoryVacationType();
+        ResetSportsVacationType();
+
+        $('#ddlVacationTypes').val(0);
+        $("#ddlSportsSeasonMaturityYearID").val('');
+        $("#txtStudiesVacationStartDate").val('');
+
+        $("#txtEmergencyVacationBalance").val('');
+        $("#txtEmergencyVacationRemainingBalance").val('');
+        $("#txtEmergencyVacationConsumedBalance").val('');
+    }
+
+    function ResetCompensatoryVacationType() {
+        $("#txtCompensatoryVacationBalance").val('');
+        $("#txtCompensatoryVacationConsumedBalance").val('');
+        $("#txtCompensatoryVacationRemainingBalance").val('');
+        $("#txtCompensatoryVacationExpiryDateText").val('');
+        $("#ddlHolidayType").val('');
+    }
+
+    function ResetSportsVacationType(SportsSeasonDescriptionName) {
+
+        $("#txtSportsVacationBalance").val('');
+        $("#txtSportsVacationRemainingBalance").val('');
+        $("#txtSportsVacationConsumedBalance").val('');
+        $("#txtSportsSeasonEndDate").val('');
+        $("#txtSportsSeasonStartDate").val('');
+
+        if (SportsSeasonDescriptionName) {
+            $("#ddlSportsSeasonDescription").empty();
+            insertSelectionOptionToDDL('ddlSportsSeasonDescription');
+        } else { $("#ddlSportsSeasonDescription").val(0); }
+    }
+
+    function GetLastNVacations() {
+        var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Vacations/GetLastNVacations/")" + EmployeeCodeID,
+            success: function (result) {
+                $("#tblLast5Vacations").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "VacationStartDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "VacationEndDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "VacationPeriod",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "VacationTypeName",
+                            "autowidth": false,
+                        }
+                    ]
+                });
+            }
+        });
+    }
+
+    function GetBalanceTableByVacationType() {
+        var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+        var VacationTypeID = $('#ddlVacationTypes').val() || '@Model.VacationType.VacationTypeID';
+        var tableName = "tblSickLeaveBalanceTable";
+
+        if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Exceptional)') {
+            tableName = "tblExceptionalLeaveBalanceTable";
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Sick)') {
+            tableName = "tblSickLeaveBalanceTable";
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.AccompanimentSick)') {
+            tableName = "tblAccompanimentLeaveBalanceTable";
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Accompaniment)') {
+            tableName = "tblAccompanimentBalanceTable";
+        }
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Vacations/GetBalanceTableByVacationType/")" + EmployeeCodeID + "/" + VacationTypeID,
+            success: function (result) {
+                $("#" + tableName).DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "StartDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "EndDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "ConsumedBalance",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "RemainingBalance",
+                            "autowidth": false,
+                        }
+                    ]
+                });
+            }
+        });
+    }
+
+    function GetBalanceTableByVacationTypeForAccompaniment() {
+        var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+        var VacationTypeID = $('#ddlVacationTypes').val() || '@Model.VacationType.VacationTypeID';
+        tableName = "tblAccompanimentBalanceTable";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Vacations/GetBalanceTableByVacationType/")" + EmployeeCodeID + "/" + VacationTypeID,
+            success: function (result) {
+                $("#" + tableName).DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        //{
+                        //    "data": "StartDate",
+                        //    "autowidth": false,
+                        //    "render": RenderDate
+                        //},
+                        //{
+                        //    "data": "EndDate",
+                        //    "autowidth": false,
+                        //    "render": RenderDate
+                        //},
+                        {
+                            "data": "ConsumedBalance",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "RemainingBalance",
+                            "autowidth": false,
+                        }
+                    ]
+                });
+            }
+        });
+    }
+</script>
+
+<table id="tblVacation" class="table table-responsive table-striped" style="width:100%">
+    <tr>
+        <td class="col-md-6" id="tdAddVacationDetails">
+            <div class="panel panel-default" style="padding:0px">
+                <div class="panel-heading">
+                    @Resources.Globalization.VacationDetailsInfoText
+                </div>
+                <div class="panel-body">
+                    <table class="table table-responsive table-striped" style="width:100%">
+                        <tr>
+                            <td class="col-md-12">
+                                @Html.LabelFor(model => model.VacationStartDate, new { @class = "control-label" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12">
+                                @Html.Partial("~/Views/Shared/_UmAlquraCalender.cshtml", new UmAlquraCalViewModel() { FullDate = Model.VacationStartDate })
+                                @Html.TextBoxFor(model => model.VacationStartDate, new
+                                    {
+                                        @class = "form-control hide",
+                                        @id = "txtVacationStartDate",
+                                        @Value = Model.VacationStartDate.HasValue ? Model.VacationStartDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                                    })
+                                @Html.HiddenFor(model => model.VacationID)
+                                @Html.HiddenFor(model => model.VacationType.VacationTypeID)
+                                @*@Html.HiddenFor(model => model.SportsSeasonID)*@
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12">
+                                @Html.LabelFor(model => model.VacationPeriod, new { @class = "control-label" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12">
+                                @Html.TextBoxFor(model => model.VacationPeriod, new { @class = "form-control", @id = "txtVacationPeriod", @type = "number" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12">
+                                @Html.LabelFor(model => model.VacationEndDate, new { @class = "control-label" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12">
+                                @Html.TextBoxFor(model => model.VacationEndDate, new
+                    {
+                        @class = "form-control",
+                        @id = "txtVacationEndDate",
+                        @readonly = "readonly",
+                        @Value = Model.VacationEndDate.HasValue ? Model.VacationEndDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                    })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12">
+                                @Html.LabelFor(model => model.WorkDate, new { @class = "control-label" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12">
+                                @Html.TextBoxFor(model => model.WorkDate, new
+                    {
+                        @class = "form-control",
+                        @id = "txtWorkDate",
+                        @readonly = "readonly",
+                        @Value = Model.WorkDate.HasValue ? Model.WorkDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                    })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12">
+                                @Html.LabelFor(model => model.Notes, new { @class = "control-label" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12">
+                                @Html.TextAreaFor(model => model.Notes, new { @class = "form-control", @id = "txtNotes" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12 text-center">
+                                <input type="submit" id="btnSubmitRequest" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12">
+                                @Html.Label(@Resources.Globalization.ListLast5VacationsText, new { @class = "control-label" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12">
+                                <table id="tblLast5Vacations" class="table table-responsive table-hover" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <td>
+                                                @Resources.Globalization.VacationStartDateText
+                                            </td>
+                                            <td>
+                                                @Resources.Globalization.VacationEndDateText
+                                            </td>
+                                            <td>
+                                                @Resources.Globalization.VacationPeriodText
+                                            </td>
+                                            <td>
+                                                @Resources.Globalization.VacationTypeText
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </td>
+        <td class="col-md-6">
+            <div id="divVacationBalance" class="panel panel-default" style="padding:0px">
+                <div class="panel-heading">
+                    @Resources.Globalization.VacationBalanceText
+                </div>
+                <div class="panel-body">
+                    <div id="divExceptionalBalance" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                                </td>
+                            </tr>
+                            @*<tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtExceptionalVacationBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtExceptionalVacationConsumedBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtExceptionalVacationRemainingBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        @Html.Label(@Resources.Globalization.ExceptionalLeaveBalanceTableText, new { @class = "control-label" })
+                    </td>
+                </tr>*@
+                            <tr>
+                                <td class="col-md-12">
+                                    <table id="tblExceptionalLeaveBalanceTable" class="table table-responsive table-hover" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <td>
+                                                    @Resources.Globalization.PeriodStartDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.PeriodEndDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.ConsumedText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.RemainingText
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div id="divCompensatory" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            <tr>
+                                <td class="col-md-6">
+                                    @Html.HiddenFor(model => model.HolidayAttendanceDetailID, new { @id = "HolidayAttendanceDetailID" })
+                                    @Html.HiddenFor(model => model.EmployeeCodeID)
+                                    <label> @Resources.Globalization.MaturityYearBalanceText </label>
+                                </td>
+                                <td class="col-md-6">
+                                    <label> @Resources.Globalization.HolidayTypeText </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-6">
+                                    @*@Html.DisplayFor(model => model.MaturityYearID)*@
+                                    @*@Html.DropDownList("fasdfa",new SelectList(new HCMBLL.MaturityYearsBalancesBLL().GetMaturityYearsBalances(), "MaturityYearID", "MaturityYear"), @Resources.Globalization.SelectFromDropDownText, new { @id = "ddlMaturityYear", @style = "width:100%" })*@
+                                    @Html.DropDownListFor(model => model.MaturityYearID, new SelectList(new HCMBLL.MaturityYearsBalancesBLL().GetMaturityYearsBalances(), "MaturityYearID", "MaturityYear"), @Resources.Globalization.SelectFromDropDownText, new { @id = "ddlMaturityYear", @style = "width:100%" })
+                                </td>
+                                <td class="col-md-6">
+                                    @*@Html.DisplayFor(model => model.HolidayTypeID)*@
+                                    @*@Html.DropDownList("fasdfa", new SelectList(new HCMBLL.HolidaysTypesBLL().GetHolidaysTypes(), "HolidayTypeID", "HolidayTypeName"), @Resources.Globalization.SelectFromDropDownText, new { @id = "ddlHolidayType", @style = "width:100%" })*@
+                                    @Html.DropDownListFor(model => model.HolidayTypeID, new SelectList(new HCMBLL.HolidaysTypesBLL().GetHolidaysTypes(), "HolidayTypeID", "HolidayTypeName"), @Resources.Globalization.SelectFromDropDownText, new { @id = "ddlHolidayType", @style = "width:100%" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <input type="text" id="txtCompensatoryVacationBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <input type="text" id="txtCompensatoryVacationConsumedBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <input type="text" id="txtCompensatoryVacationRemainingBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.ExpiryDateText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <input type="text" id="txtCompensatoryVacationExpiryDateText" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div id="divSickDDL" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            <tr>
+                                <td class="col-md-12">@Html.LabelFor(model => model.SickVacationType, new { @class = "control-label" })</td>
+                            <tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    @Html.DropDownListFor(model => model.SickVacationType.SickVacationTypeID, new SelectList(new HCMBLL.SickVacationsTypesBLL().GetSickVacationsTypes(), "SickVacationTypeID", "SickVacationTypeName"), new { @id = "ddlSickVacationTypes", @style = "width:100%" })
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div id="divSickBalance" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.SickLeaveAmountPaidText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    @Html.CheckBoxFor(model => model.IsSickLeaveAmountPaid) @Resources.Globalization.PaidText
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                                </td>
+                            </tr>
+                            @*<tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtSickVacationBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtSickVacationConsumedBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtSickVacationRemainingBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        @Html.Label(@Resources.Globalization.SickLeaveBalanceTableText, new { @class = "control-label" })
+                    </td>
+                </tr>*@
+                            <tr>
+                                <td class="col-md-12">
+                                    <table id="tblSickLeaveBalanceTable" class="table table-responsive table-hover" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <td>
+                                                    @*@Resources.Globalization.PeriodStartDateText*@
+                                                </td>
+                                                <td>
+                                                    @*@Resources.Globalization.PeriodEndDateText*@
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.ConsumedText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.RemainingText
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div id="divSportsBalance" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            <tr>
+                                <td class="col-md-6">
+                                    @Html.HiddenFor(model => model.HolidayAttendanceDetailID, new { @id = "HolidayAttendanceDetailID" })
+                                    @Html.HiddenFor(model => model.EmployeeCodeID)
+                                    <label> @Resources.Globalization.MaturityYearBalanceText </label>
+                                </td>
+                                <td class="col-md-6">
+                                    <label> @Resources.Globalization.SportsSeasonDescriptionText </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-6">
+                                    @Html.DropDownListFor(model => model.SportsSeasonMaturityYearID, new SelectList(new HCMBLL.MaturityYearsBalancesBLL().GetMaturityYearsBalances(), "MaturityYearID", "MaturityYear"), @Resources.Globalization.SelectFromDropDownText, new { @id = "ddlSportsSeasonMaturityYearID", @style = "width:100%" })
+                                </td>
+                                <td class="col-md-6">
+                                    @Html.DropDownListFor(model => model.SportsSeasonID, new SelectList(new HCMBLL.SportsSeasonsBLL().GetSportsSeasons(), "SportsSeasonID", "SportsSeasonDescription"), new { @id = "ddlSportsSeasonDescription", @style = "width:100%" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.SportsSeasonStartDateText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <input type="text" id="txtSportsSeasonStartDate" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.SportsSeasonEndDateText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <input type="text" id="txtSportsSeasonEndDate" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <input type="text" id="txtSportsVacationBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <input type="text" id="txtSportsVacationConsumedBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <input type="text" id="txtSportsVacationRemainingBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div id="divNormalBalance" class="divBalance">
+                        <table class="table table-responsive" style="width:100%">
+                            <tr>
+                                <td class="col-md-12">
+                                    <table class="table table-responsive table-striped" style="width:100%">
+                                        <tr>
+                                            <td><label class="control-label">@Resources.Globalization.NormalVacationTypeText</label></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3">
+
+                                                @Html.DropDownListFor(model => model.NormalVacationTypeID, new SelectList(new HCMBLL.NormalVacationsTypesBLL().GetNormalVacationsTypes(), "NormalVacationTypeID", "NormalVacationTypeName"), @Resources.Globalization.SelectFromDropDownText, new { @id = "ddlNormalVacationTypeID", @style = "width:100%" })
+
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12" colspan="2">
+                                    <label class="control-label">@Resources.Globalization.VacationOldBalanceText</label>
+                                    <table class="table table-responsive table-striped" style="width:100%">
+                                        <tr>
+                                            <td><label class="control-label">@Resources.Globalization.DeservedText</label></td>
+                                            <td><label class="control-label">@Resources.Globalization.ConsumedText</label></td>
+                                            <td><label class="control-label">@Resources.Globalization.RemainingText</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+
+                                                <div class="input-group">
+                                                    <input type="text" id="txtNormalDeservedOldBalance" class="form-control" readonly="readonly" />
+                                                    <span id="btnShowDeservedOldBalanceDetails" class="input-group-addon clickable" title="@Resources.Globalization.DetailsText">
+                                                        <i class="glyphicon glyphicon-check"></i>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input type="text" id="txtNormalConsumedOldBalance" class="form-control" readonly="readonly" />
+                                                    <span id="btnShowConsumedOldBalanceDetails" class="input-group-addon clickable" title="@Resources.Globalization.DetailsText">
+                                                        <i class="glyphicon glyphicon-check"></i>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtNormalRemainingOldBalance" class="form-control" readonly="readonly" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12" colspan="2">
+                                    <label class="control-label">@Resources.Globalization.VacationCurrentBalanceText</label>
+                                    <table class="table table-responsive table-striped" style="width:100%">
+                                        <tr>
+                                            <td><label class="control-label">@Resources.Globalization.DeservedText</label></td>
+                                            <td><label class="control-label">@Resources.Globalization.ConsumedText</label></td>
+                                            <td><label class="control-label">@Resources.Globalization.ExpiredText</label></td>
+                                            <td><label class="control-label">@Resources.Globalization.RemainingText</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input type="text" id="txtNormalDeservedCurrentBalance" class="form-control" readonly="readonly" />
+                                                    <span id="btnShowDeservedCurrentBalanceDetails" class="input-group-addon clickable" title="@Resources.Globalization.DetailsText">
+                                                        <i class="glyphicon glyphicon-check"></i>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input type="text" id="txtNormalConsumedCurrentBalance" class="form-control" readonly="readonly" />
+                                                    <span id="btnShowConsumedCurrentBalanceDetails" class="input-group-addon clickable" title="@Resources.Globalization.DetailsText">
+                                                        <i class="glyphicon glyphicon-check"></i>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtNormalExpiredCurrentBalance" class="form-control" readonly="readonly" />
+                                                @*<span id="btnCheckExpiry" class="input-group-addon clickable" title="@Resources.Globalization.DetailsText">
+                                        <i class="glyphicon glyphicon-check"></i>
+                                    </span>*@
+                                            </td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input type="text" id="txtNormalRemainingCurrentBalance" class="form-control" readonly="readonly" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12" colspan="2">
+                                    <label class="control-label">@Resources.Globalization.VacationTotalBalanceText</label>
+                                    <table class="table table-responsive table-striped" style="width:100%">
+                                        <tr>
+                                            <td><label class="control-label">@Resources.Globalization.TotalDeservedText</label></td>
+                                            <td><label class="control-label">@Resources.Globalization.TotalConsumedText</label></td>
+                                            <td><label class="control-label">@Resources.Globalization.TotalRemainingText</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input type="text" id="txtNormalTotalDeservedBalance" class="form-control" readonly="readonly" />
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtNormalTotalConsumedBalance" class="form-control" readonly="readonly" />
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtNormalTotalRemainingBalance" class="form-control" readonly="readonly" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12" colspan="2">
+                                    <label class="control-label">@Resources.Globalization.VacationTotalConsumedSeparatedDaysText - @Globals.Calendar.GetUmAlQuraYear(DateTime.Now)</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12" colspan="2">
+                                    <input type="text" id="txtNormalVacationTotalConsumedSeparatedDays" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12" colspan="2">
+                                    <label class="control-label">@Resources.Globalization.VacationInAdvanceBalanceText - @Globals.Calendar.GetUmAlQuraYear(DateTime.Now)</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12" colspan="2">
+                                    <input type="text" id="txtNormalVacationInAdvanceBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12" colspan="2">
+                                    <label class="control-label">@Resources.Globalization.VacationTotalVacationBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12" colspan="2">
+                                    <input type="text" id="txtNormalVacationTotalVacationBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div id="divBornBalance" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <input type="text" id="txtBornVacationBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            @*<tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtBornVacationConsumedBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtBornVacationRemainingBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>*@
+                        </table>
+                    </div>
+
+                    @*////*@
+                    <div id="divEmergencyBalance" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            @*<tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtEmergencyVacationBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>*@
+                            @*<tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtBornVacationConsumedBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtBornVacationRemainingBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>*@
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <input type="text" id="txtEmergencyVacationBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <input type="text" id="txtEmergencyVacationConsumedBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <input type="text" id="txtEmergencyVacationRemainingBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    @*////*@
+
+                    <div id="divDeadBalance" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <input type="text" id="txtDeadVacationBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            @*<tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtDeadVacationConsumedBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtDeadVacationRemainingBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>*@
+                        </table>
+                    </div>
+
+                    <div id="divAccompanimentSickBalance" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                                </td>
+                            </tr>
+                            @*<tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtAccompanimentVacationBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtAccompanimentVacationConsumedBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtAccompanimentVacationRemainingBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>*@
+                            <tr>
+                                <td class="col-md-12">
+                                    <table id="tblAccompanimentLeaveBalanceTable" class="table table-responsive table-hover" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <td>
+                                                    @Resources.Globalization.PeriodStartDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.PeriodEndDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.ConsumedText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.RemainingText
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+
+                    <div id="divAccompanimentBalance" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                                </td>
+                            </tr>
+                            @*<tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtAccompanimentVacationBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtAccompanimentVacationConsumedBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtAccompanimentVacationRemainingBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>*@
+                            <tr>
+                                <td class="col-md-12">
+                                    <table id="tblAccompanimentBalanceTable" class="table table-responsive table-hover" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                @*<td>
+                                        @Resources.Globalization.PeriodStartDateText
+                                    </td>
+                                    <td>
+                                        @Resources.Globalization.PeriodEndDateText
+                                    </td>*@
+                                                <td>
+                                                    @Resources.Globalization.ConsumedText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.RemainingText
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+
+                    <div id="divMotherHoodBalance" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <input type="text" id="txtMotherHoodVacationBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <input type="text" id="txtMotherHoodVacationConsumedBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <input type="text" id="txtMotherHoodVacationRemainingBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div id="divBirthBalance" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <input type="text" id="txtBirthVacationBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            @*<tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtBirthVacationConsumedBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtBirthVacationRemainingBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>*@
+                        </table>
+                    </div>
+
+                    <div id="divStudiesBalance" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+
+                            <tr>
+                                <td class="col-md-12">
+                                    @Html.LabelFor(model => model.StudiesVacationStartDate, new { @class = "control-label" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    @Html.TextBoxFor(model => model.StudiesVacationStartDate, new
+                    {
+                        @class = "form-control",
+                        @id = "txtStudiesVacationStartDate",
+                        @readonly = "readonly",
+                        @Value = Model.StudiesVacationStartDate.HasValue ? Model.StudiesVacationStartDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                    })
+
+                                </td>
+                            </tr>
+                            @*<tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtStudiesVacationBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtStudiesVacationConsumedBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12">
+                        <input type="text" id="txtStudiesVacationRemainingBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>*@
+                        </table>
+                    </div>
+
+                    <div id="divMarriageBalance" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationAvailableBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <input type="text" id="txtMarriageVacationBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <input type="text" id="txtMarriageVacationConsumedBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationRemainingBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    <input type="text" id="txtMarriageVacationRemainingBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    @*<div id="divExamBalance" class="divBalance">
+                        <table class="table table-responsive table-striped" style="width:100%">
+                            <tr>
+                                <td class="col-md-12">
+                                    <label class="control-label">@Resources.Globalization.VacationConsumedBalanceText</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12">
+                                    <input type="text" id="txtExamVacationConsumedBalance" class="form-control" readonly="readonly" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>*@
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div class="modal fade" id="divShowDeservedOldBalanceDetailsModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.DeservedOldBalanceDetailsText
+                </div>
+            </div>
+            <div class="modal-body" style="height:500px;">
+                @*<iframe id="iframeExpiryContent" style="border:none;width:100%;height:100%"></iframe>*@
+                <table id="tblDeservedOldBalanceDetails" class="table table-responsive table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>
+                                @Resources.Globalization.ServiceYearText
+                            </td>
+                            <td>
+                                @Resources.Globalization.MaturityBalanceText
+                            </td>
+                            <td>
+                                @Resources.Globalization.UnDeservedBalanceText
+                            </td>
+                            <td>
+                                @Resources.Globalization.DeservedBalanceText
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+                <br />
+                <div class="alert alert-info" style="font-size:smaller">
+                    @Resources.Globalization.UnDeservedNormalVacationDaysMeaningText
+                </div>
+                @*<table>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>*@
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divShowConsumedOldBalanceDetailsModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.ConsumedOldBalanceDetailsText
+                </div>
+            </div>
+            <div class="modal-body" style="height:500px;">
+                <table id="tblConsumedOldBalanceDetails" class="table table-responsive table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>
+                                @Resources.Globalization.VacationStartDateText
+                            </td>
+                            <td>
+                                @Resources.Globalization.VacationPeriodText
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divShowDeservedCurrentBalanceDetailsModal">
+    <div class="modal-dialog" style="width: 800px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.DeservedCurrentBalanceDetailsText
+                </div>
+            </div>
+            <div class="modal-body" style="height:500px;">
+                <table id="tblDeservedCurrentBalanceDetails" class="table table-responsive table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>
+                                @Resources.Globalization.FromDateText
+                            </td>
+                            <td>
+                                @Resources.Globalization.ToDateText
+                            </td>
+                            <td>
+                                @Resources.Globalization.MaturityBalanceText
+                            </td>
+                            <td>
+                                @Resources.Globalization.UnDeservedBalanceText
+                            </td>
+                            <td>
+                                @Resources.Globalization.DeservedBalanceText
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+                <br />
+                <div class="alert alert-info" style="font-size:smaller">
+                    @Resources.Globalization.UnDeservedNormalVacationDaysMeaningText
+                </div>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divShowConsumedCurrentBalanceDetailsModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.ConsumedCurrentBalanceDetailsText
+                </div>
+            </div>
+            <div class="modal-body" style="height:500px;">
+                <table id="tblConsumedCurrentBalanceDetails" class="table table-responsive table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>
+                                @Resources.Globalization.VacationStartDateText
+                            </td>
+                            <td>
+                                @Resources.Globalization.VacationPeriodText
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="divCheckExpiryModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.BreakupDetailsText
+                </div>
+            </div>
+            <div class="modal-body" style="height:600px;">
+                <table id="tblBalanceExpiry" class="table table-responsive table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>
+                                @Resources.Globalization.ExpiryDateText
+                            </td>
+                            <td>
+                                @Resources.Globalization.DaysCountText
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

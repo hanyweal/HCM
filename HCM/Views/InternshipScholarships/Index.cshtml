@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = @Resources.Globalization.InternshipScholarshipsText;
+}
+
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+
+<script>
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblInternshipScholarships").DataTable({
+            //"destroy":true,
+               dom: 'Bfrtip',
+            "ajax": {
+                "url": "/InternshipScholarships/GetInternshipScholarships",
+                "type": "get",
+                "datatype": "json"
+            },
+              "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                     "data": "InternshipScholarshipID",
+                     "autowidth": true,
+                },
+                {
+                    "data": "InternshipScholarshipType.InternshipScholarshipTypeName",
+                    "autowidth": true
+                }, 
+                {
+                    "data": "InternshipScholarshipStartDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                     "data": "InternshipScholarshipPeriod",
+                     "autowidth": true,
+                },
+                {
+                    "data": "InternshipScholarshipLocation",
+                    "autowidth": true
+                },
+                {
+                    "data": "InternshipScholarshipReason",
+                    "autowidth": true
+                },
+                {
+                     "data": "InternshipScholarshipID",
+                     "autowidth": true,
+                     "render": function (data, type, row) {
+                         Url = '@Url.Action("Details", "InternshipScholarships")' + "/" + data;
+                         return '<a href="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                     }
+                },
+                {
+                    "data": "InternshipScholarshipID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "InternshipScholarships")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "InternshipScholarshipID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "InternshipScholarships")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "InternshipScholarshipID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = 'PrintInternshipScholarship(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" title="' + '@Resources.Globalization.PrintText' + '"/></a>'
+                    }
+                },
+            ]
+        });
+    });
+
+    function PrintInternshipScholarship(InternshipScholarshipID) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/InternshipScholarships/PrintInternshipScholarship/")' + InternshipScholarshipID);
+        ShowModal("#divReportModal");
+    }
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchInternshipScholarshipDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblInternshipScholarships" class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.SequenceNoText</td>
+                    <td>@Resources.Globalization.InternshipScholarshipTypeText</td>
+                    <td>@Resources.Globalization.InternshipScholarshipStartDateText</td>
+                    <td>@Resources.Globalization.InternshipScholarshipPeriodText</td>
+                    <td>@Resources.Globalization.InternshipScholarshipLocationText</td>
+                    <td>@Resources.Globalization.InternshipScholarshipReasonText</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,442 @@
+﻿@model MvcSiteMapProvider.Web.Html.Models.MenuHelperModel
+@using System.Web.Mvc.Html
+@using MvcSiteMapProvider.Web.Html.Models
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#divVerticalMenu').treeview({
+            data: getVerticalMenu(),
+            levels: 1, // for default expanded
+            backColor: 'white',
+            //expandIcon: "glyphicon glyphicon-triangle-right",
+            //collapseIcon: "glyphicon glyphicon-triangle-bottom",
+            showBorder: true,
+            enableLinks: true,
+            selectedBackColor: '#2D3E50'
+            //backColor: 'green'
+        });
+
+    });
+
+    function getVerticalMenu() {
+        // logic to retrieve, or generate tree structure
+        var VerticalMenu = [
+            {
+                text: "@Resources.Globalization.ApplicationSettingsText",
+                nodes:
+                    [
+                        {
+                            text: "@Resources.Globalization.CountriesText",
+                            href: "/Countries/Index",
+                        },
+                        {
+                            text: "@Resources.Globalization.KSACitiesText",
+                            href: "/KSACities/Index",
+                        },
+                        {
+                            text: "@Resources.Globalization.RanksTicketsClassesText",
+                            href: "/RanksTicketsClasses/Index",
+                        },
+                        {
+                            text: "@Resources.Globalization.GovernmentFundsTypesText",
+                            href: "/GovernmentFundsTypes/Index",
+                        },
+                        {
+                            text: "@Resources.Globalization.AllowanceSettingsText",
+                            nodes: [
+                                {
+                                    text: "@Resources.Globalization.AllowanceText",
+                                    href: "/Allowances/Index",
+                                },
+                                {
+                                    text: "@Resources.Globalization.JobAllowanceText",
+                                    href: "/JobsAllowances/Index",
+                                },
+                            ]
+                        },
+                        {
+                            text: "@Resources.Globalization.RanksSettingsText",
+                            href: "/Ranks/Index",
+                        },
+                        {
+                            text: "@Resources.Globalization.PromotionPeriodsSettingsText",
+                            href: "/PromotionsPeriods/Index",
+                        },
+                        {
+                            text: "@Resources.Globalization.NominationInformationCardForPromotionText",
+                            href: "/InformationCardForPromotion/Index",
+                        },
+                        {
+                            text: "@Resources.Globalization.YearsSettingsText",
+                            href: "/YearsSettings/Index",
+                            nodes: [
+                                {
+                                    text: "@Resources.Globalization.HolidaysAttendanceText",
+                                    href: "/HolidaysAttendance/Index",
+                                }
+                            ]
+                        },
+                        {
+                            text: "@Resources.Globalization.EServicesAuthorizationsText",
+                            href: "/EServicesAuthorizations/Index",
+                        },
+                    ]
+            },
+            {
+                text: "@Resources.Globalization.EmployeesText",
+                href: "/Employees/Index",
+                nodes:
+                    [
+                        {
+                            text: "@Resources.Globalization.EmployeeProfileText",
+                            href: "/Employees/EmployeeProfile",
+                        },
+                        {
+                            text: "@Resources.Globalization.CreateEmployeeCodeNoText",
+                            href: "/Employees/CreateEmployeeCodeNo",
+                        },
+                        {
+                            text: "@Resources.Globalization.EditEmployeeNameText",
+                            href: "/Employees/EditEmployeeName",
+                        },
+                        {
+                            text: "@Resources.Globalization.EditEmployeeMobileNoText",
+                            href: "/Employees/EditMobileNo",
+                        },
+                        {
+                            text: "@Resources.Globalization.HiringNewEmployeeText",
+                            href: "/Employees/HiringNewEmployee",
+                        },
+                    ]
+            },
+            {
+                text: "@Resources.Globalization.JobsManagmentText",
+                nodes:
+                    [
+                        {
+                            text: "@Resources.Globalization.JobsText",
+                            href: "/Jobs/Index",
+                        },
+                        {
+                            text: "@Resources.Globalization.OrganizationsJobsText",
+                            href: "/OrganizationJob/Index",
+                        }
+                    ]
+            },
+            {
+                text: "@Resources.Globalization.OrganizationStructureText",
+                href: "/OrganizationStructure/IndexOrgChart",
+            },
+            {
+                text: "@Resources.Globalization.AssigningsLendersText",
+                nodes: [
+                    {
+                        text: "@Resources.Globalization.AssigningsText",
+                        href: "/Assignings/Index",
+                        nodes:
+                            [
+                                {
+                                    text: "@Resources.Globalization.EmployeesInPlacedText",
+                                    href: "/EmployeesPlacement/EmployeesInPlaced",
+                                },
+                                {
+                                    text: "@Resources.Globalization.OrganizationsPlacementText",
+                                    href: "/EmployeesPlacement/OrganizationsPlacement",
+                                },
+                            ]
+                    },
+                    {
+                        text: "@Resources.Globalization.LendersText",
+                        href: "/Lenders/Index",
+                    },
+                    {
+                        text: "@Resources.Globalization.ReportsText",
+                        nodes: [
+                            {
+                                text: "@Resources.Globalization.ReportOrphanAssignmentsText",
+                                href: "/Reports/ReportOrphanAssignments",
+                            },
+                        ]
+                    },
+                ]
+            },
+            {
+                text: "@Resources.Globalization.CareerHistoryText",
+                href: "/CareerHistory/Index",
+                nodes:
+                    [
+                         {
+                            text: "@Resources.Globalization.EmployeesOldJobsText",
+                            href: "/EmployeesOldJobs/Index",
+                        },
+                        {
+                            text: "@Resources.Globalization.EmployeesDegreesUpgradesText",
+                            href: "/EmployeesDegreesUpgrades/Index",
+                        },
+                    ]
+            },
+            {
+                text: "@Resources.Globalization.ExpensesText",
+                nodes: [
+                    {
+                        text: "@Resources.Globalization.DelegationsText",
+                        href: "/Delegations/Index",
+                    },
+                    {
+                        text: "@Resources.Globalization.PassengerOrdersText",
+                        href: "/PassengerOrders/Index",
+                    },
+                    {
+                        text: "@Resources.Globalization.OverTimesText",
+                        href: "/OverTimes/Index",
+                    },
+                    {
+                        text: "@Resources.Globalization.GovernmentFundsText",
+                        href: "/GovernmentFunds/Index",
+                    },
+                    {
+                        text: "@Resources.Globalization.EmployeeAllowanceText",
+                        href: "/EmployeesAllowances/Index",
+                    },
+                    {
+                        text: "@Resources.Globalization.InsteadDeportationsText",
+                        href: "/InsteadDeportations/Index",
+                    },
+                    {
+                        text: "@Resources.Globalization.InternshipScholarshipsText",
+                        href: "/InternshipScholarships/Index",
+                    },
+                ]
+            },
+            {
+                text: "@Resources.Globalization.PayrollsText",
+                nodes: [
+                    {
+                        text: "@Resources.Globalization.VacationDaysDuringOverTimeText",
+                        href: "/Payrolls/VacationsDuringOvertimeDays",
+                    },
+                    {
+                        text: "@Resources.Globalization.EmployeesSalariesDetailsText",
+                        href: "/Payrolls/EmployeesSalariesDetails",
+                    },
+                    {
+                        text: "@Resources.Globalization.BasicSalariesListText",
+                        href: "/BasicSalaries/Index",
+                    },
+                ]
+            },
+            {
+                text: "@Resources.Globalization.ApproveMangamentText",
+                nodes: [
+                    {
+                        text: "@Resources.Globalization.ExpensesApprovalText",
+                        nodes: [
+                            {
+                                text: "@Resources.Globalization.DelegationsText",
+                                href: "/Approvals/DelegationApproval",
+                            },
+                            {
+                                text: "@Resources.Globalization.OverTimesText",
+                                href: "/Approvals/OverTimeApproval",
+                            }
+                        ]
+                    },
+                    {
+                        text: "@Resources.Globalization.VacationsApprovalText",
+                        href: "/Approvals/VacationApproval",
+                    },
+                    {
+                        text: "@Resources.Globalization.PromotionRecordEmployeeApprovalText",
+                        href: "/Approvals/PromotionRecordEmployeeApproval",
+                    },
+                ]
+            },
+            {
+                text: "@Resources.Globalization.QualificationsManagementText",
+                nodes: [
+                    {
+                        text: "@Resources.Globalization.QualificationsSettingsText",
+                        href: "/Qualifications/Index",
+                    },
+                    {
+                        text: "@Resources.Globalization.EmployeesQualificationsText",
+                        href: "/EmployeesQualifications/Index",
+                    },
+
+                ]
+            },
+            {
+                text: "@Resources.Globalization.ScholarshipsText",
+                href: "/Scholarships/Index",
+            },
+            {
+                text: "@Resources.Globalization.VacationsText",
+                href: "/Vacations/Index",
+                nodes:
+                    [
+                        {
+                            text: "@Resources.Globalization.EVacationsRequestsText",
+                            nodes: [
+                                {
+                                    text: "@Resources.Globalization.EVacationRequestCreationText",
+                                    href: "/EVacationsRequests/Create",
+                                },
+                                {
+                                    text: "@Resources.Globalization.MyEVacationsRequestsText",
+                                    href: "/EVacationsRequests/MyEVacationsRequests",
+                                },
+                                {
+                                    text: "@Resources.Globalization.EVacationsRequestsUnderAuthorizedPersonText",
+                                    href: "/EVacationsRequests/RequestsUnderAuthorizedPerson",
+                                },
+                                {
+                                    text: "@Resources.Globalization.EVacationsRequestsText",
+                                    href: "/EVacationsRequests/Index",
+                                },
+                            ]
+                        },
+                        {
+                            text: "@Resources.Globalization.InquiryBalancesText",
+                            href: "/Vacations/InquiryBalances",
+                        },
+                        {
+                            text: "@Resources.Globalization.TeachersText",
+                            href: "/Teachers/Index",
+                        },
+                        {
+                            text: "@Resources.Globalization.ReportsText",
+                            nodes: [
+                                {
+                                    text: "@Resources.Globalization.ReportSickVacationsPaidAmountText",
+                                    href: "/Reports/ReportSickVacationsPaidAmount",
+                                },
+                                @*{
+                                    text: "@Resources.Globalization.ReportVacationTodayByVacationTypeText",
+                                    href: "/Reports/ReportVacationTodayByVacationType",
+                                },*@
+                                  {
+                                    text: "@Resources.Globalization.ReportEmployeesVacationsDuringPeriodText",
+                                      href: "/Reports/ReportEmployeesVacationsDuringPeriod",
+                                },
+                            ]
+                        },
+                    ]
+            },
+            {
+                text: "@Resources.Globalization.TransfersText",
+                href: "/Transfers/Index",
+            },
+            {
+                text: "@Resources.Globalization.StopWorksText",
+                href: "/StopWorks/Index",
+                nodes:
+                    [
+                        {
+                            text: "@Resources.Globalization.ReportsText",
+                            nodes: [
+                                {
+                                    text: "@Resources.Globalization.ReportStopWorkText",
+                                    href: "/Reports/ReportStopWorksByEndedStatus",
+                                },
+                            ]
+                        },
+                    ]
+            },
+            {
+                text: "@Resources.Globalization.EndOfServicesText",
+                href: "/EndOfServices/Index",
+                nodes:
+                    [
+                        {
+                            text: "@Resources.Globalization.ExpectedCompensationAfterEndOfServicesText",
+                            href: "/EndOfServices/ExpectedCompensationAfterEndOfServices",
+                        },
+                    ]
+            },
+            {
+                text: "@Resources.Globalization.PromotionsRecordsText",
+                href: "/PromotionsRecords/Index",
+                nodes:
+                    [
+                        {
+                            text: "@Resources.Globalization.ReportsText",
+                            nodes: [
+                                {
+                                    text: "@Resources.Globalization.ReportPromotionRecordsByPromotionPeriodText",
+                                    href: "/Reports/ReportPromotionRecordsByPromotionPeriod",
+                                }
+                            ]
+                        },
+                    ]
+            },
+            {
+                text: "@Resources.Globalization.EmployeesExperiencesText",
+                href: "/EmployeesExperiences/Index",
+                nodes: [
+                    {
+                        text: "@Resources.Globalization.EmployeesExperiencesText",
+                        href: "/EmployeesExperiences/Index"
+                    },
+                    {
+
+                        text: "@Resources.Globalization.EmployeesExperiencesDetailsText",
+                        href: "/EmployeeExperiencesWithDetails/Index"
+                    }
+
+                ]
+
+             },
+
+        {
+            text: "@Resources.Globalization.EmployeeEvaluationsText", //
+            href: "/EmployeesEvaluations/Index",
+        },
+        {
+            text: "@Resources.Globalization.ReportsText",
+            nodes: [
+                @*{
+                    text: "@Resources.Globalization.ReportSickVacationsPaidAmountText",
+                    href: "/Reports/ReportSickVacationsPaidAmount",
+                },*@
+                {
+                    text: "@Resources.Globalization.ReportJobVacanciesByRankAndCategoryText",
+                    href: "/Reports/ReportJobVacanciesByRankByCategory",
+                },
+                {
+                    text: "@Resources.Globalization.ReportChangeLogsText",
+                    href: "/Reports/ReportChangeLogs",
+                },
+            ]
+        },
+
+        ];
+        return VerticalMenu;
+    }
+
+</script>
+
+<div id="divVerticalMenu" style="width:100%"></div>
+
+
+@*
+    @foreach (SiteMapNodeModel node in Model.Nodes)
+    {
+        if (node.Parent != null)
+        {
+            //string url = node.IsClickable ? node.Url : "#";
+
+            <div class="divMenuItems">
+                <a href='@Url.Action(node.Action, node.Controller)'>
+                    <img src='@Url.Content("~/Content/images/" + node.Title + ".png")' class="img-circle">
+                </a>
+                <br />
+                <label>@node.Title</label>
+            </div>
+        }
+    }
+*@
+
+
+

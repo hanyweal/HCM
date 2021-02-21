@@ -1,0 +1,96 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#btnPromotionRecordEmployeeRemove").click(function () {
+            var PromotionRecordEmployeeID = $("#hdnFldPromotionRecordEmployeeID").val() != '' ? $("#hdnFldPromotionRecordEmployeeID").val() : 0;
+
+            var RemoveRequestObj = {
+                PromotionRecordEmployeeID: PromotionRecordEmployeeID,
+                RemovingReason: $('#txtRemovingReason').val(),
+            };
+
+            $.ajax({
+                type: "POST",
+                // dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage',
+                contentType: "application/json; charset=utf-8",
+                url: "/PromotionsRecords/RemoveByPromotionRecordEmployeeID",
+                data: JSON.stringify(RemoveRequestObj),
+                success: OnSuccessRemoveCandidate,
+                error: function (xhr, status, error) {
+                    OnFailure();
+                }
+            });
+
+        });
+    });
+
+    function OnSuccessRemoveCandidate(d) {
+
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.PromotionRecordEmployeeRemovedDoneAlertText), "")');
+        BindCandidates();               // function defined in Manage.cshtml
+
+        $("#divPromotionsRecordsEmployeesRemoveModal")
+			.fadeOut(1000, function () {
+			    DestroyModal("#divPromotionsRecordsEmployeesRemoveModal");
+			});
+    }
+
+    function OpenPromotionRecordEmployeeRemovePopup(PromotionRecordEmployeeID) {
+
+        $("#hdnFldPromotionRecordEmployeeID").val(PromotionRecordEmployeeID)
+        $('#txtRemovingReason').val('');
+        ShowModal("#divPromotionsRecordsEmployeesRemoveModal");
+
+    }
+
+</script>
+<input type="hidden" id="hdnFldPromotionRecordEmployeeID" value="" />
+<div class="modal fade" id="divPromotionsRecordsEmployeesRemoveModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.PromotionRecordEmployeeRemoveTitleText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="divPromotionsRecordsQualificationsPointsAlert" class="alert alert-info">
+                            @Resources.Globalization.PromotionRecordEmployeeRemoveDescText
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-responsive table-condensed table-striped" style="width:100%">
+                    <tbody>
+                        <tr>
+                            <td class="col-md-12">
+                                <label class="control-label">@Resources.Globalization.RemovingReasonText</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12">
+                                @Html.TextArea("txtRemovingReason", new { @class = "form-control", @id = "txtRemovingReason" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-12">
+                                <input id="btnPromotionRecordEmployeeRemove" type="button" class="btn btn-default" value="@Resources.Globalization.SaveText" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

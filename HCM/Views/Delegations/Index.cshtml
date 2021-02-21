@@ -1,0 +1,178 @@
+﻿@{
+    ViewBag.Title = @Resources.Globalization.DelegationsText;
+}
+
+<script>
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblDelegations").DataTable({
+            
+            "ajax": {
+                "url": "/Delegations/GetDelegations",
+                "type": "get",
+                "datatype": "json",
+                "data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+            
+            "serverSide": true,
+            //"initComplete": HighlightRows,
+            "columns": [
+                {
+                    "data": "DelegationID",
+                    "autowidth": true,
+                },
+                {
+                    "data": "DelegationTypeName",
+                    "autowidth": true
+                },
+                {
+                    "data": "DelegationKindName",
+                    "autowidth": true
+                },
+                {
+                    "data": "DelegationStartDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "DelegationPeriod",
+                    "autowidth": true,
+                    "orderable": false
+                },
+                {
+                    "data": "DelegationReason",
+                    "autowidth": true
+                },
+                {
+                    "data": "IsApproved",
+                    "autowidth": true,
+                    "render": RenderCheckBox,
+                    "orderable": false
+                },
+                {
+                    "data": "DelegationID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Details", "Delegations")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                    },
+                    "orderable": false
+                },
+                {
+                    "data": "DelegationID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "Delegations")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    },
+                    "orderable": false
+                },
+                {
+                    "data": "DelegationID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "Delegations")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    },
+                    "orderable": false
+                },
+                {
+                    "data": "DelegationID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = 'PrintDelegation(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" title="' + '@Resources.Globalization.PrintText' + '"/></a>'
+                    },
+                    "orderable": false
+                },
+                @*{
+                    "data": "DelegationID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Approve", "Delegations")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-pencil" title="' + '@Resources.Globalization.ApproveText' + '"/></a>'
+                    }
+                },*@
+            ]
+        });
+
+          $("#ExportExcelButton").click(function () {
+                 $.ajax({
+                     type: "GET"
+                      , contentType: "application/json;"
+                      , url: "/Delegations/ExportExcel"
+                      , success: function (response)
+                      {
+                          var url = "/WebForms/Reports/FileDownload.aspx?fileName=" + response.DownLoadFile;
+                          window.location.href = url;
+                      }
+                      , error: function (xhr, status, error) {
+
+                      }
+                 });
+             });
+    });
+
+
+    //function HighlightRows() {
+    //    //console.log('HighlightRows');
+
+    //    $('#tblDelegations tbody tr').each(function () {
+
+    //        //console.log('loop');
+
+    //        var nTds = $('td', this);
+    //        var rank = $(nTds[4]).text();
+
+    //        //console.log('rank', rank);
+
+    //        if (rank == '1') {
+    //            nTds.css('background-color', 'red');
+    //        }
+    //        else {
+    //            nTds.css('background-color', 'white');
+    //        }
+    //    });
+    //}
+
+    function PrintDelegation(DelegationID) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Delegations/PrintDelegation/")' + DelegationID);
+        ShowModal("#divReportModal");
+    }
+</script>
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.SearchDelegationDescText
+    </div>
+    <input id="ExportExcelButton" type="button" style="float:left" value="@Resources.Globalization.ExportToExcelText" />
+    <div class="panel-body">
+        <table id="tblDelegations" class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.SequenceNoText</td>
+                    <td>@Resources.Globalization.DelegationTypeText</td>
+                    <td>@Resources.Globalization.DelegationKindText</td>
+                    <td>@Resources.Globalization.DelegationStartDateText</td>
+                    <td>@Resources.Globalization.DelegationPeriodText</td>
+                    <td>@Resources.Globalization.DelegationReasonText</td>
+                    <td>@Resources.Globalization.ApproveText</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    @*<td></td>*@
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

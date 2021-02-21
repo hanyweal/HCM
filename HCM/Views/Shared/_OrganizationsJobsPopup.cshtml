@@ -1,0 +1,199 @@
+﻿@model HCM.Models.OrganizationsJobsViewModel
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            //console.log('message', message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        AddCustomColumnFilter('tblOrganizationsJobs', "BindOrganizationsJobs");
+
+        $("#OpenOrganizationsJobsPopup").click(function () {
+            ShowModal("#divOrganizationsJobsLOVModal");
+        });
+
+        BindOrganizationsJobs();
+
+    });
+
+    function DestroyOrganizationsJobsLOVModal() {
+        $("#divOrganizationsJobsLOVModal").modal('hide');
+    }
+
+    function BindOrganizationsJobs() {
+
+        var txtSearchJobNo = $('#txtSearchJobNo').val();
+        var txtSearchOrganizationName = $('#txtSearchOrganizationName').val();
+        var txtSearchJobName = $('#txtSearchJobName').val();
+        var txtSearchRankName = $('#txtSearchRankName').val();
+
+        var url = "/CareerHistory/GetOrganizationsJobs";
+        url = url + "/" + (txtSearchJobNo.length > 0 ? txtSearchJobNo.trim() : "null");
+        url = url + "/" + (txtSearchOrganizationName.length > 0 ? txtSearchOrganizationName.trim() : "null");
+        url = url + "/" + (txtSearchJobName.length > 0 ? txtSearchJobName.trim() : "null");
+        url = url + "/" + (txtSearchRankName.length > 0 ? txtSearchRankName.trim() : "null");
+
+        //console.log('url ', url);
+
+        $("#tblOrganizationsJobs").DataTable({
+            "destroy":true,
+            "ajax": {
+                "url": url,
+                "type": "get",
+                "datatype": "json",
+                "data": RemoveExtraColumnsFromURL,
+                "global": false
+            },
+            "serverSide": true,
+            "columns": [
+                {
+                    "data": "JobNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "OrganizationName",
+                    "autowidth": true
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobName",
+                    "autowidth": true
+                },
+                {
+                    "data": "IsVacant",
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "OrganizationJobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        return '<a onClick="closeOrganizationsJobsLOVPopup(' + '\'' + row.OrganizationName + '\'' + ', ' + '\'' + row.JobName + '\'' + ', ' + '\'' + row.RankName + '\'' + ', ' + row.OrganizationJobID + ', ' + row.JobNo + ')"><span class="glyphicon glyphicon-thumbs-up" /></a>'
+                    }
+                },
+            ]
+        });
+    }
+
+    function closeOrganizationsJobsLOVPopup(OrganizationName, JobName, RankName, OrganizationJobID, JobNo) {
+        DestroyOrganizationsJobsLOVModal();
+        $("#hdnFldOrganizationJobID").val(OrganizationJobID);
+        $("#txtJobName").val(JobName);
+        $("#txtOrganizationName").val(OrganizationName);
+        $("#txtRankName").val(RankName);
+        $("#txtJobNo").val(JobNo);
+    }
+
+    function ResetOrganizationJob() {
+        $("#hdnFldEmployeeCareerHistoryID").val('');
+        $("#hdnFldOrganizationJobID").val('');
+        $("#txtJobName").val('');
+        $("#txtOrganizationName").val('');
+        $("#txtRankName").val('');
+        $("#txtJobNo").val('');
+    }
+
+    function ReadOnlyOrganizationsJobs(isTrue) {
+        if (isTrue) {
+            $('#OpenOrganizationsJobsPopup').hide();
+        }
+        else {
+            $('#OpenOrganizationsJobsPopup').show();
+        }
+    }
+</script>
+
+<table class="table table-responsive table-condensed table-striped" style="text-align:right">
+    <tr>
+        <td>
+            @Html.LabelFor(model => model.JobName, new { @class = "control-label" })
+        </td>
+        <td>
+            @Html.LabelFor(model => model.RankName, new { @class = "control-label" })
+        </td>
+        <td>
+            @Html.LabelFor(model => model.OrganizationName, new { @class = "control-label" })
+        </td>
+    </tr>
+    <tr>
+        <td class="col-md-4">
+            <div class="input-group">
+                @Html.TextBoxFor(model => model.JobName, new { @class = "form-control", @id = "txtJobName", @readonly = "readonly" })
+                <span id="OpenOrganizationsJobsPopup" class="input-group-addon clickable" title="@Resources.Globalization.SearchAboutOrganizationsJobsToolTip">
+                    <i class="glyphicon glyphicon-search"></i>
+                </span>
+            </div>
+            @Html.HiddenFor(model => model.OrganizationJobID, new { @id = "hdnFldOrganizationJobID" })
+            @Html.HiddenFor(model => model.EmployeeCareerHistoryID, new { @id = "hdnFldEmployeeCareerHistoryID" })
+            @Html.ValidationMessageFor(model => model.OrganizationJobID, "", new { @class = "text-danger" })
+        </td>
+        <td class="col-md-4">
+            @Html.TextBoxFor(model => model.RankName, new { @class = "form-control", @id = "txtRankName", @readonly = "readonly" })
+        </td>
+        <td class="col-md-4">
+            @Html.TextBoxFor(model => model.OrganizationName, new { @class = "form-control", @id = "txtOrganizationName", @readonly = "readonly" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(model => model.JobNo, new { @class = "control-label" })
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="col-md-4">
+            <div class="input-group">
+                @Html.TextBoxFor(model => model.JobNo, new { @class = "form-control", @id = "txtJobNo", @readonly = "readonly" })
+            </div>
+        </td>
+        <td class="col-md-4"></td>
+        <td class="col-md-4"></td>
+    </tr>
+</table>
+
+<div class="modal fade" id="divOrganizationsJobsLOVModal">
+    <div class="modal-dialog" style="width:1000px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.OrganizationsJobsListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        @*<div class="alert alert-danger" style="padding:6px">
+                        <p>@Resources.Globalization.EmployeeMustBeCreatedFirstText</p>
+                    </div>*@
+                    </div>
+                </div>
+
+                <table id="tblOrganizationsJobs" class="table table-responsive table-hover dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th id="JobNo" class="search">@Resources.Globalization.JobNoText</th>
+                            <th id="OrganizationName" class="search">@Resources.Globalization.OrganizationNameText</th>
+                            <th id="RankName" class="search">@Resources.Globalization.RankNameText</th>
+                            <th id="JobName" class="search">@Resources.Globalization.JobNameText</th>
+                            <th class="no-search">@Resources.Globalization.IsVacantText</th>
+                            <th class="no-search">@Resources.Globalization.SelectText</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" onclick="DestroyOrganizationsJobsLOVModal();">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

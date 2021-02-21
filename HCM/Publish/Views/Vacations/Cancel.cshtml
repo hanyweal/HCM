@@ -1,0 +1,169 @@
+﻿@model HCM.Models.VacationsCancelViewModel
+
+@{
+    ViewBag.Title = "Cancel";
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnCancel").confirm({
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            content: '@Resources.Globalization.VacationCancelCofirmationMessageText',
+            animation: 'zoom',
+            boxWidth: '250px',
+            useBootstrap: false,
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $("#btnCancel").submit();
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+    });
+
+    function OkFunction() {
+
+
+        @*var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Assignings/PrintAssigning")');//ReportViewerASPX
+        //iframe.attr('src', '@Url.Content("~/WebForms/Reports/ReportViewerASPX.aspx?ID=")' + d.data.AssigningID);
+        ShowModal("#divReportModal");*@
+
+        @*$.ajax({
+            type: "GET"
+         , dataType: "json"
+         , contentType: "application/json; charset=utf-8"
+         , url: "@Url.Content("~/Assignings/GetAssigningID")"
+         , success: function (d) {
+             var iframe = $("#divReportModal .modal-body #iframeReportContent");
+             iframe.attr('src', '@Url.Content("~/Assignings/PrintAssigning/")' + d.data.AssigningID);//ReportViewerASPX
+             ShowModal("#divReportModal");
+         }
+        , error: function (xhr, status, error) {
+            alert(error.message);
+        },
+        });*@
+    }
+
+    function OnSuccess() {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedVacationCancelAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+
+        BindVacationDetails();
+    }
+
+</script>
+
+
+<p style="font-size:larger">@Resources.Globalization.VacationCancelText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.VacationCancelDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @*@Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.Delegations })*@
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Cancel", "Vacations", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <div id="divVacationExtend">
+                <table class="table table-responsive" style="width:100%">
+                    <tr class="col-md-12">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.VacationStartDate, new { @class = "control-label" })
+                            @Html.HiddenFor(model => model.VacationID)
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.VacationStartDate, new
+                    {
+                        @class = "form-control",
+                        @id = "txtVacationStartDate",
+                        @readonly = "readonly",
+                        @Value = Model.VacationStartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                    })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.VacationPeriod, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.VacationPeriod, new { @class = "form-control", @id = "txtVacationPeriod", @readonly = "readonly" })
+                            @*<input type="number" id="txtVacationPeriod" min="1" class="form-control" />*@
+                        </td>
+                    </tr>
+                    <tr class="col-md-12">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.VacationEndDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.VacationEndDate, new
+                    {
+                        @class = "form-control",
+                        @id = "txtVacationEndDate",
+                        @readonly = "readonly",
+                        @Value = Model.VacationEndDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                    })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.WorkDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.WorkDate, new
+                    {
+                        @class = "form-control",
+                        @id = "txtWorkDate",
+                        @readonly = "readonly",
+                        @Value = Model.WorkDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                    })
+                        </td>
+                    </tr>
+                    <tr class="col-md-12">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.Notes, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextAreaFor(model => model.Notes, new { @class = "form-control", @id = "txtNotes" })
+                        </td>
+                    </tr>
+                </table>
+                <table class="table table-responsive" style="width:100%">
+                    <tr>
+                        <td class="col-md-12" style="text-align:left">
+                            <input type="submit" id="btnCancel" value="@Resources.Globalization.VacationCancelText" class="btn btn-default" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        }
+
+        @Html.Partial("~/Views/Vacations/_VacationDetails.cshtml", new HCM.Models.VacationsViewModel() { VacationID = @Model.VacationID })
+    </div>
+</div>

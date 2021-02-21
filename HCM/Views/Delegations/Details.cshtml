@@ -1,0 +1,212 @@
+﻿@model HCM.Models.DelegationsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.DetailsDelegationText;
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+          $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+              $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+          }
+
+        BindDelegationEmployees();
+
+        var DelegationType = '@Model.DelegationType.DelegationTypeID';
+        if (DelegationType == '@Convert.ToInt32(DelegationsTypesEnum.Internal)') {
+            $('.internal').show();
+            $('.external').hide();
+        }
+        else {
+            $('.internal').hide();
+            $('.external').show();
+        }
+    });
+
+    function BindDelegationEmployees() {
+        $("#tblDelegationEmployees").DataTable({
+            destroy: true,
+            "searching": false,
+            "ordering": false,
+            "paging": false,
+            "ajax": {
+                "url": "/Delegations/GetDelegationEmployeesByDelegationID/" + '@Model.DelegationID',
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.Employee.EmployeeNameAr",
+                    "autowidth": true,
+                },
+                {
+                    "data": "IsPassengerOrderCompensation",
+                    "render" : RenderCheckBox,
+                    "autowidth": true,
+                }
+            ]
+        });
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.DetailsDelegationText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.DetailsDelegationDescText
+    </div>
+    <div class="panel-body">
+        @Html.AntiForgeryToken()
+        <span class="control-label">@Resources.Globalization.DelegationBasicInfoText</span>
+        <table class="table table-responsive table-condensed">
+            <tbody>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.DelegationsTypes, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.DelegationType.DelegationTypeName)
+                        @Html.HiddenFor(model => model.DelegationType.DelegationTypeID)
+                        @Html.HiddenFor(model => model.DelegationID)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.DelegationsKinds, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.DelegationKind.DelegationKindName)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.DelegationStartDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.DelegationStartDate, new
+                                                                                {
+                                                                                    @Value = Model.DelegationStartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                                                                })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.DelegationEndDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.DelegationEndDate, new
+                                                                                {
+                                                                                    @Value = Model.DelegationEndDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                                                                })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.DelegationPeriod, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.DelegationPeriod)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.DelegationDistancePeriod, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.DelegationDistancePeriod)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.DelegationReason, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.DelegationReason)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.Notes, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.Notes)
+                    </td>
+                </tr>
+                <tr class="internal">
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.KSARegions, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.KSARegion.KSARegionName)
+                    </td>
+                </tr>
+                <tr class="internal">
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.KSACities, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.KSACity.KSACityName)
+                    </td>
+                </tr>
+                <tr class="external">
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.Countries, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.Country.CountryName)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.CreatedBy, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.CreatedBy)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.CreatedDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.CreatedDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.IsApprove, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.CheckBoxFor(model => model.IsApprove, new { @class = "disabled" })
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <span class="control-label">@Resources.Globalization.EmployeesText</span>
+        <table id="tblDelegationEmployees" class="table table-responsive table-hover" style="width:100%">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                    <td>@Resources.Globalization.IsPassengerOrderCompensation؟</td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Delegations"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

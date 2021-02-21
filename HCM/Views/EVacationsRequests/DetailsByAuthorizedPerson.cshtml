@@ -1,0 +1,189 @@
+﻿@model HCM.Models.EVacationsRequestsViewModel
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums;
+@{
+    ViewBag.Title = Resources.Globalization.EVacationRequestsDetailsText;
+    Layout = "~/Views/Shared/_EServiecsLayout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnBack").click(function () {
+             window.location.href='@Url.Content("~/EVacationsRequests/RequestsUnderAuthorizedPerson")';
+        });
+
+        bindEVacationRequestStatusTrackBar('@Model.EVacationRequestStatusEnum'); // defined in _EVacationRequestStatus.chtml partial view
+    });
+
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-12">
+                @Resources.Globalization.EVacationRequestsDetailsText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+
+        @Html.Partial("~/Views/EVacationsRequests/_EVacationRequestStatus.cshtml")
+
+        <table class="table table-responsive table-condensed table-striped" style="text-align:right">
+            <tr>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.EVacationRequestNo, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.VacationType, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.EVacationRequestStatusName, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.CreatedDate, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.EVacationRequestNo)
+                    @Html.HiddenFor(x => x.EVacationRequestID)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.VacationType)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.EVacationRequestStatusName)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.CreatedDate)
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.VacationStartDate, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.VacationPeriod, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.VacationEndDate, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.WorkDate, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.VacationStartDate)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.VacationPeriod)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.VacationEndDate)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.WorkDate)
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-12" colspan="4">
+                    @Html.LabelFor(model => model.CreatorNotes, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-12" colspan="4">
+                    @Html.DisplayFor(model => model.CreatorNotes)
+                </td>
+            </tr>
+            @if (Model.LastUpdatedDate.HasValue)
+            {
+                <tr>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.LastUpdatedBy, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.LastUpdatedDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(model => model.LastUpdatedBy)
+                    </td>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(model => model.LastUpdatedDate)
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                </tr>
+            }
+        </table>
+        <br />
+        <table class="table table-responsive table-condensed table-striped" style="text-align:right">
+            <tr>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.AuthorizedPersonCodeNo, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.AuthorizedPersonNameAr, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.AuthorizedPersonDecision, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.AuthorizedPersonDecisionDateTime, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.AuthorizedPersonCodeNo)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.AuthorizedPersonNameAr)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.AuthorizedPersonDecision)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.AuthorizedPersonDecisionDateTime)
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-12" colspan="4">
+                    @Html.LabelFor(model => model.AuthorizedPersonNotes, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-12" colspan="4">
+                    @Html.DisplayFor(model => model.AuthorizedPersonNotes)
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table class="table table-responsive table-condensed table-striped">
+            <tr>
+                <td class="col-md-3">
+                </td>
+                <td class="col-md-3" style="text-align:center">
+                    <button id="btnBack" class="btn btn-success btn-sm btn-success">@Resources.Globalization.BacktoListText</button>
+                </td>
+
+                <td class="col-md-3">
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+</div>
+

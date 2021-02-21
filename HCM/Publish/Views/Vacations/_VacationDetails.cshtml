@@ -1,0 +1,105 @@
+﻿@model HCM.Models.VacationsViewModel
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        BindVacationDetails();
+    });
+
+    function BindVacationDetails() {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Vacations/GetEmployeeVacationsDetailsByVacationID/")" + '@Model.VacationID',
+            success: function (result) {
+                $("#tblVacationDetails").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "VacationActionName",
+                            "autowidth": false
+                        },
+                        {
+                            "data": "FromDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "VacationPeriod",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "ToDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "IsApproved",
+                            "autowidth": false,
+                            "render": RenderCheckBox
+                        },
+                        {
+                            "data": "Notes",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        @*{
+                            "data": "VacationDetailID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = '';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                            }
+                        },*@
+                    ]
+                });
+            }
+        });
+    }
+
+</script>
+
+<table id="tblVacationDetails" class="table table-responsive table-hover" style="width:100%">
+    <thead>
+        <tr>
+            <td>
+                @Resources.Globalization.VacationActionText
+            </td>
+            <td>
+                @Resources.Globalization.FromDateText
+            </td>
+            <td>
+                @Resources.Globalization.VacationPeriodText
+            </td>
+            <td>
+                @Resources.Globalization.ToDateText
+            </td>
+            <td>
+                @Resources.Globalization.ApproveText
+            </td>
+            <td>
+                @Resources.Globalization.NotesText
+            </td>
+            <td>
+                @Resources.Globalization.CreatedByText
+            </td>
+            <td>
+                @Resources.Globalization.CreatedDateText
+            </td>
+            @*<td></td>*@
+        </tr>
+    </thead>
+</table>

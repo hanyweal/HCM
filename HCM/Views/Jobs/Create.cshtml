@@ -1,0 +1,213 @@
+﻿@model HCM.Models.JobsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = @Resources.Globalization.AddNewJobText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+    var JobID = 0;
+
+    $(document).ready(function () {
+        BindJobsGroupsDDL();
+    });
+
+
+    function OnSuccess(data) {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "")');
+        JobID = data.JobID;
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        $('#ddlJobsGeneralGroups').val(1);
+        $('#ddlJobsGroups').html('');
+        $('#ddlJobsCategories').html('');
+        $('#txtJobCode').val('');
+        $('#txtJobName').val('');
+    }
+
+    function BindJobsGroupsDDL() {
+        $('#ddlJobsGroups').val(0);
+        $('#ddlJobsCategories').val(0);
+        var JobGeneralGroupID = $("#ddlJobsGeneralGroups").val();
+        GetJobsGroups(JobGeneralGroupID);
+    }
+
+    function GetJobsGroups(JobGeneralGroupID) {
+        if (JobGeneralGroupID != null) {
+            console.log("JobGeneralGroupID: " + JobGeneralGroupID);
+            $.ajax({
+                type: "get"
+                , dataType: "json"
+                , url: "/Jobs/GetJobsGroupsByJobGeneralGroupID/" + JobGeneralGroupID
+                , success: function (d) {
+                    $("#ddlJobsGroups").html("");
+                    var JobsGroups = d.data;
+                    $.each(JobsGroups, function (i, jobGroup) {
+                        $("#ddlJobsGroups").append($('<option></option>').val(jobGroup.JobGroupID).html(jobGroup.JobGroupName));
+                    });
+                    BindJobsCategoriesDDL();
+                }
+                , error: function (xhr, status, error) {
+                    alert(error.message);
+                }
+            });
+        }
+        else {
+            BindJobsCategoriesDDL();
+        }
+    }
+
+    function BindJobsCategoriesDDL() {
+        $('#ddlJobsCategories').val('');
+        var JobGroupID = $("#ddlJobsGroups").val();
+        GetJobsCategories(JobGroupID);
+    }
+
+    function GetJobsCategories(JobGroupID) {
+        if (JobGroupID != null) {
+            $.ajax({
+                type: "get"
+                , dataType: "json"
+                , url: "/Jobs/GetJobsCategoriesByJobGroupID/" + JobGroupID
+                , success: function (d) {
+                    $("#ddlJobsCategories").html("");
+                    $("#txtJobCode").val(d);
+                    var JobsCategories = d.data;
+                    $.each(JobsCategories, function (i, JobCategory) {
+                        $("#ddlJobsCategories").append($('<option></option>').val(JobCategory.JobCategoryID).html(JobCategory.JobCategoryName));
+                        if(i==0)
+                        $("#txtJobCode").val(JobCategory.JobCategoryNo);
+                    });
+                  
+                }
+                , error: function (xhr, status, error) {
+                    alert(error.message);
+                }
+            });
+        }
+    }
+    function BindJobCodeText() {
+        var JobCategoryID = $("#ddlJobsCategories").val();
+        $.ajax({
+            type: "get"
+            , dataType: "json"
+            , url: "/Jobs/GetJobCategoryByJobCategoryID/" + JobCategoryID
+            , success: function (d) {
+                debugger;
+                $("#txtJobCode").val(d);
+                var JobCategory = d.data;
+                $("#txtJobCode").val(JobCategory.JobCategoryNo);
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+
+    }
+    
+</script>
+<p style="font-size:larger">@Resources.Globalization.AddNewJobText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewJobDescText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "Jobs", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.JobBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobGeneralGroup, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobGroup, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobCategoryID, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.JobGeneralGroup.JobGeneralGroupID, new SelectList(new HCMBLL.JobsGeneralGroupsBLL().GetJobsGeneralGroups(), "JobGeneralGroupID", "JobGeneralGroupName"), new { @id = "ddlJobsGeneralGroups", @style = "width:100%", @onchange = "BindJobsGroupsDDL()" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.JobGroup.JobGroupID, new SelectList(string.Empty, "JobGroupID", "JobGroupName"), new { @id = "ddlJobsGroups", @style = "width:100%", @onchange = "BindJobsCategoriesDDL()" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.JobCategoryID, new SelectList(string.Empty, "JobCategoryID", "JobCategoryName"), new { @id = "ddlJobsCategories", @style = "width:100%", @onchange = "BindJobCodeText()" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobCode, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobName, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.JobCode, new { @class = "form-control", @id = "txtJobCode", @type = "number", @readonly = "readonly" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.JobName, new { @class = "form-control", @id = "txtJobName", @onkeypress = "return(AcceptArabicKeyPress(event))" })
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                    </tr>
+                
+                </tbody>
+            </table>
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Jobs"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }*@
+

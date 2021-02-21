@@ -1,0 +1,264 @@
+﻿@model HCM.Models.EServicesProxiesViewModel
+@using HCMBLL;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums;
+@using HCM.Models;
+@{
+    Layout = "~/Views/Shared/_EServiecsLayout.cshtml";
+    ViewBag.Title = Resources.Globalization.MyEServicesProxiesText;
+}
+
+<script>
+    
+    var EServiceTypeID;
+    extentedFuncOnClickService = "BindProxies";        // defined in _EServicesTypes.cshtml
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        EServiceTypeID = 0;
+        SetSelectedCSS(0);                              // defined in _EServicesTypes.cshtml      
+        BindProxies(0);
+    });
+
+    function BindProxies(eServiceTypeID) {   
+        EServiceTypeID = eServiceTypeID;
+        BindProxiesByMe(eServiceTypeID);
+        BindProxiesToMe(eServiceTypeID);
+    }
+
+    function RevokeProxy(EServiceProxyID) {
+
+        $.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: '@Resources.Globalization.CofirmationEServicesProxiesRevokeMessageTitleText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+
+                        $.ajax({
+                            type: "POST",
+                            contentType: "application/json; charset=utf-8",
+                            url: "@Url.Content("~/EServicesProxies/RevokeEServiceProxy/")" + EServiceProxyID,
+                            //data: null,
+                            success: OnSuccess,
+                            error: OnFailure
+                        });
+
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { console.log('cancel'); },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    }
+
+    function BindProxiesByMe(EServiceTypeID) {
+        $("#tblProxiesByMe").DataTable({
+            "destroy": "true",
+            "ajax": {
+                "url": "/EServicesProxies/GetProxiesByMe/"+EServiceTypeID,
+                "type": "get",
+                "datatype": "json",
+            },
+            "columns": [
+                {
+                    "data": "EServiceTypeName",
+                    "autowidth": true
+                },
+                {
+                    "data": "ToEmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "ToEmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "StartDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "EndDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "EServiceProxyStatus",
+                    "autowidth": true
+                },
+                {
+                    "data": "IsActive",
+                    "autowidth": true,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "Notes",
+                    "autowidth": true
+                },
+                {
+                    "data": "EServiceProxyID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = 'RevokeProxy(' + data + ');';
+                        lnk = '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.EServicesProxiesRevokeTooltipText' + '"/></a>';
+                        if (row.IsActive == false)
+                            lnk = '';
+
+                        return lnk;
+                    },
+                }
+            ]
+        });
+    }
+
+    function BindProxiesToMe(EServiceTypeID) {
+        $("#tblProxiesToMe").DataTable({
+            "destroy": "true",
+            "ajax": {
+                "url": "/EServicesProxies/GetProxiesToMe/"+EServiceTypeID,
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "EServiceTypeName",
+                    "autowidth": true
+                },
+                {
+                    "data": "FromEmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "FromEmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "StartDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "EndDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "EServiceProxyStatus",
+                    "autowidth": true
+                },
+                {
+                    "data": "IsActive",
+                    "autowidth": true,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "Notes",
+                    "autowidth": true
+                }
+            ]
+        });
+    }
+
+    function OnSuccess(data) {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "CallbackAfterSuccess")');
+
+        BindProxies(EServiceTypeID);
+        SetSelectedCSS(EServiceTypeID);
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.MyEServicesProxiesDescText
+    </div>
+    <div class="panel-body">
+
+        <span class="control-label"><b>@Resources.Globalization.ServiceTypeText</b></span>
+        <div class="row">
+            <div class="col-md-8">
+                @Html.Partial("~/Views/Shared/_EServicesTypes.cshtml", Model.EServiceTypes)
+                @*@foreach (var item in Model.EServiceTypes)
+                {
+                    <a onclick="BindOrgChart('@item.EServiceTypeID');">
+                        <div class="col-md-3">
+                            <div class="wrapper_service">
+                                <div id="form_centent_service" class="service @item.EServiceTypeID">
+                                    <div class="fade_In_service">
+                                        @item.EServiceTypeName
+                                    </div>
+                                    <div id="form_footer_service">
+                                        <img src='@string.Format("/Content/Images/{0}.png", @item.EServiceTypeName)' height="64" width="64" />
+                                        <input type="hidden" name="hdnEServiceTypeID" value="@item.EServiceTypeID" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                }*@
+            </div>
+            <div class="col-md-4">
+
+            </div>
+        </div>
+        <br />
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#TabProxiesByMe" data-toggle="tab">@Resources.Globalization.ProxiesByMeText</a>
+            </li>
+            <li>
+                <a href="#TabProxiesToMe" data-toggle="tab">@Resources.Globalization.ProxiesToMeText</a>
+            </li>
+        </ul>
+        <div class="tab-content clearfix">
+            <div id="TabProxiesByMe" class="tab-pane active padding-5">
+                <table id="tblProxiesByMe" class="table table-responsive table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.ServiceTypeText</td>
+                            <td>@Resources.Globalization.EServicesProxiesToEmployeeCodeNoText</td>
+                            <td>@Resources.Globalization.EServicesProxiesToEmployeeNameText</td>
+                            <td>@Resources.Globalization.StartDateText</td>
+                            <td>@Resources.Globalization.EndDateText</td>
+                            <td>@Resources.Globalization.EServicesProxiesStatusText</td>
+                            <td>@Resources.Globalization.IsActiveText</td>
+                            <td>@Resources.Globalization.NotesText</td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div id="TabProxiesToMe" class="tab-pane padding-5">
+                <table id="tblProxiesToMe" class="table table-responsive table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.ServiceTypeText</td>
+                            <td>@Resources.Globalization.EServicesProxiesFromEmployeeCodeNoText</td>
+                            <td>@Resources.Globalization.EServicesProxiesFromEmployeeNameText</td>
+                            <td>@Resources.Globalization.StartDateText</td>
+                            <td>@Resources.Globalization.EndDateText</td>
+                            <td>@Resources.Globalization.EServicesProxiesStatusText</td>
+                            <td>@Resources.Globalization.IsActiveText</td>
+                            <td>@Resources.Globalization.NotesText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

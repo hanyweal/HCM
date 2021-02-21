@@ -1,0 +1,326 @@
+﻿@using HCM.Classes.Enums;
+@model HCM.Models.CreateEmployeeCodeNoViewModel
+@{
+    ViewBag.Title = Resources.Globalization.CreateEmployeeCodeNoText;
+}
+<script type="text/javascript">
+    var EmployeeID = 0;
+    var IsConfirmAdded = false;
+
+    $(document).ready(function () {
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            //console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#txtEmployeeNameAr").autocomplete({
+            source: function (request, response) {
+                // autocomplete starts from 5 char
+                var val = $("#txtEmployeeNameAr").val().trim();
+                if (val.length < 5) {
+                    return;
+                }
+
+                $.ajax({
+                    type: "get"
+                    , dataType: "json"
+                    , contentType: "application/json; charset=utf-8"
+                    , url: "GetEmployeesByName/" + $("#txtEmployeeNameAr").val()
+                    , success: function (data) {
+                        response($.map(data.data, function (item) {
+                            return { label: item.EmployeeIDNo + ' - ' + item.EmployeeNameAr, value: item.EmployeeNameAr }
+                        }));
+                    }
+                    , error: function (xhr, status, error) {
+                        console.log(xhr, status, error);
+                    }
+                });
+            }
+        });
+
+        $("#txtEmployeeNameAr").on('blur', function (i) {
+            if ($("#txtEmployeeNameAr").val() != '') {
+                $.ajax({
+                    type: "POST"
+                        , dataType: "json"
+                        , contentType: "application/json; charset=utf-8"
+                        , url: "/Employees/GetEmployeeByEmployeeNameAr"
+                        , data: "{ 'EmployeeNameAr' : '" + $("#txtEmployeeNameAr").val() +
+                                "'}"
+                        , success: function (data) {
+                            if (data.EmployeeIDNo != null) {
+                                $("#txtEmployeeNameAr").val(data.EmployeeNameAr);
+                                $("#txtEmployeeNameEn").val(data.EmployeeNameEn);
+                                $("#txtEmployeeIDNo").val(data.EmployeeIDNo);
+                                $("#txtEmployeeEMail").val(data.EmployeeEMail);
+                                $("#txtEmployeeBirthDate").val(RenderDate(data.EmployeeBirthDate));
+                                $("#txtEmployeeBirthPlace").val(data.EmployeeBirthPlace);
+                                $("#txtEmployeeMobileNo").val(data.EmployeeMobileNo);
+                                $("#txtEmployeePassportNo").val(data.EmployeePassportNo);
+                                $("#txtEmployeeIDIssueDate").val(RenderDate(data.EmployeeIDIssueDate));
+                                $("#txtEmployeePassportSource").val(data.EmployeePassportSource);
+                                $("#txtEmployeePassportIssueDate").val(RenderDate(data.EmployeePassportIssueDate));
+                                $("#txtEmployeePassportEndDate").val(RenderDate(data.EmployeePassportEndDate));
+                                //$("#txtEmployeeCodeNo").val(data.ActiveEmployeeCode.EmployeeCodeNo);
+                                $("#hdnFldEmployeeID").val(data.EmployeeID);
+                                //EmployeeID = data.ActiveEmployeeCode.EmployeeID;
+                                if (data.ActiveEmployeeCode != null) {
+                                    $("#EmployeeCodeNo").val(data.ActiveEmployeeCode.EmployeeCodeNo);
+                                    $("#ddlDelegationTypes").val(data.ActiveEmployeeCode.EmployeeType.EmployeeTypeID);
+                                    if (IsConfirmAdded != true) {
+                                        AddConfirmOnSave();
+                                        IsConfirmAdded = true;
+                                    }
+                                }
+                            }
+                            else {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Notice, Globals.Utilities.RemoveSpace(@Resources.Globalization.NoEmployeeFoundText))');
+                            }
+                        }
+                        , error: function (jqXHR, exception) {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                        }
+                });
+            }
+        });
+
+        $("#txtEmployeeIDNo").on('change', function () {
+            // $("#txtEmployeeIDNo").blur(function () {
+            if ($("#txtEmployeeIDNo").val() != '') {
+                $.ajax({
+                    type: "POST"
+                        , dataType: "json"
+                        , contentType: "application/json; charset=utf-8"
+                        , url: "/Employees/GetEmployeeByEmployeeIDNo"
+                        , data: "{ 'EmployeeIDNo' : '" + $("#txtEmployeeIDNo").val() +
+                                "'}"
+                        , success: function (data) {
+                            if (data.EmployeeIDNo != null) {
+                                $("#txtEmployeeNameAr").val(data.EmployeeNameAr);
+                                $("#txtEmployeeNameEn").val(data.EmployeeNameEn);
+                                $("#txtEmployeeIDNo").val(data.EmployeeIDNo);
+                                $("#txtEmployeeEMail").val(data.EmployeeEMail);
+                                $("#txtEmployeeBirthDate").val(RenderDate(data.EmployeeBirthDate));
+                                $("#txtEmployeeBirthPlace").val(data.EmployeeBirthPlace);
+                                $("#txtEmployeeMobileNo").val(data.EmployeeMobileNo);
+                                $("#txtEmployeePassportNo").val(data.EmployeePassportNo);
+                                $("#txtEmployeeIDIssueDate").val(RenderDate(data.EmployeeIDIssueDate));
+                                $("#txtEmployeePassportSource").val(data.EmployeePassportSource);
+                                $("#txtEmployeePassportIssueDate").val(RenderDate(data.EmployeePassportIssueDate));
+                                $("#txtEmployeePassportEndDate").val(RenderDate(data.EmployeePassportEndDate));
+                                //$("#txtEmployeeCodeNo").val(data.ActiveEmployeeCode.EmployeeCodeNo);
+                                $("#hdnFldEmployeeID").val(data.EmployeeID);
+                                //EmployeeID = data.ActiveEmployeeCode.EmployeeID;
+                                if (data.ActiveEmployeeCode != null) {
+                                    $("#EmployeeCodeNo").val(data.ActiveEmployeeCode.EmployeeCodeNo);
+                                    $("#ddlDelegationTypes").val(data.ActiveEmployeeCode.EmployeeType.EmployeeTypeID);
+                                    if (IsConfirmAdded != true) {
+                                        AddConfirmOnSave();
+                                        IsConfirmAdded = true;
+                                    }
+                                }
+                            }
+                            else {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Notice, Globals.Utilities.RemoveSpace(@Resources.Globalization.NoEmployeeFoundText))');
+                            }
+                        }
+                        , error: function (jqXHR, exception) {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                        }
+                });
+            }
+        })
+    });
+
+    function OnSuccess() {
+        $('#CreateEmployeeCodeNoForm')[0].reset();
+        $('#EmployeeCodeNoForm')[0].reset();
+        $("#hdnFldEmployeeID").val('');
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function AddConfirmOnSave()
+    {
+        $("#BtnSave").confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            //post: true,
+            animation: 'zoom',
+            content: '@Resources.Globalization.ConfirmUpdateEmployeeCodeNoText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () { $("#BtnSave").submit(); },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.CreateEmployeeCodeNoText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.CreateEmployeeCodeNoDescText
+    </div>
+    <div class="panel-body">
+        <form id="EmployeeCodeNoForm">
+            <table id="tblEmployeeProfile" class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>
+                            <label class="control-label">@Resources.Globalization.EmployeeIDNoText</label>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text" id="txtEmployeeIDNo" class="form-control" maxlength="10" />
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="control-label">@Resources.Globalization.EmployeeNameArText</label>
+                        </td>
+                        <td>
+                            <label class="control-label">@Resources.Globalization.EmployeeNameEnText</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text" id="txtEmployeeNameAr" class="form-control" />
+                        </td>
+                        <td>
+                            <input type="text" id="txtEmployeeNameEn" class="form-control" readonly />
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <label class="control-label">@Resources.Globalization.EmployeeBirthDateText</label>
+                        </td>
+                        <td class="col-md-4">
+                            <label class="control-label">@Resources.Globalization.EmployeeBirthPlaceText</label>
+                        </td>
+                        <td class="col-md-4">
+                            <label class="control-label">@Resources.Globalization.EmployeeMobileNoText</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <input type="text" id="txtEmployeeBirthDate" class="form-control" readonly />
+                        </td>
+                        <td class="col-md-4">
+                            <input type="text" id="txtEmployeeBirthPlace" class="form-control" readonly />
+                        </td>
+                        <td class="col-md-4">
+                            <input type="text" id="txtEmployeeMobileNo" class="form-control" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <label class="control-label">@Resources.Globalization.EmployeePassportNoText</label>
+                        </td>
+                        <td class="col-md-4">
+                            <label class="control-label">@Resources.Globalization.EmployeeEMailText</label>
+                        </td>
+                        <td class="col-md-4">
+                            <label class="control-label">@Resources.Globalization.EmployeeIDIssueDateText</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <input type="text" id="txtEmployeePassportNo" class="form-control" readonly />
+                        </td>
+                        <td class="col-md-4">
+                            <input type="text" id="txtEmployeeEMail" class="form-control" readonly />
+                        </td>
+                        <td class="col-md-4">
+                            <input type="text" id="txtEmployeeIDIssueDate" class="form-control" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <label class="control-label">@Resources.Globalization.EmployeePassportSourceText</label>
+                        </td>
+                        <td class="col-md-4">
+                            <label class="control-label">@Resources.Globalization.EmployeePassportIssueDateText</label>
+                        </td>
+                        <td class="col-md-4">
+                            <label class="control-label">@Resources.Globalization.EmployeePassportEndDateText</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <input type="text" id="txtEmployeePassportSource" class="form-control" readonly />
+                        </td>
+                        <td class="col-md-4">
+                            <input type="text" id="txtEmployeePassportIssueDate" class="form-control" readonly />
+                        </td>
+                        <td class="col-md-4">
+                            <input type="text" id="txtEmployeePassportEndDate" class="form-control" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+
+        @using (Ajax.BeginForm("CreateEmployeeCodeNo", "Employees", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }, new { id = "CreateEmployeeCodeNoForm" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <table id="table" class="table table-responsive">
+                <tr>
+                    <td class="col-md-4">
+                        <label class="control-label">@Resources.Globalization.EmployeeCodeNoText</label>
+                    </td>
+                    <td class="col-md-4">
+                        <label class="control-label">@Resources.Globalization.EmployeeTypeText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        @Html.TextBoxFor(x => x.EmployeeCodeNo, new { @class = "form-control", @maxlength = "8" })
+                        @Html.HiddenFor(x => x.EmployeeID, new { @id = "hdnFldEmployeeID" })
+                    </td>
+                    <td class="col-md-4">
+                        @Html.DropDownListFor(model => model.EmployeeType.EmployeeTypeID, new SelectList(new HCMBLL.EmployeesTypesBLL().GetEmployeesTypes(), "EmployeeTypeID", "EmployeeTypeName"), new { @id = "ddlDelegationTypes", @style = "width:100%" })
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" id="BtnSave" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+</div>
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

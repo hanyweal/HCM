@@ -1,0 +1,237 @@
+﻿@model HCM.Models.VacationsBreakViewModel
+
+@{
+    ViewBag.Title = "Extend";
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#txtWorkDate').on('focus', function () {
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+            onSelect: function (dates) {
+                GetVacationPeriodAndEndDate("#txtVacationStartDate", "#txtVacationPeriod", "#txtVacationEndDate", "#txtWorkDate");
+                @*if (parseInt($('#txtVacationPeriod').val()) > parseInt('@Model.VacationPeriod')) {
+                    $("#txtWorkDate").val('@Model.WorkDate.Date.ToShortDateString()');
+                    $("#txtVacationPeriod").val('@Model.VacationPeriod');
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationVacationPeriodText + @Model.VacationPeriod))');
+                    return;
+                }*@
+            }
+        })
+
+        $('#txtVacationPeriod').on('change', function (event) {
+            if (parseInt($(this).val()) > parseInt('@Model.VacationPeriod')) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationVacationPeriodText))');
+                $(this).val('@Model.VacationPeriod');
+                GetVacationEndDate("#txtVacationStartDate", "#txtVacationPeriod", "#txtVacationEndDate", "#txtWorkDate");
+                return;
+            }
+            GetVacationEndDate("#txtVacationStartDate", "#txtVacationPeriod", "#txtVacationEndDate", "#txtWorkDate");
+        });
+
+        @*$('#txtVacationEndDate').on('focus', function () {
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+            onSelect: function (dates) {
+                var d1 = new Date($('#txtVacationStartDate').val());
+                var d2 = new Date($('#txtVacationEndDate').val());
+                var oneDay = 24 * 60 * 60 * 1000;
+                var diff = 0;
+
+                if (d1 && d2) {
+                    diff = Math.round((new Date(d2 - d1)) / oneDay);
+                }
+                //console.log('d1', d1, d2, diff);
+
+                if (diff < 0) {
+                    $("#txtVacationPeriod").val(0);
+                    $("#txtWorkDate").val($('#txtVacationEndDate').val());
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Warning, Globals.Utilities.RemoveSpace(string.Format(@Resources.Globalization.ValidationRangeText,@Resources.Globalization.VacationPeriodText ,1,999)))');
+                }
+                else {
+                    $("#txtVacationPeriod").val(diff + 1);
+                    // get GetWorkDateAfterVacation
+                    $.ajax({
+                        type: "POST"
+                         , url: "/Vacations/GetWorkDateAfterVacation/" + $('#txtVacationEndDate').val()
+                         , success: function (d) {
+                             $("#txtWorkDate").val(d.data);
+                         }
+                         , error: function (xhr, status, error) {
+                            //AddingFailure();
+                         }
+                    });
+                }
+            }
+        });*@
+
+    });
+
+    function GetVacationPeriodAndEndDate(txtVacationStartDate, txtVacationPeriod, txtVacationEndDateOut, txtWorkDateOut) {
+        var VacationStartDate = $(txtVacationStartDate);
+        var VacationPeriod = $(txtVacationPeriod);
+        var VacationEndDate = $(txtVacationEndDateOut);
+        var WorkDate = $(txtWorkDateOut);
+        
+        //console.log('workdate', '/Vacations/GetVacationPeriodAndEndDate/' + WorkDate.val() + '/' + VacationStartDate.val());
+
+        if (VacationStartDate.val() != '' && VacationPeriod.val() != '' && WorkDate.val() != '') {
+            $.ajax({
+                type: "POST"
+               , url: "/Vacations/GetVacationPeriodAndEndDate/" + WorkDate.val() + '/' + VacationStartDate.val()
+               , success: function (d) { 
+                   VacationEndDate.val(d.VacationEndDate);
+                   VacationPeriod.val(d.VacationPeriod); 
+               }
+                , error: function (xhr, status, error) {
+                    //AddingFailure();
+                }
+            });
+        }
+        else
+            VacationEndDate.val('');
+    }
+
+    function OkFunction() {
+        @*var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Assignings/PrintAssigning")');//ReportViewerASPX
+        //iframe.attr('src', '@Url.Content("~/WebForms/Reports/ReportViewerASPX.aspx?ID=")' + d.data.AssigningID);
+        ShowModal("#divReportModal");*@
+    }
+
+    function OnSuccess() {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedVacationBreakAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        BindVacationDetails();
+    }
+     
+</script>
+
+
+<p style="font-size:larger">@Resources.Globalization.VacationBreakText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.VacationBreakDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @*@Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.Delegations })*@
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Break", "Vacations", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <div id="divVacationBreak">
+                <table class="table table-responsive" style="width:100%">
+                    <tr class="col-md-12">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.VacationStartDate, new { @class = "control-label" })
+                            @Html.HiddenFor(model => model.VacationID)
+                            @Html.HiddenFor(model => model.VacationTypeID)
+                            @Html.HiddenFor(model => model.SickVacationTypeID)
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.VacationStartDate, new
+                    {
+                        @class = "form-control",
+                        @id = "txtVacationStartDate",
+                        @readonly = "readonly",
+                        @Value = Model.VacationStartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                    })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.VacationPeriod, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.VacationPeriod, new { @class = "form-control", @id = "txtVacationPeriod" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.VacationEndDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.VacationEndDate, new
+                                {
+                                    @class = "form-control",
+                                    @id = "txtVacationEndDate",
+                                    @readonly = "readonly",
+                                    @Value = Model.VacationEndDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                })
+                        </td>
+                    </tr>
+                    <tr class="col-md-12">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.WorkDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.WorkDate, new
+                    {
+                        @class = "form-control",
+                        @id = "txtWorkDate",
+                        @readonly = "readonly",
+                        @Value = Model.WorkDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                    })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.MainframeNo, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.MainframeNo, new { @class = "form-control", @id = "txtMainframeNo" })
+                        </td>
+                        <td class="col-md-2"></td>
+                        <td class="col-md-2"></td>
+                    </tr>
+                    <tr class="col-md-12">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.Notes, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextAreaFor(model => model.Notes, new { @class = "form-control", @id = "txtNotes" })
+                        </td>
+                    </tr>
+                </table>
+                <table class="table table-responsive" style="width:100%">
+                    <tr>
+                        <td class="col-md-6" style="text-align:left">
+                            <input type="submit" id="btnSave" value="@Resources.Globalization.SaveText" class="btn btn-default" />
+                        </td>
+                        <td class="col-md-6" style="text-align:right">
+                            <input type="reset" id="btnReset" value="@Resources.Globalization.ResetText" class="btn btn-default" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        }
+
+        @Html.Partial("~/Views/Vacations/_VacationDetails.cshtml", new HCM.Models.VacationsViewModel() { VacationID = @Model.VacationID, 
+                                                                                                        HasCreatingAccess=@Model.HasCreatingAccess,
+                                                                                                        HasUpdatingAccess = @Model.HasUpdatingAccess,
+                                                                                                        HasDeletingAccess = @Model.HasDeletingAccess,
+                                                                                                    })
+    </div>
+</div>

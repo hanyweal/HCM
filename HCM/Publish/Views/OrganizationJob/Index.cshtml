@@ -1,0 +1,105 @@
+﻿@{
+    ViewBag.Title = Resources.Globalization.OrganizationsJobsText;
+}
+
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+
+<script>
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblOrganizationJob").DataTable({
+            //"destroy":true,
+            "ajax": {
+                "url": "/OrganizationJob/GetOrganizationsJobs",
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "JobNo",
+                    "autowidth": true
+                },
+                 {
+                     "data": "OrganizationName",
+                     "autowidth": true
+                 },
+                {
+                    "data": "JobName",
+                    "autowidth": true
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true,
+                },
+                @*{
+                    "data": "IsVacant",
+                    "autowidth": true,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "OrganizationJobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Details", "OrganizationJob")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                    }
+                },*@
+                {
+                    "data": "OrganizationJobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "OrganizationJob")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                },
+                @*{
+                    "data": "OrganizationJobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "OrganizationJob")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "OrganizationJobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = 'PrintAssigning(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" title="' + '@Resources.Globalization.PrintText' + '"/></a>'
+                    }
+                },*@
+            ]
+        });
+    });
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchOrganizationJobDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblOrganizationJob" class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.JobNoText</td>
+                    <td>@Resources.Globalization.OrganizationNameText</td>
+                    <td>@Resources.Globalization.JobNameText</td>
+                    <td>@Resources.Globalization.RankNameText</td>
+                    @*<td>@Resources.Globalization.IsVacantText</td>
+                    <td></td>*@
+                    <td></td>
+                    @*<td></td>
+                    <td></td>*@
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+

@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<mvcSiteMap xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://mvcsitemap.codeplex.com/schemas/MvcSiteMap-File-4.0"
+            xsi:schemaLocation="http://mvcsitemap.codeplex.com/schemas/MvcSiteMap-File-4.0 MvcSiteMapSchema.xsd">
+
+  <mvcSiteMapNode title="الرئيسية" controller="Home" action="Index">
+
+    <mvcSiteMapNode title="إعدادات النظام" controller="Settings" action="Index">
+
+    </mvcSiteMapNode>
+
+    <mvcSiteMapNode title="إدارة الموظفين" controller="Empoloyees" action="Index">
+      <mvcSiteMapNode title="ملف الموظف" controller="Employees" action="EmployeeProfile"/>
+      <mvcSiteMapNode title="أستحداث رقم وظيفي" controller="Employees" action="CreateEmployeeCodeNo"/>
+      <mvcSiteMapNode title="تعديل الإسم" controller="Employees" action="EditName"/>
+      <mvcSiteMapNode title="تحديث رقم الجوال" controller="Employees" action="EditMobileNo"/>
+    </mvcSiteMapNode>
+
+    <mvcSiteMapNode title="إدارة الوظائف" controller="Jobs" action="JobsDefiniation">
+      <mvcSiteMapNode title="تعريف الوظائف" controller="Jobs" action="JobsDefiniation"/>
+      <mvcSiteMapNode title="إحداث وظيفة" controller="Jobs" action="JobCreation"/>
+      <mvcSiteMapNode title="تحوير وظيفة" controller="Jobs" action="JobModulation"/>
+    </mvcSiteMapNode>
+
+    <mvcSiteMapNode title="إدارة الهيكل التنظيمي" controller="OrganizationStructure" action="Index"/>
+
+
+    <mvcSiteMapNode title="إدارة التكاليف" controller="Assigning" action="Index">
+      <mvcSiteMapNode title="التكاليف" controller="Assigning" action="Index"/>
+     
+    </mvcSiteMapNode>
+    
+    <mvcSiteMapNode title="إدارة النفقات" controller="Jobs" action="JobsDefiniation">
+      <mvcSiteMapNode title="الإنتدابات" controller="Delegations" action="Index"/>
+      <mvcSiteMapNode title="العمل الإضافي" controller="OverTimes" action="Index"/>
+      <mvcSiteMapNode title="أوامر الإركاب" controller="Delegation" action="TravelTickets"/>
+      <mvcSiteMapNode title="صرف البدلات" controller="Delegation" action="AllowancesExchange"/>
+      <mvcSiteMapNode title="المكافآت التشجيعية" controller="Delegation" action="IncentiveBonus"/>
+      <mvcSiteMapNode title="حسم الصناديق الحكومية" controller="Delegation" action="GovernmentFunds"/>
+    </mvcSiteMapNode>
+
+    <mvcSiteMapNode title="إدارة الأجازات" controller="Jobs" action="JobsDefiniation">
+      <mvcSiteMapNode title="الأجازة الإعتيادية" controller="Delegation" action="Normal"/>
+      <mvcSiteMapNode title="الأجازة المرضية" controller="Delegation" action="Satisfactory"/>
+      <mvcSiteMapNode title="الأجازة الإضطرارية" controller="Delegation" action="Compulsory"/>
+      <mvcSiteMapNode title="الأجازة الرياضية" controller="Delegation" action="Sport"/>
+      <mvcSiteMapNode title="الأجازة إستثنائية" controller="Delegation" action="Exceptional"/>
+      <mvcSiteMapNode title="الأجازة التعويضية" controller="Jobs" action="JobsDefiniation">
+        <mvcSiteMapNode title="إصدار قرار مرابطة" controller="Delegation" action="AnchoredCreation"/>
+        <mvcSiteMapNode title="إصدار قرار تعويض عن مرابطة" controller="Delegation" action="CompensatoryCreation"/>
+      </mvcSiteMapNode>
+    </mvcSiteMapNode>
+
+  </mvcSiteMapNode>
+
+</mvcSiteMap>

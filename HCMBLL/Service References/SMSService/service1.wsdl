@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="SendSingleSMS">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="mobileNumber" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="contenet" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendSingleSMSResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SendSingleSMSResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendSMSToGroup">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="groupName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="contenet" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendSMSToGroupResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SendSMSToGroupResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendMultipleSMS">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="mobileNumber" type="tns:ArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="contenet" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SendMultipleSMSResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SendMultipleSMSResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendSingleSMSV2">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="mobileNumber" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="contenet" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendSingleSMSV2Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SendSingleSMSV2Result" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendMultipleSMSWithSenderV2">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="mobileNumber" type="tns:ArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="contenet" type="tns:ArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="Link" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendMultipleSMSWithSenderV2Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SendMultipleSMSWithSenderV2Result" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendMultipleSMSWithSender">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="mobileNumber" type="tns:ArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="contenet" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Link" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendMultipleSMSWithSenderResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SendMultipleSMSWithSenderResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetSMSStatus">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="SMSID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetSMSStatusResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetSMSStatusResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetUserQuota">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetUserQuotaResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetUserQuotaResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="SendSingleSMSSoapIn">
+    <wsdl:part name="parameters" element="tns:SendSingleSMS" />
+  </wsdl:message>
+  <wsdl:message name="SendSingleSMSSoapOut">
+    <wsdl:part name="parameters" element="tns:SendSingleSMSResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendSMSToGroupSoapIn">
+    <wsdl:part name="parameters" element="tns:SendSMSToGroup" />
+  </wsdl:message>
+  <wsdl:message name="SendSMSToGroupSoapOut">
+    <wsdl:part name="parameters" element="tns:SendSMSToGroupResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendMultipleSMSSoapIn">
+    <wsdl:part name="parameters" element="tns:SendMultipleSMS" />
+  </wsdl:message>
+  <wsdl:message name="SendMultipleSMSSoapOut">
+    <wsdl:part name="parameters" element="tns:SendMultipleSMSResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendSingleSMSV2SoapIn">
+    <wsdl:part name="parameters" element="tns:SendSingleSMSV2" />
+  </wsdl:message>
+  <wsdl:message name="SendSingleSMSV2SoapOut">
+    <wsdl:part name="parameters" element="tns:SendSingleSMSV2Response" />
+  </wsdl:message>
+  <wsdl:message name="SendMultipleSMSWithSenderV2SoapIn">
+    <wsdl:part name="parameters" element="tns:SendMultipleSMSWithSenderV2" />
+  </wsdl:message>
+  <wsdl:message name="SendMultipleSMSWithSenderV2SoapOut">
+    <wsdl:part name="parameters" element="tns:SendMultipleSMSWithSenderV2Response" />
+  </wsdl:message>
+  <wsdl:message name="SendMultipleSMSWithSenderSoapIn">
+    <wsdl:part name="parameters" element="tns:SendMultipleSMSWithSender" />
+  </wsdl:message>
+  <wsdl:message name="SendMultipleSMSWithSenderSoapOut">
+    <wsdl:part name="parameters" element="tns:SendMultipleSMSWithSenderResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetSMSStatusSoapIn">
+    <wsdl:part name="parameters" element="tns:GetSMSStatus" />
+  </wsdl:message>
+  <wsdl:message name="GetSMSStatusSoapOut">
+    <wsdl:part name="parameters" element="tns:GetSMSStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetUserQuotaSoapIn">
+    <wsdl:part name="parameters" element="tns:GetUserQuota" />
+  </wsdl:message>
+  <wsdl:message name="GetUserQuotaSoapOut">
+    <wsdl:part name="parameters" element="tns:GetUserQuotaResponse" />
+  </wsdl:message>
+  <wsdl:portType name="Service1Soap">
+    <wsdl:operation name="SendSingleSMS">
+      <wsdl:input message="tns:SendSingleSMSSoapIn" />
+      <wsdl:output message="tns:SendSingleSMSSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendSMSToGroup">
+      <wsdl:input message="tns:SendSMSToGroupSoapIn" />
+      <wsdl:output message="tns:SendSMSToGroupSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendMultipleSMS">
+      <wsdl:input message="tns:SendMultipleSMSSoapIn" />
+      <wsdl:output message="tns:SendMultipleSMSSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendSingleSMSV2">
+      <wsdl:input message="tns:SendSingleSMSV2SoapIn" />
+      <wsdl:output message="tns:SendSingleSMSV2SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendMultipleSMSWithSenderV2">
+      <wsdl:input message="tns:SendMultipleSMSWithSenderV2SoapIn" />
+      <wsdl:output message="tns:SendMultipleSMSWithSenderV2SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendMultipleSMSWithSender">
+      <wsdl:input message="tns:SendMultipleSMSWithSenderSoapIn" />
+      <wsdl:output message="tns:SendMultipleSMSWithSenderSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSMSStatus">
+      <wsdl:input message="tns:GetSMSStatusSoapIn" />
+      <wsdl:output message="tns:GetSMSStatusSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUserQuota">
+      <wsdl:input message="tns:GetUserQuotaSoapIn" />
+      <wsdl:output message="tns:GetUserQuotaSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Service1Soap" type="tns:Service1Soap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SendSingleSMS">
+      <soap:operation soapAction="http://tempuri.org/SendSingleSMS" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendSMSToGroup">
+      <soap:operation soapAction="http://tempuri.org/SendSMSToGroup" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMultipleSMS">
+      <soap:operation soapAction="http://tempuri.org/SendMultipleSMS" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendSingleSMSV2">
+      <soap:operation soapAction="http://tempuri.org/SendSingleSMSV2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMultipleSMSWithSenderV2">
+      <soap:operation soapAction="http://tempuri.org/SendMultipleSMSWithSenderV2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMultipleSMSWithSender">
+      <soap:operation soapAction="http://tempuri.org/SendMultipleSMSWithSender" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSMSStatus">
+      <soap:operation soapAction="http://tempuri.org/GetSMSStatus" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUserQuota">
+      <soap:operation soapAction="http://tempuri.org/GetUserQuota" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="Service1Soap12" type="tns:Service1Soap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SendSingleSMS">
+      <soap12:operation soapAction="http://tempuri.org/SendSingleSMS" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendSMSToGroup">
+      <soap12:operation soapAction="http://tempuri.org/SendSMSToGroup" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMultipleSMS">
+      <soap12:operation soapAction="http://tempuri.org/SendMultipleSMS" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendSingleSMSV2">
+      <soap12:operation soapAction="http://tempuri.org/SendSingleSMSV2" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMultipleSMSWithSenderV2">
+      <soap12:operation soapAction="http://tempuri.org/SendMultipleSMSWithSenderV2" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMultipleSMSWithSender">
+      <soap12:operation soapAction="http://tempuri.org/SendMultipleSMSWithSender" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSMSStatus">
+      <soap12:operation soapAction="http://tempuri.org/GetSMSStatus" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUserQuota">
+      <soap12:operation soapAction="http://tempuri.org/GetUserQuota" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Service1">
+    <wsdl:port name="Service1Soap" binding="tns:Service1Soap">
+      <soap:address location="http://172.16.0.31/smsservice/service1.asmx" />
+    </wsdl:port>
+    <wsdl:port name="Service1Soap12" binding="tns:Service1Soap12">
+      <soap12:address location="http://172.16.0.31/smsservice/service1.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

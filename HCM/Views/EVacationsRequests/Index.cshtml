@@ -1,0 +1,134 @@
+﻿
+@{
+    ViewBag.Title = @Resources.Globalization.EVacationsRequestsText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        BindEVacationsRequests();
+    });
+
+    function BindEVacationsRequests() {
+        $("#tblEVacationsRequests").DataTable({
+              dom: 'Bfrtip',
+            "ajax": {
+                "url": "/EVacationsRequests/GetAllEVacationsRequests",
+                "type": "get",
+                "datatype": "json"
+            },
+             "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                     "data": "EVacationRequestNo",
+                     "autowidth": true,
+                },
+                {
+                     "data": "EmployeeCodeNo",
+                     "autowidth": true,
+                },
+                {
+                     "data": "EmployeeNameAr",
+                     "autowidth": true,
+                },
+                {
+                     "data": "OrganizationName",
+                     "autowidth": true,
+                },
+                {
+                     "data": "VacationType",
+                     "autowidth": true,
+                },
+                {
+                     "data": "VacationStartDate",
+                     "autowidth": true,
+                     "render": RenderDate
+                },
+                {
+                     "data": "VacationPeriod",
+                     "autowidth": true,
+                },
+                {
+                    "data": "VacationEndDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "WorkDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "EVacationRequestStatus",
+                    "autowidth": true
+                },
+                {
+                    "data": "CreatedDate",
+                    "autowidth": false,
+                    "render": RenderDateTime
+                },
+                @*{
+                    "data": "JobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "Jobs")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                },*@
+                {
+                    "data": "EVacationRequestID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Details", "EVacationsRequests")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.EVacationRequestDetailsText' + '"/></a>'
+                    }
+                },
+
+            ]
+        });
+    }
+
+</script>
+@*<p style="font-size:larger">@Resources.Globalization.EVacationsRequestsText</p>*@
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-12">
+                @Resources.Globalization.EVacationsRequestsDescText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+
+        <table id="tblEVacationsRequests" class="table table-responsive table-condensed" style="width:100%">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.RequestNoText</td>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                    <td>@Resources.Globalization.ActualOrganizationNameText</td>
+                    <td>@Resources.Globalization.VacationTypeText</td>
+                    <td>@Resources.Globalization.VacationStartDateText</td>
+                    <td>@Resources.Globalization.VacationPeriodText</td>
+                    <td>@Resources.Globalization.VacationEndDateText</td>
+                    <td>@Resources.Globalization.WorkDateText</td>
+                    <td>@Resources.Globalization.RequestStatusText</td>
+                    <td>@Resources.Globalization.RequestCreatedDateText</td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+</div>
+

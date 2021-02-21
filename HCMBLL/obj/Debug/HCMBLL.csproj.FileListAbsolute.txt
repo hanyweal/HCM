@@ -1,0 +1,16 @@
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\bin\Debug\HCMBLL.dll.config
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\bin\Debug\HCMBLL.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\bin\Debug\HCMBLL.pdb
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\bin\Debug\CommonUtilities.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\bin\Debug\HCMDAL.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\bin\Debug\TimeAttendanceDTO.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\bin\Debug\EntityFramework.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\bin\Debug\HCMDAL.pdb
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\bin\Debug\HCMDAL.dll.config
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\bin\Debug\TimeAttendanceDTO.pdb
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\obj\Debug\HCMBLL.csprojAssemblyReference.cache
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\obj\Debug\HCMBLL.Globalization.resources
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\obj\Debug\HCMBLL.csproj.GenerateResource.cache
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\obj\Debug\HCMBLL.csproj.CopyComplete
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\obj\Debug\HCMBLL.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMBLL\obj\Debug\HCMBLL.pdb

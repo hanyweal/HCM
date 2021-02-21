@@ -1,0 +1,119 @@
+﻿@model HCM.Models.PromotionsPeriodsViewModel
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+
+@{
+    ViewBag.Title = @Resources.Globalization.EditPromotionPeriodText;
+}
+<script type="text/javascript">
+
+    function OnSuccess() {
+      
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+    function AddingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText))');
+    }
+    function AddingFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        $("#txtPromotionStartDate").val("");
+        $("#txtPromotionEndDate").val("");
+        $("#ckbxIsActive").prop("checked", false);
+    }
+
+</script>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EditPromotionPeriodDescText
+            </div>
+
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Edit", "PromotionsPeriods", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.PromotionPeriodBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">@Html.LabelFor(model => model.YearID, new { @class = "control-label" })</td>
+                        <td class="col-md-4">@Html.LabelFor(model => model.PeriodID, new { @class = "control-label" })</td>
+                        <td class="col-md-4">@Html.LabelFor(model => model.PromotionStartDate, new { @class = "control-label" })</td>
+                        @Html.HiddenFor(model => model.PromotionPeriodID)
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">@Html.DropDownListFor(model => model.YearID, new SelectList(new HCMBLL.MaturityYearsBalancesBLL().GetMaturityYearsBalances(), "MaturityYearID", "MaturityYear"), new { @id = "ddlYear", @style = "width:100%" })</td>
+                        <td class="col-md-4">@Html.DropDownListFor(model => model.PeriodID, new SelectList(new HCMBLL.PeriodsBLL().GetPeriods(), "PeriodID", "PeriodName"), new { @id = "ddlPeriod", @style = "width:100%" })</td>
+                        <td class="col-md-4">
+
+                            @Html.TextBoxFor(model => model.PromotionStartDate, new
+                           {
+                               @class = "form-control TxtHijriPicker",
+                               @id = "txtPromotionStartDate",
+                               @readonly = "readonly",
+                               @Value =  Model.PromotionStartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) 
+                           })
+                            @Html.ValidationMessageFor(model => model.PromotionStartDate, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">@Html.LabelFor(model => model.PromotionEndDate, new { @class = "control-label" })</td>
+                        <td class="col-md-4">@Html.LabelFor(model => model.IsActive, new { @class = "control-label" })</td>
+                        <td class="col-md-4"> </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.PromotionEndDate, new
+                           {
+                               @class = "form-control TxtHijriPicker",
+                               @id = "txtPromotionEndDate",
+                               @readonly = "readonly",
+                               @Value =  Model.PromotionEndDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) 
+                           })
+                            @Html.ValidationMessageFor(model => model.PromotionEndDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.CheckBoxFor(model => model.IsActive, new { @id = "ckbxIsActive" })
+                        </td>
+                        <td class="col-md-4"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "PromotionsPeriods"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>

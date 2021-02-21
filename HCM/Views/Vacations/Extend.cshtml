@@ -1,0 +1,154 @@
+﻿@model HCM.Models.VacationsExtentionViewModel
+
+@{
+    ViewBag.Title = "Extend";
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#txtExtentionPeriod').on('change', function (event) {
+            GetVacationEndDate("#txtFromDate", "#txtExtentionPeriod", "#txtToDate", "#txtWorkDate");
+        });
+
+    });
+
+    function ResizeModal(h) {
+        iframe.css('height', h);
+        $('#divModal .modal-body').css('height', h);
+    }
+
+    function OkFunction() {
+        @*var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Assignings/PrintAssigning")');//ReportViewerASPX
+        //iframe.attr('src', '@Url.Content("~/WebForms/Reports/ReportViewerASPX.aspx?ID=")' + d.data.AssigningID);
+        ShowModal("#divReportModal");*@
+    }
+
+    function OnSuccess() {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedVacationExtentionAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        $("#txtFromDate").val($("#txtWorkDate").val());
+        $("#txtExtentionPeriod").val('');
+        $("#txtToDate").val('');
+        $("#txtWorkDate").val('');
+        $("#txtMainframeNo").val('');
+        $("#txtNotes").val('');
+        BindVacationDetails();
+    }
+
+</script>
+
+
+<p style="font-size:larger">@Resources.Globalization.VacationExtendText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.VacationExtendDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @*@Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.Delegations })*@
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Extend", "Vacations", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <div id="divVacationExtend">
+                <table class="table table-responsive" style="width:100%">
+                    <tr class="col-md-12">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.FromDate, new { @class = "control-label" })
+                            @Html.HiddenFor(model => model.VacationID)
+                            @Html.HiddenFor(model => model.VacationTypeID) 
+                            @Html.HiddenFor(model => model.SickVacationTypeID)
+                            @Html.HiddenFor(model => model.SportsSeasonID)
+                                                      
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.FromDate, new
+                    {
+                        @class = "form-control",
+                        @id = "txtFromDate",
+                        @readonly = "readonly",
+                        @Value = Model.FromDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                    })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.ExtentionPeriod, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.ExtentionPeriod, new { @class = "form-control", @id = "txtExtentionPeriod" })
+                            @*<input type="number" id="txtExtentionPeriod" min="1" class="form-control" />*@
+                        </td>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.ToDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtToDate", @readonly = "readonly" })
+                        </td>
+                    </tr>
+                    <tr class="col-md-12">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.WorkDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.WorkDate, new { @class = "form-control", @id = "txtWorkDate", @readonly = "readonly" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.MainframeNo, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.MainframeNo, new { @class = "form-control", @id = "txtMainframeNo" })
+                        </td>
+                        <td class="col-md-2"></td>
+                        <td class="col-md-2"></td>
+                    </tr>
+                    <tr class="col-md-12">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.Notes, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextAreaFor(model => model.Notes, new { @class = "form-control", @id = "txtNotes" })
+                        </td>
+                    </tr>
+                </table>
+                <table class="table table-responsive" style="width:100%">
+                    <tr>
+                        <td class="col-md-6" style="text-align:left">
+                            <input type="submit" id="btnSave" value="@Resources.Globalization.SaveText" class="btn btn-default" />
+                        </td>
+                        <td class="col-md-6" style="text-align:right">
+                            <input type="reset" id="btnReset" value="@Resources.Globalization.ResetText" class="btn btn-default" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        }
+
+        @Html.Partial("~/Views/Vacations/_VacationDetails.cshtml", new HCM.Models.VacationsViewModel()
+                                                                                                    {
+                                                                                                        VacationID = @Model.VacationID,
+                                                                                                        HasCreatingAccess = @Model.HasCreatingAccess,
+                                                                                                        HasUpdatingAccess = @Model.HasUpdatingAccess,
+                                                                                                        HasDeletingAccess = @Model.HasDeletingAccess,
+                                                                                                    })
+    </div>
+</div>

@@ -1,0 +1,104 @@
+﻿@using HCM.Classes.Enums
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#btnAddCandidateManually").click(function () {
+
+            //var JobCategoryID = $('#hdnFldJobCategoryID').val();
+            //var RankID = $('#hdnFldRankID').val();
+            //if (JobCategoryID == "") JobCategoryID = 0;
+            //if (RankID == "") RankID = 0;
+            //BindJobsVacancies(JobCategoryID, RankID);
+            ShowModal("#divAddingCandidateManuallyModal");
+        });
+
+        $("#btnSaveCandidate").click(function () {
+            var PromotionRecordID = $("#hdnFldPromotionRecordID").val() != '' ? $("#hdnFldPromotionRecordID").val() : 0;
+            var EmployeeCodeID = $("#hdnFldEmployeeCodeID").val() != '' ? $("#hdnFldEmployeeCodeID").val() : 0;
+            var ManualAddedReason = $("#txtManualAddedReason").val().trim() != '' ? $("#txtManualAddedReason").val().trim() : '';
+            if (EmployeeCodeID == 0 || ManualAddedReason == '') {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.RequiredEmployeeAndReasonToAddingText), "")');
+            }
+            else {
+                $.ajax({
+                    type: "get"
+               , dataType: "json"
+               , url: "/PromotionsRecords/AddCandidateManually/" + EmployeeCodeID + "/" + PromotionRecordID + "/" + ManualAddedReason
+               , success: function (d) {
+                   ResetCandidateAddedManually();
+                   BindCandidates("refresh", PromotionRecordID);
+                   $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText), "")');
+               }
+               , error: function (xhr, status, error) {
+                   OnFailure();
+               }
+                });
+            }
+            //console.log(PromotionRecordID);
+            //console.log(EmployeeCodeID);
+            //console.log(ManualAddedReason);
+        })
+    });
+
+    function ResetCandidateAddedManually() {
+        ResetEmployee();
+        $("#txtManualAddedReason").val('');
+    }
+
+
+</script>
+
+<button id="btnAddCandidateManually" class="btn btn-default" type="button" title="@Resources.Globalization.ClickToAddCandidateManuallyTooltip">
+    <span class="glyphicon glyphicon-plus" style="font-size:8pt;padding:0"></span>
+    <span class="glyphicon glyphicon-user"></span>
+    @Resources.Globalization.AddCandidateManuallyText
+</button>
+
+<div class="modal fade" id="divAddingCandidateManuallyModal">
+    <div class="modal-dialog" style="width:900px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.AddCandidateManuallyText
+                </div>
+            </div>
+            <div class="modal-body" style="height:580px">
+                <div class="alert alert-info text-right">
+                    @Html.Raw(@Globals.Utilities.NewLineInHTML(@Resources.Globalization.ConditionsToAddingCandidateManuallyText))
+                </div>
+                <table class="table table-responsive table-condensed table-striped" style="width:100%">
+                    <tr>
+                        <td class="col-md-12">
+                            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new HCM.Models.EmployeesViewModel() { })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-12">
+                            <label class="control-label">  @Resources.Globalization.AddingCandidateManuallyReasonText</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-12">
+                            <textarea id="txtManualAddedReason" class="form-control"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-12">
+                            <button id="btnSaveCandidate" type="button" class="btn btn-default">@Resources.Globalization.AddText</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,133 @@
+﻿@model HCM.Models.InsteadDeportationsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.AddNewInsteadDeportationText;
+}
+
+<script type="text/javascript">
+    var InsteadDeportationID = 0;
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+     
+    function OnSuccess(data) {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+        InsteadDeportationID = data.InsteadDeportationID;
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        $('#txtDeportationDate').val('');
+        $('#txtAmount').val('');
+        $('#txtNote').val('');
+        ResetEmployeeData();
+    }
+     
+    function OkFunction() {
+        
+    }
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.AddNewInsteadDeportationText</p>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewInsteadDeportationDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.InsteadDeportations })
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "InsteadDeportations", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <span class="control-label">@Resources.Globalization.InsteadDeportationBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.DeportationDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.Amount, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.DeportationDate, new { @class = "form-control TxtHijriPicker", @id = "txtDeportationDate" })
+                            @Html.ValidationMessageFor(model => model.DeportationDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.Amount, new { @class = "form-control", @id = "txtAmount", @type = "decimal", @value = "" })
+                            @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.Note, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextAreaFor(model => model.Note, new { @class = "form-control", @id = "txtNote" })
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { }) 
+            
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "InsteadDeportations"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>

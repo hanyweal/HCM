@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<logicalClassDesignerDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11.625, 8.5" name="BusinessRulesClassDiagram">
+  <logicalClassDesignerModelMoniker Id="b7e1542f-4ae8-448c-bac4-7df496e21f03" />
+  <nestedChildShapes>
+    <classShape Id="b21bf791-be2e-4a94-b7d9-659b58b187c1" absoluteBounds="3.25, 1.75, 3.625, 2.1835936953624091" hideQualifiedName="false" increaseHeight="0" customColor="181, 193, 223">
+      <classMoniker Id="9d8b105c-b03f-4302-ad43-90a532303504" LastKnownName="BusinessRulesBLL" />
+      <nestedChildShapes>
+        <AttributeElementListCompartment Id="bfc08998-d286-4bb0-a0b1-54faf14fa23e" absoluteBounds="3.265, 2.14, 3.5949999999999998, 1.0019530927141507" name="AttributesCompartment" titleTextColor="Black" itemTextColor="Black" />
+        <OperationElementListCompartment Id="6863f68d-e610-4940-9a1c-5eb10bdb3239" absoluteBounds="3.265, 3.1519530927141508, 3.5949999999999998, 0.68164060264825843" name="OperationsCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <enumerationShape Id="8c3d7177-f5d3-4418-b4a0-770a70bcf737" absoluteBounds="8.625, 1.75, 2.75, 1.1716406026482584" hideQualifiedName="false" increaseHeight="0" customColor="161, 150, 103">
+      <enumerationMoniker Id="78fd4283-8d83-4898-87d8-731383a7b332" LastKnownName="BusinessSubCategoriesEnum" />
+      <nestedChildShapes>
+        <LiteralElementListCompartment Id="46611af3-12e7-4bf1-ae58-44873513fae5" absoluteBounds="8.64, 2.14, 2.7199999999999998, 0.68164060264825832" name="LiteralsCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </enumerationShape>
+  </nestedChildShapes>
+</logicalClassDesignerDiagram>

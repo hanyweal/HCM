@@ -1,0 +1,445 @@
+﻿@model HCM.Models.HolidaysAttendanceViewModel
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+
+@{
+    ViewBag.Title = Resources.Globalization.AddNewHolidayAttendanceText;
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#ddlHolidayType").on('change', function (event) {
+            var MaturityYearID = $("#ddlMaturityYear").val();
+            var HolidayTypeID = $("#ddlHolidayType").val();
+            if (MaturityYearID != '') {
+                $.ajax({
+                    type: "POST"
+                    , url: "@Url.Content("~/HolidaysAttendance/GetHolidayAttendanceDates/")" + MaturityYearID + "/" + HolidayTypeID
+                    , success: function (d) {
+                        debugger;
+                        if (d.IsExist) {
+                            $('#txtHolidaySettingStartDate').val(d.HolidaySettingStartDate);
+                            $('#txtHolidaySettingEndDate').val(d.HolidaySettingEndDate);
+                            $('#hdfHolidaySettingID').val(d.HolidaySettingID);
+                        }
+                        else {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationNoSelectDataText))');
+                        }
+                    }
+                    , error: function (xhr, status, error) {
+                        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationThereIsNoHolidaySettingText))');
+                    }
+                });
+            }
+            else {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationYearMustSelectText))');
+            }
+        });
+        $("#ddlMaturityYear").on('change', function (event) {
+            $("#ddlHolidayType").val('');
+        });
+        BindHolidayAttendanceEmployees();
+
+        $('#txtHolidayAttendancePeriod').on('change', function (event) {
+            GetHolidayAttendanceEndDate();
+        });
+
+        $("#btnAdd").click(function () {
+            var Employee = {};
+            if ($("#txtEmployeeCodeNo").val() != '') {
+
+                EmployeeCareerHistory = {
+                    EmployeeCareerHistoryID: $("#hdnFldEmployeeCareerHistoryID").val(),
+                    EmployeeCode: {
+                        EmployeeCodeID: $("#hdnFldEmployeeCodeID").val(),
+                        EmployeeCodeNo: $("#txtEmployeeCodeNo").val(),
+                        Employee: {
+                            FirstNameAr: $("#txtEmployeeNameAr").val()
+                        }
+                    },
+                    JoinDate: $("#txtHiringDate").val()
+                }
+
+            }
+
+            var HolidayAttendanceDetailRequest =
+            {
+                EmployeeCareerHistory: EmployeeCareerHistory,
+            };
+            var HolidayAttendanceRequest =
+         {
+             HolidayAttendanceDetailRequest: HolidayAttendanceDetailRequest,
+         };
+            $.ajax({
+                type: "POST"
+                //, dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                , contentType: "application/json; charset=utf-8"
+                , url: "@Url.Content("~/HolidaysAttendance/CreateHolidayAttendanceDetail")"
+                , data: JSON.stringify(HolidayAttendanceRequest)
+                , success: function () {
+                    AddingSuccess();
+                    ResetEmployeeData();
+                }
+            , error: function (xhr, status, error) {
+                AddingFailure();
+                ResetEmployeeData();
+            }
+            });
+        });
+        //--=== End Add Employee
+
+
+        var PreviousHolidayAttendanceStartDate;
+        $('#txtHolidayAttendanceStartDate').on('focus', function () {
+            PreviousHolidayAttendanceStartDate = this.value;
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+            onSelect: function (dates) {
+                var rowsCount = GetRowsCount("#tblHolidayAttendanceEmployees");
+                if (rowsCount > 0) {
+                    $('#txtHolidayAttendanceStartDate').val(PreviousHolidayAttendanceStartDate);
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.WarningCannotChangeBecauseEmployeeAdded))');
+                }
+                else {
+                    GetHolidayAttendanceEndDate();
+                }
+            }
+        });
+
+        //--=== End Ready function
+    });
+
+
+    function RemoveTextBox(button) {
+        $(button).parent().remove();
+    }
+
+    function OnSuccess(data) {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText),"OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function AddingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText))');
+        BindHolidayAttendanceEmployees();
+    }
+
+    function AddingFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        $('#txtHolidaySettingStartDate').val('');
+        $('#txtHolidaySettingEndDate').val('');
+        $('#ddlMaturityYear').val('');
+        $('#ddlHolidayType').val('');
+        $('#txtOrganizationName').val('');
+        ResetEmployeeData();
+        $("#tblHolidayAttendanceEmployees").DataTable().clear().draw();
+        ResetEmployeeFromSession();
+        $('#TextBoxContainer').empty();
+
+
+    }
+
+    function ResetEmployeeFromSession() {
+        $.ajax({
+            type: "POST"
+            //, contentType: "application/json; charset=utf-8"
+                , url: "@Url.Action("ResetEmployeeFromSession", "HolidaysAttendance")"
+                , success: function () {
+                }
+           , error: function (xhr, status, error) {
+               OnFailure();
+           }
+        });
+    }
+
+    //--=== Start Bind Employees AfterSelect
+    function BindHolidayAttendanceEmployees() {
+        var HolidayAttendanceEmployees;
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "/HolidaysAttendance/GetHolidayAttendanceEmployees",
+            success: function (result) {
+                $("#tblHolidayAttendanceEmployees").DataTable({
+                    destroy: true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "EmployeeCareerHistory.EmployeeCode.Employee.FirstNameAr",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo",
+                            "width": "5%",
+                            "sorting": false,
+                            "render": function (data, type, row) {
+                                Url = 'RemoveEmployeeFromHolidayAttendance(' + data + ');';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                            }
+                        }
+                    ]
+                });
+                var rowsCount = GetRowsCount("#tblHolidayAttendanceEmployees");//table.data().count();
+
+                if (rowsCount > 0) {
+                    $('#txtHolidayAttendancePeriod').prop('readonly', true);
+                }
+                else {
+                    $('#txtHolidayAttendancePeriod').prop('readonly', false);
+                }
+            }
+        });
+    }
+    //--=== End Bind Employees AfterSelect
+
+    //--=== Start Remove Employee From HolidayAttendance
+    function RemoveEmployeeFromHolidayAttendance(EmployeeCodeNo) {
+        $.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+
+                        var HolidayAttendanceDetailRequest =
+                            {
+                                HolidayAttendanceDetailRequest: {
+                                    EmployeeCareerHistory: {
+                                        EmployeeCode: {
+                                            EmployeeCodeNo: EmployeeCodeNo
+                                        }
+                                    }
+                                }
+                            };
+                        $.ajax({
+                            type: "POST"
+                            //, dataType: "json"
+                            , contentType: "application/json; charset=utf-8"
+                            , url: "@Url.Action("RemoveEmployeeFromHolidayAttendance", "HolidaysAttendance")"
+                            , data: JSON.stringify(HolidayAttendanceDetailRequest)
+                            , success: function () {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+                                // rebind tha data
+                                BindHolidayAttendanceEmployees();
+                            }
+                        , error: function (xhr, status, error) {
+                            OnFailure();
+                        }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    }
+    //--=== End Remove Employee From HolidayAttendance
+    function GetHolidayAttendanceEndDate() {
+        var HolidayAttendanceStartDate = $("#txtHolidayAttendanceStartDate").val();
+        var HolidayAttendancePeriod = $("#txtHolidayAttendancePeriod").val();
+        if (HolidayAttendanceStartDate != '' && HolidayAttendancePeriod != '') {
+            $.ajax({
+                type: "POST"
+                , url: "@Url.Content("~/HolidayAttendance/GetHolidayAttendanceEndDate/")" + HolidayAttendancePeriod + "/" + HolidayAttendanceStartDate
+                , success: function (d) {
+                    $('#txtHolidayAttendanceEndDate').val(d.data);
+                }
+                , error: function (xhr, status, error) {
+                    AddingFailure();
+                }
+            });
+        }
+        else
+            $('#txtHolidayAttendanceEndDate').val('');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+    function OkFunction() {
+    }
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.AddNewHolidayAttendanceText</p>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewHolidayAttendanceDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "HolidaysAttendance", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.HolidaySetting.HolidaySettingID, new { @id = "hdfHolidaySettingID" })
+            <span class="control-label">@Resources.Globalization.HolidayAttendanceBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>
+                            <label> @Resources.Globalization.MaturityYearBalanceText </label>
+                        </td>
+                        <td>
+                            <label> @Resources.Globalization.HolidayTypeText </label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.MaturityYearID, new SelectList(new HCMBLL.MaturityYearsBalancesBLL().GetMaturityYearsBalances(), "MaturityYearID", "MaturityYear"), @Resources.Globalization.SelectFromDropDownText, new { @id = "ddlMaturityYear", @style = "width:100%" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.HolidayTypeID, new SelectList(new HCMBLL.HolidaysTypesBLL().GetHolidaysTypes(), "HolidayTypeID", "HolidayTypeName"), @Resources.Globalization.SelectFromDropDownText, new { @id = "ddlHolidayType", @style = "width:100%" })
+                        </td>
+                        <td class="col-md-4"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label> @Resources.Globalization.HolidaySettingStartDateText</label>
+                        <td>
+                            <label> @Resources.Globalization.HolidaySettingEndDateText</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="txtHolidaySettingStartDate" class="form-control TxtHijriPicker" readonly="readonly" disabled="disabled" />
+                        <td>
+                            <input id="txtHolidaySettingEndDate" class="form-control TxtHijriPicker" readonly="readonly" disabled="disabled" />
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>@Resources.Globalization.OrganizationParentText</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.Partial("~/Views/Shared/_OrganizationStructurePopup.cshtml", new OrganizationStructureViewModel() { })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+
+                            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+                            <div class="row">
+                                <div class="col-md-10">
+                                </div>
+                                <div class="col-md-2 text-right">
+                                    <input id="btnAdd" type="button" class="btn btn-default" value="@Resources.Globalization.AddText" />
+                                </div>
+                            </div>
+                            <table id="tblHolidayAttendanceEmployees" class="table table-responsive table-condensed table-striped">
+                                <thead>
+                                    <tr>
+                                        <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                                        <td>@Resources.Globalization.EmployeeNameArText</td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+
+
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "HolidaysAttendance"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="divMultipleDates">
+    <div class="modal-dialog" style="width:800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.EmployeesListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        asdasdas
+                    </div>
+                </div>
+                <div>
+                    <input id="txtDate" type="text" class="form-control TxtHijriPicker" readonly="readonly" />
+                </div>
+                <div class="modal-footer" style="margin:0">
+                    <button class="btn btn-default" data-dismiss="modal" id="closeCalender">@Resources.Globalization.CloseText</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

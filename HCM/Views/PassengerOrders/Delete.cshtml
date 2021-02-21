@@ -1,0 +1,354 @@
+﻿@model HCM.Models.PassengerOrdersViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.DeletePassengerOrderText;
+}
+<script type="text/javascript">
+
+    function OkFunction() {
+        window.location.href = "/PassengerOrders/Index";
+    }
+
+    $(document).ready(function () {
+        BindItinerary();
+        BindEscort();
+        $("#BtnDelete").confirm({
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () { $("#BtnDelete").submit(); },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+    });
+
+    function OnSuccess() {
+        //alert('OnSuccess');
+        $("#BtnDelete").attr("disabled", "disabled");
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText),"OkFunction")');
+    }
+
+    function OnFailure() {
+        //alert('OnFailure');
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function RemoveItineraryFromPassengerOrder(PassengerOrdersItineraryID) {
+        $.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $.ajax({
+                            type: "POST"
+                            //, dataType: "json"
+                            , contentType: "application/json; charset=utf-8"
+                            , url: "/PassengerOrders/RemovePassengerOrderItineraryDB/" + PassengerOrdersItineraryID
+                            , success: function () {
+                                $("#divAlert").load('@Url.Content("~/Modal/Index/" + HCM.Classes.Enums.ModalTypes.Success + "/" + Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+                                // rebind tha data
+                                BindItinerary();
+                            }
+                        , error: function (xhr, status, error) {
+                            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+                        }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    }
+    function RemoveEscortFromPassengerOrder(PassengerOrdersEscortID) {
+        $.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $.ajax({
+                            type: "POST"
+                            //, dataType: "json"
+                            , contentType: "application/json; charset=utf-8"
+                            , url: "/PassengerOrders/RemovePassengerOrderEscortDB/" + PassengerOrdersEscortID
+                            , success: function () {
+                                $("#divAlert").load('@Url.Content("~/Modal/Index/" + HCM.Classes.Enums.ModalTypes.Success + "/" + Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+                                // rebind tha data
+                                BindEscort();
+                            }
+                        , error: function (xhr, status, error) {
+                            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+                        }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    } 
+    function BindItinerary() {
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            "url": "/PassengerOrders/GetPassengerOrdersItinerariesByPassengerOrderID/" + '@Model.PassengerOrderID',
+            success: function (result) {
+                $("#tblPassengerOrdersItineraries").DataTable({
+                    destroy: true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "FromCity",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "ToCity",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "PassengerOrdersItineraryID",
+                            "width": "5%",
+                            "sorting": false,
+                            "render": function (data, type, row) {
+                                Url = 'RemoveItineraryFromPassengerOrder(' + data + ');';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                            }
+                        }
+                    ]
+                });
+
+            }
+        });
+
+
+
+    }
+    function BindEscort() {
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            "url": "/PassengerOrders/GetPassengerOrdersEscortsByPassengerOrderID/" + '@Model.PassengerOrderID',
+            success: function (result) {
+                $("#tblEscort").DataTable({
+                    destroy: true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "EscortName",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "EscortIDNo",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "EscortAge",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "EscortRelativeRelation",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "PassengerOrdersEscortID",
+                            "width": "5%",
+                            "sorting": false,
+                            "render": function (data, type, row) {
+                                Url = 'RemoveEscortFromPassengerOrder(' + data + ');';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                            }
+                        }
+                    ]
+                });
+
+            }
+        });
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.DeletePassengerOrderText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.DeletePassengerOrderDescText
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Delete", "PassengerOrders", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            InsertionMode = InsertionMode.Replace,
+            HttpMethod = "DELETE",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    @Html.HiddenFor(model => model.PassengerOrderID)
+                    <tr>
+                        <td class="col-md-2">
+                            <b>@Resources.Globalization.EmployeeCodeNoText</b>
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.Employee.EmployeeCodeNo)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            <b>@Resources.Globalization.EmployeeNameArText</b>
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.Employee.EmployeeNameAr)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.TravellingDate, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.TravellingDate, new { @class = "TxtHijriPicker form-control", @id = "txtTravellingDate" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.RankName, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.RankName, new { @class = "form-control", @id = "txtRankName", @readonly = "readonly" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.TicketsClasses, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.TicketClassName, new { @class = "form-control", @id = "txtTicketClassName", @readonly = "readonly" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.Going, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(model => model.Going)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.Returning, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(model => model.Returning)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.Reason, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.Reason)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.CreatedBy, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.CreatedBy)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.CreatedDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.CreatedDate)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <span class="control-label">@Resources.Globalization.PassengerOrderItinerariesText</span>
+
+            <table id="tblPassengerOrdersItineraries" class="table table-responsive table-hover" width="100%">
+                <thead>
+                    <tr>
+                        <td>@Resources.Globalization.FromCityText</td>
+                        <td>@Resources.Globalization.ToCityText</td>
+                        <td></td>
+                    </tr>
+                </thead>
+            </table>
+            <span class="control-label">@Resources.Globalization.PassengerOrderEscortsDataText</span>
+            <table id="tblEscort" class="table table-responsive table-condensed table-striped dataTable">
+                <thead>
+                    <tr>
+                        <td>@Resources.Globalization.NameText</td>
+                        <td>@Resources.Globalization.EmployeeIDNoText</td>
+                        <td>@Resources.Globalization.AgeText</td>
+                        <td>@Resources.Globalization.RelativeRelationText</td>
+                        <td></td>
+                    </tr>
+                </thead>  
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" id="BtnDelete" name="BtnDelete" value="@Resources.Globalization.DeleteText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "PassengerOrders"))
+        {
+        <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

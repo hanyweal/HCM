@@ -1,0 +1,178 @@
+﻿@model HCM.Models.EmployeesViewModel
+@using HCM.Classes.Enums;
+@{
+    ViewBag.Title = Resources.Globalization.AddNewEmployeeText;
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        insertSelectionOptionToDDL('ddlCountry');
+        insertSelectionOptionToDDL('ddlGender');
+    });
+</script>
+<table id="tblEmployeeProfile" class="table table-responsive table-condensed table-striped">
+    <tbody>
+        <tr>
+            <td colspan="3">
+                @Html.LabelFor(c => c.EmployeeNameAr)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div class="row">
+                    <div class="col-md-2">
+                        @Html.TextBoxFor(c => c.FirstNameAr, new { @class = "form-control", @placeholder = Resources.Globalization.FirstNameArText })
+                        @Html.ValidationMessageFor(model => model.FirstNameAr, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.TextBoxFor(c => c.MiddleNameAr, new { @class = "form-control", @placeholder = Resources.Globalization.MiddleNameArText })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.TextBoxFor(c => c.GrandFatherNameAr, new { @class = "form-control", @placeholder = Resources.Globalization.GrandFatherNameArText })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.TextBoxFor(c => c.FifthNameAr, new { @class = "form-control", @placeholder = Resources.Globalization.FifthNameArText })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.TextBoxFor(c => c.LastNameAr, new { @class = "form-control", @placeholder = Resources.Globalization.LastNameArText })
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                @Html.LabelFor(c => c.EmployeeNameEn)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div class="row">
+                    <div class="col-md-2">
+                        @Html.TextBoxFor(c => c.FirstNameEn, new { @class = "form-control", @placeholder = Resources.Globalization.FirstNameArText })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.TextBoxFor(c => c.MiddleNameEn, new { @class = "form-control", @placeholder = Resources.Globalization.MiddleNameArText })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.TextBoxFor(c => c.GrandFatherNameEn, new { @class = "form-control", @placeholder = Resources.Globalization.GrandFatherNameArText })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.TextBoxFor(c => c.FifthNameEn, new { @class = "form-control", @placeholder = Resources.Globalization.FifthNameArText })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.TextBoxFor(c => c.LastNameEn, new { @class = "form-control", @placeholder = Resources.Globalization.LastNameArText })
+                    </div>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="col-md-4">@Html.LabelFor(c => c.EmployeeIDNo)</td>
+            <td class="col-md-4"></td>
+            <td class="col-md-4"></td>
+            @*No EmployeeNameEn Found In ViewModel*@
+        </tr>
+        <tr>
+            <td>
+                @Html.TextBoxFor(c => c.EmployeeIDNo, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(model => model.EmployeeIDNo, "", new { @class = "text-danger" })
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
+
+        <tr>
+            <td>@Html.LabelFor(c => c.EmployeeBirthDate)@*No EmployeeBirthDate Found In ViewModel*@
+            <td>@Html.LabelFor(c => c.EmployeeBirthPlace)</td>
+            @*No EmployeeBirthPlace Found In ViewModel*@
+            <td>@Html.LabelFor(c => c.EmployeeMobileNo)</td>
+            @*No EmployeeMobileNo Found In ViewModel*@
+        </tr>
+        <tr>
+            <td>
+                @Html.TextBoxFor(model => model.EmployeeBirthDate, new { @class = "TxtHijriPicker form-control", @id = "txtEmployeeBirthDate", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.EmployeeBirthDate, "", new { @class = "text-danger" })
+            </td>
+            <td>@Html.TextBoxFor(c => c.EmployeeBirthPlace, new { @class = "form-control" })</td>
+            <td>@Html.TextBoxFor(c => c.EmployeeMobileNo, new { @class = "form-control" })</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(c => c.EmployeePassportNo)</td>
+            @*No EmployeePassportNo Found In ViewModel*@
+            <td>@Html.LabelFor(c => c.EmployeeEMail)</td>
+            @*No EmployeeEMail Found In ViewModel*@
+            <td>@Html.LabelFor(c => c.EmployeeIDIssueDate)</td>
+            @*No EmployeeIDIssueDate Found In ViewModel*@
+        </tr>
+        <tr>
+            <td>@Html.TextBoxFor(c => c.EmployeePassportNo, new { @class = "form-control" })</td>
+            <td>@Html.TextBoxFor(c => c.EmployeeEMail, new { @class = "form-control" })</td>
+            <td>
+                @Html.TextBoxFor(model => model.EmployeeIDIssueDate, new { @class = "TxtHijriPicker form-control", @id = "txtEmployeeIDIssueDate", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.EmployeeIDIssueDate, "", new { @class = "text-danger" })
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(c => c.EmployeePassportSource)</td>
+            @*No EmployeePassportSource Found In ViewModel*@
+            <td>@Html.LabelFor(c => c.EmployeePassportIssueDate)</td>
+            @*No EmployeePassportIssueDate Found In ViewModel*@
+            <td>@Html.LabelFor(c => c.EmployeePassportEndDate)</td>
+            @*No EmployeePassportEndDate Found In ViewModel*@
+        </tr>
+        <tr>
+            <td>@Html.TextBoxFor(c => c.EmployeePassportSource, new { @class = "form-control" })</td>
+            <td>
+                @Html.TextBoxFor(model => model.EmployeePassportIssueDate, new { @class = "TxtHijriPicker form-control", @id = "txtEmployeePassportIssueDate", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.EmployeePassportIssueDate, "", new { @class = "text-danger" })
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.EmployeePassportEndDate, new { @class = "TxtHijriPicker form-control", @id = "txtEmployeePassportEndDate", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.EmployeePassportEndDate, "", new { @class = "text-danger" })
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(c => c.EmployeeIDExpiryDate)</td>
+            <td>@Html.LabelFor(c => c.EmployeeIDIssuePlace)</td>
+            <td>@Html.LabelFor(c => c.EmployeeIDCopyNo)</td>
+        </tr>
+        <tr>
+            <td>
+                @Html.TextBoxFor(model => model.EmployeeIDExpiryDate, new { @class = "TxtHijriPicker form-control", @id = "txtEmployeeIDExpiryDate", @readonly = "readonly" })
+                @*@Html.ValidationMessageFor(model => model.EmployeeIDExpiryDate, "", new { @class = "text-danger" })*@
+            </td>
+            <td>@Html.TextBoxFor(c => c.EmployeeIDIssuePlace, new { @class = "form-control" })</td>
+            <td>@Html.TextBoxFor(c => c.EmployeeIDCopyNo, new { @class = "form-control", @type = "number", @maxlength = "2" })</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(c => c.MaritalStatus)</td>
+            <td>@Html.LabelFor(c => c.DependentCount)</td>
+            <td>@Html.LabelFor(c => c.GenderID)</td>
+        </tr>
+        <tr>
+            <td>
+                @Html.DropDownListFor(model => model.MaritalStatus.MaritalStatusID, new SelectList(new HCMBLL.MaritalStatusBLL().GetMaritalStatus(), "MaritalStatusID", "MaritalStatusName"), new { @id = "ddlMaritalStatus", @style = "width:100%" })
+            </td>
+            <td>@Html.TextBoxFor(c => c.DependentCount, new { @class = "form-control", @type = "number", @maxlength = "2" })</td>
+            <td>
+                @Html.DropDownListFor(model => model.GenderID, new SelectList(new HCMBLL.GendersBLL().GetGenders(), "GenderID", "GenderName"), new { @id = "ddlGender", @style = "width:100%" })
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(c => c.CountryID)</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                @Html.DropDownListFor(model => model.CountryID, new SelectList(new HCMBLL.CountriesBLL().GetCountries(), "CountryID", "CountryName"), new { @id = "ddlCountry", @style = "width:100%" })
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,162 @@
+﻿
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <title>@ViewBag.Title - @Resources.Globalization.ApplicationNameText</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/javascript")
+    <script type="text/javascript">
+
+        //$(document).ready(function () {
+        //    //$(window).resize();
+        //    $(".overlay").height($(window).height());
+        //    $(".overlay").width($(window).width());
+        //});
+
+        //$(window).resize(function () {
+        //    $(".overlay").height($(window).height());
+        //    $(".overlay").width($(window).width());
+        //});
+
+
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        @*<div class="container" style="margin-right:auto;margin-left:auto;text-align:center">*@
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <center>
+                        <a href="@Url.Action("Index","Home")">
+                            <img src="@Url.Content("~/Content/Images/HCMLogo.png")" style="height:80px" />
+                        </a>
+                    </center>
+                </div>
+                <div class="col-md-6">
+                    <div class="application-name">
+                        @{
+                            var ApplicationEnviroment = System.Configuration.ConfigurationManager.AppSettings["Environment"].ToString();
+                            if (ApplicationEnviroment == "dev")
+                            {
+                                <p>@Resources.Globalization.ApplicationNameText - @Resources.Globalization.DevTrialText</p>
+                            }
+                            else if (ApplicationEnviroment == "test")
+                            {
+                                <p>@Resources.Globalization.ApplicationNameText - @Resources.Globalization.TestTrialText</p>
+                            }
+                            else
+                            {
+                                @Resources.Globalization.ApplicationNameText
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    @*<div class="navbar-header">*@
+                    <center>
+                        <img src="@Url.Content("~/Content/Images/MICLogo.png")" style="height:80px" />
+                    </center>
+                    @*</div>*@
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mainBody">
+        <div class="container-fluid">
+            <div class="row">
+                <section id="right-navigation">
+                    <div class="sidebar">
+                        @Html.Action("Index", "Account")
+                        <div class="side-menu">
+                            @Html.MvcSiteMap().Menu("IconsMenu")
+                        </div>
+                    </div>
+                </section>
+                <div class="bodyAria">
+                    <div class="row">
+                        @*<div class="col-md-12">
+                            @Html.Action("Index", "Dashboard")
+                        </div>*@
+                        <div class="col-md-12">
+                            <div class="BreadcrumbContainer">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <!-- site map path -->
+                                        <div class="breadcrumb">
+                                            @*<i class="fa fa-home"> </i> *@ <label class="control-label">@ViewBag.Title</label> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="body-content form-horizontal">
+                                @RenderBody()
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /container -->
+
+    </div>
+
+    <div class="row navbar-fixed-bottom">
+        <div class="col-md-12" style="height:60px">
+            <div class="footer">
+                <div class="applicationFooter">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div style="float:right">
+                                <img src="@Url.Content("~/Content/Images/MICLogo.jpg")" class="footerImage" />
+                            </div>
+                            <div class="lineVertical"></div>
+                            <div style="float:right">
+                                <img src="@Url.Content("~/Content/Images/ITLogo.png")" class="footerImage" />
+                            </div>
+                        </div>
+                        <div style="padding-top:15px">
+                            <div class="col-md-6">
+                                <p>&copy; @DateTime.Now.Year - @Resources.Globalization.CopyRightsText - @Resources.Globalization.OwnerNameText - @Globals.Calendar.GetUmAlQuraYear(DateTime.Now)</p>
+                            </div>
+                            <div class="col-md-3">
+                                <p>@Resources.Globalization.ContactTechnicalSupportText</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/javascript")
+    @RenderSection("scripts", required: false)
+    <div id="divAlert"></div>
+    @Html.Partial("~/Views/Shared/_Spinner.cshtml")
+    @Html.Partial("~/Views/Shared/_ReportViewerModal.cshtml")
+
+    <div class="modal fade" id="divModalAccount">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <iframe id="iframeContent" style="width:100%;border:none;"></iframe>
+                </div>
+                <div class="modal-footer" style="margin:0">
+                    <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

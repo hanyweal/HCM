@@ -1,0 +1,323 @@
+﻿@model HCM.Models.VacationsViewModel
+@using HCMBLL.Enums;
+@using HCM.Models;
+
+@{
+    ViewBag.Title = @Resources.Globalization.VacationsText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#txtVacationPeriod').on('change', function (event) {
+            GetVacationEndDate("#txtVacationStartDate", "#txtVacationPeriod", "#txtVacationEndDate", "#txtWorkDate");
+        });
+
+        $('#txtVacationStartDate').on('focus', function () {
+            // PreviousVacationStartDate = this.value;
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+            onSelect: function (dates) {
+                GetVacationEndDate("#txtVacationStartDate", "#txtVacationPeriod", "#txtVacationEndDate", "#txtWorkDate");
+            }
+        });
+
+        $('#ddlVacationTypes').on('change', function (event) {
+            BindEmployeeVacations($('#hdnFldEmployeeCodeID').val());
+        });
+
+        $('#ddlVacationActions').on('change', function (event) {
+            var VacationAction = $('#ddlVacationActions').val();
+            if (VacationAction == '@Convert.ToInt32(VacationsActionsEnum.Add)') {
+                $('#divExceptionalAdding').show();
+                $('#divEmployeeVacations').hide();
+            }
+            else {
+                $('#divExceptionalAdding').hide();
+                $('#divEmployeeVacations').show();
+            }
+        });
+
+        $("#divVacationDetailsModal").on('hidden.bs.modal', function () {
+            BindEmployeeVacations($('#hdnFldEmployeeCodeID').val());
+        });
+    });
+
+    function OnSuccess() {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+    }
+
+    function OpenVacationDetails(VacationID) {
+        var iframe = $("#divVacationDetailsModal .modal-body #iframeContent");
+
+        var VacationAction = $("#ddlVacationActions").val();
+        if (VacationAction == '@Convert.ToInt32(VacationsActionsEnum.Extend)') {
+            iframe.attr('src', '@Url.Content("~/Vacations/Extend/")' + VacationID);
+        }
+        else if (VacationAction == '@Convert.ToInt32(VacationsActionsEnum.Break)') {
+            iframe.attr('src', '@Url.Content("~/Vacations/Break/")' + VacationID);
+        }
+        else if (VacationAction == '@Convert.ToInt32(VacationsActionsEnum.Cancel)') {
+            iframe.attr('src', '@Url.Content("~/Vacations/Cancel/")' + VacationID);
+        }
+        ShowModal("#divVacationDetailsModal");
+    }
+
+    function BindEmployeeVacations(EmployeeCodeID) {
+        var VacationTypeID = $('#ddlVacationTypes').val();
+        //var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val();
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Vacations/GetEmployeeVacationsByVacationTypeID/")" + EmployeeCodeID + "/" + VacationTypeID,
+            success: function (result) {
+                $("#tblEmployeeVacations").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "VacationID",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "VacationStartDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "VacationPeriod",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "VacationEndDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "WorkDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "IsCanceled",
+                            "autowidth": false,
+                            "render": RenderCheckBox
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        {
+                            "data": "VacationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = 'OpenVacationDetails(' + data + ');';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                            }
+                        },
+                    ]
+                });
+            }
+        });
+
+    }
+
+    function Reset() {
+        $("#txtVacationStartDate").val('');
+        $("#txtVacationEndDate").val('');
+        $("#txtWorkDate").val('');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+        BindEmployeeVacations(EmployeeCodeID);
+    }
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.VacationsText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.VacationsDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.Vacations })
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "Vacations", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+            <br />
+            <table class="table table-responsive table-striped">
+                <tr>
+                    <td class="col-md-4">
+                        @Html.LabelFor(model => model.VacationType, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-4">
+                        @Html.LabelFor(model => model.VacationAction, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-4"></td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        @Html.DropDownListFor(model => model.VacationType.VacationTypeID, new SelectList(new HCMBLL.VacationsTypesBLL().GetVacationsTypes(), "VacationTypeID", "VacationTypeName"), new { @id = "ddlVacationTypes", @style = "width:100%" })
+                    </td>
+                    <td class="col-md-4">
+                        @Html.DropDownListFor(model => model.VacationAction.VacationActionID, new SelectList(new HCMBLL.VacationsActionsBLL().GetVacationsActions(), "VacationActionID", "VacationActionName"), new { @id = "ddlVacationActions", @style = "width:100%" })
+                    </td>
+                    <td class="col-md-4"></td>
+                </tr>
+            </table>
+
+            <div id="divExceptionalAdding">
+                <table class="table table-responsive table-striped" style="width:100%">
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.VacationStartDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.VacationPeriod, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.VacationEndDate, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.VacationStartDate, new { @class = "form-control ", @id = "txtVacationStartDate" })
+                        </td>
+                        <td class="col-md-4">
+                            @*@Html.TextBoxFor(model => model.VacationPeriod, new { @class = "form-control", @id = "txtVacationPeriod", @type = "number", @value = "1" })*@
+                            <input type="number" id="txtVacationPeriod" min="1" class="form-control" value="1" />
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.VacationEndDate, new { @class = "form-control", @id = "txtVacationEndDate", @readonly = "readonly" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.WorkDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4"> </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.WorkDate, new { @class = "form-control", @id = "txtWorkDate", @readonly = "readonly" })
+                        </td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4" style="text-align:center"></td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.Notes, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4"> </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="col-md-4">
+                            @Html.TextAreaFor(model => model.Notes, new { @class = "form-control", @id = "txtNotes" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4" style="text-align:center">
+                            <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        }
+
+        <div id="divEmployeeVacations" hidden>
+            <table id="tblEmployeeVacations" class="table table-responsive table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <td>
+                            @Resources.Globalization.SequenceNoText
+                        </td>
+                        <td>
+                            @Resources.Globalization.VacationStartDateText
+                        </td>
+                        <td>
+                            @Resources.Globalization.VacationPeriodText
+                        </td>
+                        <td>
+                            @Resources.Globalization.VacationEndDateText
+                        </td>
+                        <td>
+                            @Resources.Globalization.WorkDateText
+                        </td>
+                        <td>
+                            @Resources.Globalization.IsVacationCanceledText
+                        </td>
+                        <td>
+                            @Resources.Globalization.CreatedByText
+                        </td>
+                        <td>
+                            @Resources.Globalization.CreatedDateText
+                        </td>
+                        <td></td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divVacationDetailsModal">
+    <div class="modal-dialog" style="width:1100px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                </div>
+            </div>
+            <div class="modal-body">
+                <iframe id="iframeContent" style="width:100%;height:550px;border:none;"></iframe>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*@section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }*@

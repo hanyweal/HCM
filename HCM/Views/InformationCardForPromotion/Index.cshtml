@@ -1,0 +1,215 @@
+﻿@model HCM.Models.PromotionCardsPrintingDetailsViewModel
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+@{
+    ViewBag.Title = "EmployeeAprovedPromotionCard";
+    Layout = "~/Views/Shared/_EServiecsLayout.cshtml";
+}
+
+<script type="text/javascript">
+    var OTPvalueIsSuccess = false;
+    $(document).ready(function () {
+
+        $("#btnSubmit").attr('disabled', 'disabled');
+        var iframe = $("#iframePDF");
+        if ('@ViewBag.PrintedBefor' == "True") {
+            iframe.attr('src', '@Url.Content("~/InformationCardForPromotion/PrintPromotionCardExist/")' + '@Model.PromotionCardPrintingID');
+            $('.divRatification').hide();
+
+        }
+        if ('@ViewBag.PrintedBefor' == "False") {
+            iframe.attr('src', '@Url.Content("~/InformationCardForPromotion/PrintPromotionCardBeforRatificationByPromotionPeriod/")' + '@Model.EmployeeCodeID' + "/" + '@Model.PromotionPeriodID');
+            $('.divRatification').show();
+        }
+        $("#btnAfterOTP").click(function () {
+
+            var txtOTP = $("#txtOTP").val();
+            if (txtOTP == '')
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure,Globals.Utilities.RemoveSpace(@Resources.Globalization.EnterOTPText))');
+            else {
+                $.ajax({
+                type: "GET"
+                , contentType: "application/json; charset=utf-8"
+                , url: "@Url.Content("~/InformationCardForPromotion/ValidateOTP/")" + txtOTP
+                    , success: function (data) {
+                        if (data.data == true) {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.ICPSuccessOTPEnterdText))');
+                            DestroyModal("#divOTPModal");
+                            OTPvalueIsSuccess= true;
+                    }
+                    else {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure,Globals.Utilities.RemoveSpace(@Resources.Globalization.WrongOTPText))');
+                            OTPvalueIsSuccess =false;
+                    }
+                }
+                , error: OnFailureChangePassword
+                });
+            }
+            return OTPvalueIsSuccess;
+        });
+    });
+
+            function OnSuccess(data) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+
+
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function OkFunction() {
+        window.location.href = "/InformationCardForPromotion/Index";
+    }
+    function ChangeDisabledOfSubmit() {
+        if ($('#chkIsApproved').is(':checked')) {
+            $("#btnSubmit").attr('disabled', false);
+        }
+        else {
+            $("#btnSubmit").attr('disabled', 'disabled');
+        }
+
+    }
+    function OpenOTPPopup() {
+        if (!OTPvalueIsSuccess) {
+            $.ajax({
+                type: "GET"
+                , contentType: "application/json; charset=utf-8"
+                , url: "@Url.Content("~/InformationCardForPromotion/SendingOTPToValidateUser")", success: function (data) {
+                    if (data.data != null) {
+                        ShowModal("#divOTPModal");
+                    }
+                }
+                , error: OnFailureChangePassword
+            });
+        }
+        return OTPvalueIsSuccess ;
+    }
+
+
+
+
+      function OnFailureChangePassword() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure , "Error")');
+    }
+</script>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                @Resources.Globalization.NominationInformationCardForPromotionText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Approved", "InformationCardForPromotion", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            OnBegin= "return OpenOTPPopup();",
+            HttpMethod = "POST",
+        }, new { id = "InformationCardForPromotionForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <div class="modal-body" style="height:900px;">
+                <iframe id="iframePDF" style="border:none;width:100%;height:100%"></iframe>
+            </div>
+            <div class="divRatification">
+                <span class="control-label">@Resources.Globalization.RatificationText</span><br />
+                <table class="table table-responsive table-condensed table-striped">
+                    <tbody>
+                        <tr>
+                            <td class="col-md-4">
+                                @Resources.Globalization.IsApprovedYouHaveJobWithAllowncesAndGotJobWithoutAllowncesDetailsText
+                            </td>
+                            <td class="col-md-8">
+                                @Html.HiddenFor(model => model.PromotionPeriodID)
+                                @Html.HiddenFor(model => model.EmployeeCodeID)
+                                @Html.RadioButtonFor(model => model.IsApprovedYouHaveJobWithAllowncesAndGotJobWithoutAllowncesDetails, true, new {  @value = "true" }) @Resources.Globalization.YesText
+                                @Html.RadioButtonFor(model => model.IsApprovedYouHaveJobWithAllowncesAndGotJobWithoutAllowncesDetails, false, new {  @value = "false" }) @Resources.Globalization.NoText
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Resources.Globalization.RatificationDetailsText
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="text-center">
+                                @Html.CheckBoxFor(model => model.IsApprovedDetails, new { @id = "chkIsApproved", @onClick = "ChangeDisabledOfSubmit()" })
+                                @Resources.Globalization.IsApprovedDetailsText
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-responsive table-condensed">
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                <center>
+                                    <input type="submit" class="btn btn-default" id="btnSubmit" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                </center>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        }
+
+    </div>
+</div>
+
+<div class="modal fade" id="divOTPModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2d3e50;color:white">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.InformationCardForPromotionValidateOTPSendedText
+                </div>
+            </div>
+            <div class="modal-body" style="height:420px;overflow:hidden;">
+                <div>
+                    @Resources.Globalization.InformationCardForPromotionSendedText
+                </div>
+
+                <table class="table table-condensed">
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                <div class="col-md-3">
+                                    <label>@Resources.Globalization.OTPText</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input id="txtOTP" type="number" class="form-control" />
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                <center>
+                                    <input type="submit" id="btnAfterOTP" class="btn btn-default" value="@Resources.Globalization.ConfirmButtonText" />
+                                </center>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,161 @@
+﻿
+@{
+    ViewBag.Title = @Resources.Globalization.MyEVacationsRequestsText;
+    Layout = "~/Views/Shared/_EServiecsLayout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        BindMyEVacationsRequests();
+    });
+
+    function BindMyEVacationsRequests() {
+        $("#tblEVacationsRequests").DataTable({
+            "dom": 'Bfrtip',
+            "ajax": {
+                "url": "/EVacationsRequests/GetMyEVacationsRequests",
+                "type": "get",
+                "datatype": "json"
+            },
+             "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "createdRow": function (row, data, index) {
+                SetBackgroundColorOnStatus(row,data);
+            },
+            "order": [[ 7 , "desc"]],
+            "buttons": ['excel'],
+            "columns": [
+                {
+                     "data": "EVacationRequestNo",
+                     "autowidth": true,
+                },
+                {
+                     "data": "VacationType",
+                     "autowidth": true,
+                },
+                {
+                     "data": "VacationStartDate",
+                     "autowidth": true,
+                     "render": RenderDate
+                },
+                {
+                     "data": "VacationPeriod",
+                     "autowidth": true,
+                },
+                {
+                    "data": "VacationEndDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "WorkDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "EVacationRequestStatus",
+                    "autowidth": true
+                },
+                {
+                    "data": "EVacationRequestStatusID",
+                    "autowidth": true,
+                    "render": RenderEVacationRequestStatusAsIcon
+                },
+                {
+                    "data": "CreatedDate",
+                    "autowidth": false,
+                    "render": RenderDateTime
+                },
+                {
+                    "data": "EVacationRequestID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("DetailsByEmployee", "EVacationsRequests")' + "/" + data;
+                        //return '<a href="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.EVacationRequestDetailsText' + '"/></a>'
+                         return '<a href="' + Url + '"><button Class="btn btn-info" title="' + '@Resources.Globalization.EVacationRequestDetailsText' + '">@Resources.Globalization.DetailsText</button></a>'
+                    }
+                },
+            ]
+        });
+    }
+
+    function SetBackgroundColorOnStatus(row,data) {
+        var cell = $(row).find('td:eq(6)');
+        if (data.EVacationRequestStatusID == '@Convert.ToInt16(HCMBLL.Enums.EVacationRequestStatusEnum.Approved)') {
+            //cell.addClass('alert-success');
+            $(row).addClass("alert-success");
+        }
+        else if (data.EVacationRequestStatusID == '@Convert.ToInt16(HCMBLL.Enums.EVacationRequestStatusEnum.Refused)') {
+            //cell.addClass('alert-danger');
+            $(row).addClass("alert-danger");
+        }
+        else if (data.EVacationRequestStatusID == '@Convert.ToInt16(HCMBLL.Enums.EVacationRequestStatusEnum.Pending)') {
+            // cell.addClass('alert-warning');
+            $(row).addClass("alert-warning");
+        }
+        else if (data.EVacationRequestStatusID == '@Convert.ToInt16(HCMBLL.Enums.EVacationRequestStatusEnum.CancelledByHR)'
+            || data.EVacationRequestStatusID == '@Convert.ToInt16(HCMBLL.Enums.EVacationRequestStatusEnum.CancelledByCreator)'
+            || data.EVacationRequestStatusID == '@Convert.ToInt16(HCMBLL.Enums.EVacationRequestStatusEnum.CancelledBySystem)'
+        ) {
+            //cell.addClass('alert-info');
+            $(row).addClass("alert-info");
+        }
+    }
+
+    function RenderEVacationRequestStatusAsIcon(data) {
+        var EVacationRequestStatusID = data;
+        var Url;
+        if (EVacationRequestStatusID == '@Convert.ToInt16(HCMBLL.Enums.EVacationRequestStatusEnum.Approved)')
+            Url = '../Content/Images/done.png';
+        else if (EVacationRequestStatusID == '@Convert.ToInt16(HCMBLL.Enums.EVacationRequestStatusEnum.Refused)')
+            Url = '../Content/Images/refused.png';
+        else if (EVacationRequestStatusID == '@Convert.ToInt16(HCMBLL.Enums.EVacationRequestStatusEnum.Pending)') 
+            Url = '../Content/Images/loader1.gif';
+        else if (EVacationRequestStatusID == '@Convert.ToInt16(HCMBLL.Enums.EVacationRequestStatusEnum.CancelledByHR)' || EVacationRequestStatusID == '@Convert.ToInt16(HCMBLL.Enums.EVacationRequestStatusEnum.CancelledByCreator)' || EVacationRequestStatusID == '@Convert.ToInt16(HCMBLL.Enums.EVacationRequestStatusEnum.CancelledBySystem)')
+            Url = '../Content/Images/Stop.png';
+        return '<img style="width:20px;height:20px" width="20px" height="20px" src="' + Url + '"/>'
+    }
+
+</script>
+
+@*<div class="alert alert-success">
+    <p style="font-size:larger">@Resources.Globalization.MyEVacationsRequestsText</p>
+</div>*@
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-12">
+                @Resources.Globalization.MyEVacationsRequestsDescText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @*<img src="~/Content/Images/done.jpg" he*@
+        <table id="tblEVacationsRequests" class="table table-responsive table-condensed " style="width:100%">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.RequestNoText</td>
+                    <td>@Resources.Globalization.VacationTypeText</td>
+                    <td>@Resources.Globalization.VacationStartDateText</td>
+                    <td>@Resources.Globalization.VacationPeriodText</td>
+                    <td>@Resources.Globalization.VacationEndDateText</td>
+                    <td>@Resources.Globalization.WorkDateText</td>
+                    <td>@Resources.Globalization.RequestStatusText</td>
+                    <td></td>
+                    <td>@Resources.Globalization.RequestCreatedDateText</td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+</div>
+

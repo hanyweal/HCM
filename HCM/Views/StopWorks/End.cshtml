@@ -1,0 +1,249 @@
+﻿@model HCM.Models.StopWorksViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+@using HCM.Classes.Extensions
+
+@{
+    // ViewBag.Title = Resources.Globalization.EndStopWorkEmployeeText;
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        
+        $("#BtnApprove").confirm({
+            animation: 'zoom',
+            content: '@Resources.Globalization.EndStopWorkConfirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () { $("#BtnSave").submit(); },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+    });
+
+    function GetTypes() {
+        var StopWorkCategoryID = $("#ddlStopWorksCategories").val();
+        $.ajax({
+            type: "get",
+            dataType: "json",
+            url: "/StopWorks/GetStopWorksTypes/" + StopWorkCategoryID,
+            success: function (d) {
+                $("#ddlStopWorksTypes").html("");
+                var types = d.data;
+                $.each(types, function (i, type) {
+                    $("#ddlStopWorksTypes").append($('<option></option>').val(type.StopWorkTypeID).html(type.StopWorkTypeName));
+                });
+
+                if ('@Model.StopWorkType.StopWorkTypeID' > 0) {
+                    $('#ddlStopWorksTypes').val('@Model.StopWorkType.StopWorkTypeID');
+                }
+
+            },
+            error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+    
+    function OkFunction() {
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.EndStopWorkText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EndStopWorkDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                <a id="OpenBusinessConditions">
+                    @*<span class="glyphicon glyphicon-print" title="اضغط لمعرفة الشروط الخاصة لتعديل تكليف"></span>*@
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("End", "StopWorks", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @*@Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", Model.Employee.GetEmployee())*@
+            <span class="control-label">@Resources.Globalization.StopWorkBasicInfoText</span>
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-2">
+                            <label class="control-label">@Resources.Globalization.EmployeeCodeNoText</label>
+                        </td>
+                        <td class="col-md-10">
+                            @Html.HiddenFor(model => model.StopWorkID)
+                            @Html.DisplayFor(model => model.EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            <label class="control-label">@Resources.Globalization.EmployeeNameArText</label>
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.Employee.EmployeeNameAr, new { @class = "form-control" })
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.StopWorkType, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.StopWorkType.StopWorkTypeName, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.StopPoint, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.StopPoint, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.StopWorkStartDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.StopWorkStartDate, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.StopWorkEndDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.TextBoxFor(model => model.StopWorkEndDate, new
+                       {
+                           @class = "TxtHijriPicker form-control",
+                           @id = "txtStopWorkEndDate",
+                           @readonly = "readonly",
+                           @Value = Model.StopWorkEndDate.HasValue ? Model.StopWorkEndDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                       })
+                            @Html.ValidationMessageFor(model => model.StopWorkEndDate.Value, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.StartStopWorkDecisionNumber, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.StartStopWorkDecisionNumber, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.StartStopWorkDecisionDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.StartStopWorkDecisionDate, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.EndStopWorkDecisionNumber, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.EndStopWorkDecisionNumber, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.EndStopWorkDecisionDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.EndStopWorkDecisionDate, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.IsConvicted, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DropDownListFor(model => model.IsConvicted, new SelectList(
+                                new[] {
+                                    new{Value=true,Text=@Resources.Globalization.ConvicteText},
+                                    new{Value=false,Text=@Resources.Globalization.UnconvicteText},
+                                },
+
+                     "Value", "Text"),
+                     new { @width = "200px" })
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.Note, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.TextAreaFor(model => model.Note, new { @class = "form-control", @id = "RankName" })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" id="BtnSave" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                @*<input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />*@
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "StopWorks"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+
+@*@section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }*@
+
+
+
+

@@ -1,0 +1,215 @@
+﻿@model HCM.Models.StopWorksViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.AddNewStopWorkText;
+}
+
+<script type="text/javascript">
+
+    function OkFunction() {
+        window.location.href = "/StopWorks/Index";
+    }
+
+    $(document).ready(function () {
+        GetTypes();
+    });
+
+    function GetTypes() {
+        //debugger;
+        var StopWorkCategoryID = $("#ddlStopWorksCategories").val();
+        $.ajax({
+            type: "get"
+            , dataType: "json"
+            , url: "/StopWorks/GetStopWorksTypes/" + StopWorkCategoryID
+            , success: function (d) {
+                $("#ddlStopWorksTypes").html("");
+                var types = d.data;
+                $.each(types, function (i, type) {
+                    $("#ddlStopWorksTypes").append($('<option></option>').val(type.StopWorkTypeID).html(type.StopWorkTypeName));
+                });
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function OnSuccess() {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+    function Reset() {
+
+        ResetEmployee();
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.AddNewStopWorkText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewStopWorkDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                <a id="OpenBusinessConditions">
+                    @*<span class="glyphicon glyphicon-print" title="اضغط لمعرفة الشروط الخاصة لإنشاء تكليف جديد"></span>*@
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "StopWorks", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+            <span class="control-label">@Resources.Globalization.StopWorkBasicInfoText</span>
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.StopWorkCategory)
+                        </td>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.StopWorkType)
+                        </td>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.StopPoint, new { @class = "control-label" })
+                        </td>
+
+                    </tr>
+                    <tr>
+
+                        <td>@Html.DropDownListFor(model => model.StopWorkCategory.StopWorkCategoryID, new SelectList(new HCMBLL.StopWorksCategoriesBLL().GetStopWorksCategories(), "StopWorkCategoryID", "StopWorkCategoryName"), new { @id = "ddlStopWorksCategories", @style = "width:100%", @onchange = "GetTypes()" })</td>
+                        <td>@Html.DropDownListFor(model => model.StopWorkType.StopWorkTypeID, new SelectList(new HCMBLL.StopWorksTypesBLL().GetStopWorksTypes(), "StopWorkTypeID", "StopWorkTypeName"), new { @id = "ddlStopWorksTypes", @style = "width:100%" })</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.StopPoint, new { @class = "form-control", @id = "txtFridayHoursAvg", @min = "0", @value = "0" })
+
+                        </td>
+                    </tr>
+                    <tr>
+
+                        <td>@Html.LabelFor(model => model.StopWorkStartDate)</td>
+                        <td>@Html.LabelFor(model => model.StopWorkEndDate)</td>
+                        <td>@Html.LabelFor(model => model.IsConvicted, new { @class = "control-label" })</td>
+                    </tr>
+                    <tr>
+
+                        <td>
+                            @Html.TextBoxFor(model => model.StopWorkStartDate, new { @class = "form-control TxtHijriPicker", @id = "txtStopWorkStartDate", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.StopWorkStartDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.StopWorkEndDate, new { @class = "form-control TxtHijriPicker", @id = "txtStopWorkEndDate", @readonly = "readonly" })
+
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.IsConvicted, new SelectList(
+                                new[] {
+                                    new{Value=true,Text=@Resources.Globalization.ConvicteText},
+                                    new{Value=false,Text=@Resources.Globalization.UnconvicteText},
+                                },
+
+                     "Value",
+"Text"), @Resources.Globalization.SelectFromDropDownText, new { @width = "200px" })
+                            @Html.ValidationMessageFor(model => model.IsConvicted)
+                        </td>
+
+
+                    </tr>
+                    @*start*@
+                    <tr>
+                        <td>@Html.LabelFor(model => model.StartStopWorkDecisionNumber)</td>
+                        <td>@Html.LabelFor(model => model.StartStopWorkDecisionDate)</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.StartStopWorkDecisionNumber, new { @class = "form-control", @id = "txtStartStopWorkDecisionNumber", @min = "0", @value = "0" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.StartStopWorkDecisionDate, new { @class = "form-control TxtHijriPicker", @id = "txtStartStopWorkDecisionDate", @readonly = "readonly" })
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.EndStopWorkDecisionNumber)</td>
+                        <td>@Html.LabelFor(model => model.EndStopWorkDecisionDate)</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.EndStopWorkDecisionNumber, new { @class = "form-control", @id = "txtEndStopWorkDecisionNumber", @min = "0", @value = "0" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.EndStopWorkDecisionDate, new { @class = "form-control TxtHijriPicker", @id = "txtEndStopWorkDecisionDate", @readonly = "readonly" })
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    @*end*@
+                    <tr>
+                        <td>@Html.LabelFor(model => model.Note, new { @class = "control-label" })</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            @Html.TextAreaFor(model => model.Note, new { @class = "form-control", @id = "txtTasks" })
+                        </td>>
+
+                        <td class="col-md-3">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "StopWorks"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }*@
+
+
+

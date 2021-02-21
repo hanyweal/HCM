@@ -1,0 +1,81 @@
+﻿@*@model HCM.Models.PromotionsRecordsStatusViewModel*@
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+<script type="text/javascript">
+    $(document).ready(function () {
+        RenderPromotionRecordStatus();
+    });
+
+    function RenderPromotionRecordStatus() {
+        var PromotionRecordStatusID = $('#hdnFldPromotionRecordStatusID').val();
+
+        //console.log('PromotionRecordStatusID', PromotionRecordStatusID)
+
+        $.ajax({
+            type: "GET",
+            url: "@Url.Content("~/PromotionsRecords/GetPromotionsRecordsStatus/")",
+            success: function (result) {
+                BindPromotionRecordStatus(PromotionRecordStatusID, result.data);
+            },
+            error: function (xhr, status, error) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+            }
+        });
+    }
+     
+    function BindPromotionRecordStatus(PromotionRecordStatusID, statusList) {
+        $("#ulPromotionRecordStatus").empty ();
+
+        //console.log('empty RenderPromotionRecordStatus', PromotionRecordStatusID)
+
+        if(PromotionRecordStatusID == '0'){
+            $("#ulPromotionRecordStatus").append('<li><span><i class="fa fa-spinner"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Open)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Preferenced)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Installed)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Closed)') + ' </span></li>');
+        }
+        else if(PromotionRecordStatusID == '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Open)'){
+            $("#ulPromotionRecordStatus").append('<li><span class="done"><i class="fa fa-check"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Open)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span><i class="fa fa-spinner"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Preferenced)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Installed)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Closed)') + ' </span></li>');
+        }
+        else if(PromotionRecordStatusID == '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Preferenced)'){
+            $("#ulPromotionRecordStatus").append('<li><span class="done"><i class="fa fa-check"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Open)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span class="done"><i class="fa fa-check"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Preferenced)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span><i class="fa fa-spinner"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Installed)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Closed)') + ' </span></li>');
+        }
+        else if(PromotionRecordStatusID == '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Installed)'){
+            $("#ulPromotionRecordStatus").append('<li><span class="done"><i class="fa fa-check"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Open)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span class="done"><i class="fa fa-check"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Preferenced)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span class="done"><i class="fa fa-check"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Installed)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span><i class="fa fa-spinner"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Closed)') + ' </span></li>');
+        }
+        else if(PromotionRecordStatusID == '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Closed)'){
+            $("#ulPromotionRecordStatus").append('<li><span class="done"><i class="fa fa-check"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Open)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span class="done"><i class="fa fa-check"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Preferenced)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span class="done"><i class="fa fa-check"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Installed)') + ' </span></li>');
+            $("#ulPromotionRecordStatus").append('<li><span class="done"><i class="fa fa-check"></i> ' + GetValue(statusList, '@Convert.ToInt32(HCMBLL.Enums.PromotionsRecordsStatusEnum.Closed)') + ' </span></li>');
+        }
+    }
+
+    function GetValue(statusList, key){
+        var i = null;
+        for (var i = 0; i < statusList.length; i++) {
+            if(statusList[i].PromotionRecordStatusID == key)
+                return statusList[i].PromotionRecordStatusName;
+        }
+        return '';
+    }
+</script>
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <ul id="ulPromotionRecordStatus" class="breadcrumb"> 
+        </ul>
+    </div>
+    <div class="col-md-1"></div>
+</div>

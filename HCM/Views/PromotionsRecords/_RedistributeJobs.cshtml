@@ -1,0 +1,156 @@
+﻿@*@model HCM.Models.PromotionsRecordsStatusViewModel*@
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#btnOpenPromotionRecordRedistributeJobsPopup").click(function () {
+
+            var PromotionRecordID = $('#hdnFldPromotionRecordID').val();
+            if (PromotionRecordID == "") PromotionRecordID = 0;
+
+            BindPromotionsRecordsRedistributeJobs(PromotionRecordID);
+            ShowModal("#divPromotionsRecordsRedistributeJobsModal");
+
+        });
+
+        $("#divPromotionsRecordsRedistributeJobsModal").on('hidden.bs.modal', function () {
+             
+            $(this).data('bs.modal', null);
+            BindCandidates();               // function defined in Manage.cshtml
+
+        });
+
+    });
+
+    function BindPromotionsRecordsRedistributeJobs(PromotionRecordID) {
+
+        var url = "/PromotionsRecords/GetCandidatesForRedistributeJobsByPromotionRecordID/" + PromotionRecordID;
+
+        var tblPromotionsRecordsRedistributeJobs = $("#tblPromotionsRecordsRedistributeJobs").DataTable({
+            "ajax": {
+                "url": url,
+                "type": "get",
+                "datatype": "json"
+            },
+            "destroy": true,
+            "processing": true,
+            "columns": [
+                {
+                    "data": "JobCode",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true
+                },
+                {
+                    "data": "OrganizationName",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCodeNo",
+                    "width": '100px',
+                    "render": function (data, type, row) { 
+                        return '<input type="text" class="form-control" value=' + data + ' text=' + data + ' data-current=' + data + ' onchange="ShuffleJob(this, ' + row.PromotionRecordEmployeeID + ')">';
+                    }
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true,
+                    "defaultContent": ""
+                },
+            ]
+        });
+    }
+
+    function ShuffleJob(txtEmployeeCodeNo, PromotionRecordEmployeeID) {
+
+        //console.log('func', $(txtEmployeeCodeNo).val(), PromotionRecordEmployeeID, $(txtEmployeeCodeNo).data('current'));
+
+        var CurrentEmployeeCodeNo = $(txtEmployeeCodeNo).data('current');
+        var NewEmployeeCodeNo = $(txtEmployeeCodeNo).val();
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/PromotionsRecords/ShuffleJob/")" + PromotionRecordEmployeeID + "/" + NewEmployeeCodeNo,
+            //data: JSON.stringify(ObjShuffleJob),
+            success: OnSuccessShuffleJob,
+            error: function () {
+
+                $(txtEmployeeCodeNo).val(CurrentEmployeeCodeNo);
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+            }
+        });
+    }
+
+    function OnSuccessShuffleJob(data) {
+
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.PromotionRecordEmployeeJobRedistributeDoneAlertText), "")');
+
+        var PromotionRecordID = $('#hdnFldPromotionRecordID').val();
+        if (PromotionRecordID == "") PromotionRecordID = 0;
+
+        BindPromotionsRecordsRedistributeJobs(PromotionRecordID);
+        
+    }
+
+</script>
+
+<button id="btnOpenPromotionRecordRedistributeJobsPopup" class="btn btn-default" type="button" title="@Resources.Globalization.RedistributePromotionRecordJobsText">
+    <span class="glyphicon glyphicon-transfer"></span>
+    @Resources.Globalization.RedistributePromotionRecordJobsText
+</button>
+
+<div class="modal fade" id="divPromotionsRecordsRedistributeJobsModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.PromotionsRecordsRedistributeJobsListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="divPromotionsRecordsRedistributeJobsAlert" class="alert alert-info">
+                            @Resources.Globalization.PromotionsRecordsRedistributeJobsDescText
+                        </div>
+                    </div>
+                </div>
+                <table id="tblPromotionsRecordsRedistributeJobs" class="table table-responsive table-hover dataTable font-12" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.JobCodeText</td>
+                            <td>@Resources.Globalization.JobNameText</td>
+                            <td>@Resources.Globalization.JobNoText</td>
+                            <td>@Resources.Globalization.RankNameText</td>
+                            <td>@Resources.Globalization.OrganizationNameText</td>
+                            <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                            <td>@Resources.Globalization.EmployeeNameArText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

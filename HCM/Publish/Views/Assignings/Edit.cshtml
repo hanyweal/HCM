@@ -1,0 +1,252 @@
+﻿@model HCM.Models.AssigningsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+@using HCM.Classes.Extensions
+@{
+    ViewBag.Title = Resources.Globalization.EditAssigningText;
+}
+
+<script type="text/javascript">
+
+    function OkFunction() {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Assignings/PrintAssigning/")' + '@Model.AssigningID');
+        ShowModal("#divReportModal");
+    }
+
+    function BindingAssigningType(AssigningType) {
+        if (AssigningType == '@Convert.ToInt32(AssigningsTypesEnum.Internal)') {
+            $('#tblInternal').show();
+            $('#tblExternal').hide();
+        }
+        else {
+            $('#tblInternal').hide();
+            $('#tblExternal').show();
+        }
+    }
+
+    $(document).ready(function () {
+
+        var AssigningType = '@Model.AssigningType.AssigningTypeID';
+        BindingAssigningType(AssigningType);
+
+        $('#ddlAssigningTypes').on('change', function (event) {
+            var AssigningType = $('#ddlAssigningTypes').val();
+            BindingAssigningType(AssigningType);
+        });
+
+        GetCities();
+    });
+
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function GetCities() {
+        var KSARegionID = $("#ddlKSARegions").val();
+        $.ajax({
+            type: "get"
+            , dataType: "json"
+            , url: "/KSACities/GetKSACities/" + KSARegionID
+            , success: function (d) {
+                $("#ddlKSACities").html("");
+                var cities = d.data;
+                $.each(cities, function (i, city) {
+                    $("#ddlKSACities").append($('<option></option>').val(city.KSACityID).html(city.KSACityName)); 
+                });
+                  
+                if ('@Model.ExternalKSACity.KSACityID' > 0) {                    
+                    $('#ddlKSACities').val('@Model.ExternalKSACity.KSACityID');
+                }
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.EditAssigningText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EditAssigningDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Edit", "Assignings", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.AssigningBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.AssigningType, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.AssginingStartDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.AssginingEndDate, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.AssigningType.AssigningTypeID, new SelectList(new HCMBLL.AssigningsTypesBLL().GetAssigningsTypes(), "AssigningTypeID", "AssigningTypeName"), new { @id = "ddlAssigningTypes", @style = "width:100%" })
+                            @Html.HiddenFor(model => model.AssigningID)
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.AssginingStartDate, new
+                       {
+                           @class = "TxtHijriPicker form-control",
+                           @id = "txtAssginingStartDate",
+                           @readonly = "readonly",
+                           @Value = Model.AssginingStartDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                       })
+                            @Html.ValidationMessageFor(model => model.AssginingStartDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.AssginingEndDate, new
+                       {
+                           @class = "TxtHijriPicker form-control",
+                           @id = "txtAssginingEndDate",
+                           @readonly = "readonly",
+                           @Value = Model.AssginingEndDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                       })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.AssigningReason, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4"></td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.AssigningReason.AssigningReasonID, new SelectList(new HCMBLL.AssigningsReasonsBLL().GetAssigningsReasons(), "AssigningReasonID", "AssigningReasonName"), new { @id = "ddlAssigningReason", @style = "width:100%" })
+                        </td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4"></td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.IsFinished, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4"></td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.CheckBoxFor(model => model.IsFinished)
+                        </td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="tblInternal" class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.OrganizationName, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobName, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4"></td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.Partial("~/Views/Shared/_OrganizationStructurePopup.cshtml", Model.OrganizationStructure)
+                        </td>
+                        <td class="col-md-4">
+                            @*@Html.Partial("~/Views/Shared/_JobsPopup.cshtml", new JobsViewModel() { JobID = Model.Job != null ? Model.Job.JobID : 0, JobName = Model.Job != null ? Model.Job.JobName : string.Empty })*@
+                            @Html.Partial("~/Views/Shared/_JobsPopup.cshtml", Model.Job)
+                        </td>
+                        <td class="col-md-4"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="tblExternal" class="table table-responsive table-condensed table-striped" hidden="hidden">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.ExternalOrganization, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.ExternalKSARegion, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.ExternalKSACity, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.ExternalOrganization, new { @class = "form-control" })
+                        </td> 
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.ExternalKSARegion.KSARegionID, new SelectList(new HCMBLL.KSARegionsBLL().GetKSARegions(), "KSARegionID", "KSARegionName"), new { @id = "ddlKSARegions", @style = "width:100%", @onchange = "GetCities()" })
+                            @*@Html.ValidationMessageFor(model => model.ExternalCity, "", new { @class = "text-danger" })*@
+                        </td>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.ExternalKSACity.KSACityID, new SelectList(new HCMBLL.KSACitiesBLL().GetKSACities(), "KSACityID", "KSACityName"),
+                                                                                             new { @id = "ddlKSACities", @style = "width:100%" })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", Model.Employee.GetEmployee())
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                @*<input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />*@
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Assignings"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@
+
+
+
+

@@ -1,0 +1,89 @@
+﻿@model HCM.Models.PromotionsPeriodsViewModel
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+
+@{
+    ViewBag.Title = @Resources.Globalization.EmployeeConfirmedInformationCardForPromotionText;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblPromotionsPeriods").DataTable({
+            //"destroy":true,
+             dom: 'Bfrtip',
+            "ajax": {
+                "url": "/PromotionsPeriods/GetInformationCardForPromotionConfirmed/" + @Model.PromotionPeriodID,
+                "type": "get",
+                "datatype": "json",
+            },
+             "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "MaturityYear",
+                     "autowidth": true
+                },
+                {
+                    "data": "PromotionStartDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "PromotionEndDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "PromotionCardPrintingID",
+                     "autowidth": true,
+                     "render": function (data, type, row) {
+                         Url = 'Print(' +data+')';
+                         return '<a onClick="' + Url + '"><span Class="glyphicon glyphicon-file"  title="' + '@Resources.Globalization.RatificationDisplayText' + '"/></a>'
+                     }
+                 },
+                
+            ]
+        });
+    });
+
+    function Print(PromotionCardPrintingID) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/InformationCardForPromotion/PrintPromotionCardExist/")' + PromotionCardPrintingID);
+        ShowModal("#divReportModal");
+    }
+</script> 
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.EmployeeConfirmedInformationCardForPromotionDetailsText
+    </div>
+    <div class="panel-body">
+        <table id="tblPromotionsPeriods" class="table table-responsive table-hover dataTable">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                    <td>@Resources.Globalization.YearText</td>
+                    <td>@Resources.Globalization.PromotionStartDateText</td>
+                    <td>@Resources.Globalization.PromotionEndDateText</td>
+                    <td>@Resources.Globalization.RatificationDisplayText</td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

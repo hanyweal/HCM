@@ -1,0 +1,94 @@
+﻿@model HCM.Models.ReportChangeLogsViewModel
+@using HCM.Models
+@using HCM.Classes.Enums
+@using HCMBLL
+@using System.Configuration
+
+@{
+    ViewBag.Title = @Resources.Globalization.ReportStopWorkText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+
+    $(document).ready(function () {
+        
+        insertSelectionOptionToDDL('ddlBusinessSubCategories', -1);        
+    });
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Print(data) {
+
+        //console.log('data', '@Url.Content("~/WebForms/")' + data.url);
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/WebForms/")' + data.url);
+
+        ShowModal("#divReportModal");
+    }
+</script>
+
+<div class="panel panel-default" style="padding:0">
+    <div class="panel-heading">
+        @Resources.Globalization.ReportChangeLogsText
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("ChangeLogs", "Reports", new AjaxOptions()
+        {
+            OnSuccess = "Print",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.ValidationSummary()
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-12" colspan="3">
+                            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.BusinssSubCategoryID, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(model => model.BusinssSubCategoryID, new SelectList(new HCMBLL.BusinessSubCategoriesBLL().GetBusinessSubCategories(), "BusinssSubCategoryID", "BusinessSubCategoryAr"), new { @id = "ddlBusinessSubCategories", @style = "width:100%" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.StartDate, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.EndDate, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control TxtHijriPicker", @id = "txtStartDate", @Value = Model.StartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])})
+                            @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control TxtHijriPicker", @id = "txtEndDate", @Value = Model.EndDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])})
+                            @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td></td>
+                    </tr>
+
+                </tbody>
+            </table>
+            <input type="submit" value='@Resources.Globalization.ReportViewText' class="btn btn-primary" >      @*onclick="Print()"*@
+        }
+    </div>
+</div>
+

@@ -1,0 +1,164 @@
+﻿@model HCM.Models.SportsSeasonsViewModel
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+
+@{
+    ViewBag.Title = Resources.Globalization.AddNewSportSeasonText;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        //--=== Start Ready function
+        $('#txtSportsSeasonPeriod').on('change', function (event) {
+            GetHolidaySettingEndDate();
+        });
+        //--=== End Ready function
+    });
+    //--===== start help function
+    function GetHolidaySettingEndDate() {
+        var HolidaySettingStartDate = $("#txtSportsSeasonStartDate").val();
+        var HolidaySettingPeriod = $("#txtSportsSeasonPeriod").val();
+        if (HolidaySettingStartDate != '' && HolidaySettingPeriod != '') {
+            $.ajax({
+                type: "POST"
+                , url: "@Url.Content("~/HolidaySetting/GetHolidaySettingEndDate/")" + HolidaySettingPeriod + "/" + HolidaySettingStartDate
+                , success: function (d) {
+                    $('#txtSportsSeasonEndDate').val(d.data);
+                }
+                , error: function (xhr, status, error) {
+                    AddingFailure();
+                }
+            });
+        }
+        else
+            $('#txtSportsSeasonEndDate').val('');
+    }
+    //--===== end help function
+    var id;
+    function OnSuccess(data) {
+        id = data.MaturityYearID;
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText),"OkFunction")');     
+    }
+    function OkFunction() {
+        window.location.href = '/YearsSettings/Details/' + id;
+    }
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+    function AddingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText))');
+    }
+    function AddingFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+    function Reset() {
+        $('#txtSportsSeasonStartDate').val('');
+        $('#txtSportsSeasonEndDate').val('');
+        $('#txtSportsSeasonPeriod').val('1');
+        $('#ddlMaturityYear').val(0);
+    }   
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.AddNewSportSeasonText</p>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewSportSeasonDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.SportsSeasons })
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "SportsSeasons", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.SportsSeasonsInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.MaturityYearBalance, new { @class = "control-label" })</td>
+                        <td></td>
+                        <td> </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(model => model.MaturityYearBalance.MaturityYear, new { @class = "control-label" })
+                            @Html.HiddenFor(model => model.MaturityYearBalance.MaturityYearID)
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.SportsSeasonDescription, new { @class = "control-label" }) </td>
+                        <td></td>
+                        <td> </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.SportsSeasonDescription, new { @class = "form-control", @id = "txtSportsSeasonDescription" })
+                            @Html.ValidationMessageFor(model => model.SportsSeasonDescription, "", new { @class = "text-danger" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.SportsSeasonStartDate)
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.SportsSeasonPeriod)
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.SportsSeasonEndDate)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.SportsSeasonStartDate, new { @class = "form-control TxtHijriPicker", @id = "txtSportsSeasonStartDate", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.SportsSeasonStartDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            <input type="number" id="txtSportsSeasonPeriod" min="1" class="form-control" value="1" />
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.SportsSeasonEndDate, new { @class = "form-control", @id = "txtSportsSeasonEndDate", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.SportsSeasonEndDate, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Details/" + @Model.MaturityYearBalance.MaturityYearID, "YearsSettings"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+

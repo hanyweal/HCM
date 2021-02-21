@@ -1,0 +1,53 @@
+﻿@model HCM.Models.ReportPromotionRecordsByPromotionPeriodViewModel
+@using HCM.Classes.Enums
+@using HCMBLL
+@using System.Configuration
+
+@{
+    ViewBag.Title = @Resources.Globalization.ReportPromotionRecordsByPromotionPeriodText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+
+    $(document).ready(function () {
+
+    });
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Print() {
+        var PromotionPeriodID = $("#ddlPromotionPeriod").val() ? $("#ddlPromotionPeriod").val() : '';
+        var YearID = $("#ddlYears").val();       
+        if (PromotionPeriodID == '' || YearID == '') {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(Resources.Globalization.RequiredPromotionPeriodText))');
+        }
+        else {
+            var iframe = $("#divReportModal .modal-body #iframeReportContent");
+            iframe.attr('src', '@Url.Content(string.Format("~/Reports/PromotionRecordsByPromotionPeriod?PromotionPeriodID="))' + PromotionPeriodID);
+            ShowModal("#divReportModal");
+        }
+    }
+</script>
+
+<div class="panel panel-default" style="padding:0">
+    <div class="panel-heading">
+        @Resources.Globalization.ReportPromotionRecordsByPromotionPeriodText
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("ReportPromotionRecordsByPromotionPeriod", "Report", new AjaxOptions()
+        {
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.ValidationSummary()
+            <div class="form-group">
+                @Html.Partial("~/Views/Shared/_PromotionsPeriods.cshtml", new HCM.Models.PromotionsPeriodsViewModel() { })
+            </div>
+        }  <input type="submit" value='@Resources.Globalization.ReportViewText' class="btn btn-primary" onclick="Print()">
+    </div>
+</div>
+

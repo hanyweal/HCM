@@ -1,0 +1,87 @@
+﻿@model HCM.Models.EmployeesViewModel
+@using HCM.Classes.Enums;
+@using HCM.Models;
+@{
+    ViewBag.Title = Resources.Globalization.AddNewEmployeeText;
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+    });
+
+    function OnSuccess() {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        $('#EmployeeIDNo').val('');
+        $('#FirstNameAr').val('');
+        $('#MiddleNameAr').val('');
+        $('#GrandFatherNameAr').val('');
+        $('#LastNameAr').val('');
+        $('#FirstNameEn').val('');
+        $('#MiddleNameEn').val('');
+        $('#GrandFatherNameEn').val('');
+        $('#LastNameEn').val('');
+        $('#txtEmployeeBirthDate').val('');
+        $('#EmployeeBirthPlace').val('');
+        $('#EmployeeMobileNo').val('');
+        $('#EmployeePassportNo').val('');
+        $('#EmployeeEMail').val('');
+        $('#txtEmployeeIDIssueDate').val('');
+        $('#EmployeePassportSource').val('');
+        $('#txtEmployeePassportIssueDate').val('');
+        $('#txtEmployeePassportEndDate').val('');
+        $('#txtEmployeeIDExpiryDate').val('');
+        $('#EmployeeIDIssuePlace').val('');
+        $('#EmployeeIDCopyNo').val('');
+        $('#MaritalStatus').val('1');
+        $('#DependentCount').val('');
+    }
+
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.AddNewEmployeeText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.AddNewEmployeeDescText
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "Employees", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            @Html.Partial("~/Views/Shared/_personalData.cshtml", new EmployeesViewModel() { })
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Employees"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>

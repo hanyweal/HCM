@@ -1,0 +1,374 @@
+﻿@using HCM.Models
+@{
+
+    Layout = null;
+}
+
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/orgChart")
+    @Scripts.Render("~/bundles/javascript")
+    <style type="text/css">
+        [node-id] rect {
+            fill: #F57C00;
+            /*height:150px;*/
+        }
+
+        .node.Done rect {
+            fill: lightgreen;
+        }
+
+        [node-id='1'] rect {
+            fill: lightblue;
+        }
+
+      
+    </style>
+</head>
+<body >
+
+    <div class="modal fade" id="divEmployeesModal">
+        <div class="modal-dialog" style="width:550px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div style="float:left">
+                        <button data-dismiss="modal" class="close">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-title">
+                        @Resources.Globalization.EmployeesListText
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                        </div>
+                    </div>
+                    <table id="tblEmployees" class="table table-responsive table-hover dataTable" style="width:100%">
+                        <thead>
+                            <tr>
+                                <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                                <td>@Resources.Globalization.EmployeeNameArText</td>
+                                @*<td>@Resources.Globalization.EmployeeIDNoText</td>*@
+                                <td>@Resources.Globalization.SelectText</td>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="modal-footer" style="margin:0">
+                    <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.Partial("~/Views/Shared/_AssigningManagerToOrganization.cshtml")
+
+    <div class="panel panel-default" style="padding:0px">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-12">
+                    @Resources.Globalization.AddNewDelegationDescText
+                </div>
+            </div>
+        </div>
+        <div class="panel-body" style="width:80%;margin-left:auto;margin-right:auto">
+
+            <table class="table table-responsive table-condensed table-bordered">
+                <thead>
+                    @Resources.Globalization.ManagerInfoText
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="width:15%">
+                            <label class="control-label">@Resources.Globalization.EmployeeCodeNoText</label>
+                        </td>
+                        <td style="width:35%">
+                            <input type="text" class="form-control" id="txtUserCodeNo" readonly />
+                        </td>
+                        <td style="width:15%">
+                            <label class="control-label">@Resources.Globalization.EmployeeIDNoText</label>
+                        </td>
+                        <td style="width:35%">
+                            <input type="text" class="form-control" id="txtUserIDNo" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:15%">
+                            <label class="control-label">@Resources.Globalization.NameText</label>
+                        </td>
+                        <td style="width:35%">
+                            <input type="text" class="form-control" id="txtUserName" readonly />
+                        </td>
+                        <td style="width:15%">
+                            <label class="control-label">@Resources.Globalization.OrganizationNameText</label>
+                        </td>
+                        <td style="width:35%">
+                            <input type="text" class="form-control" id="txtUserOrganizationName" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <div id="divOrgChart" style="height:600px" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+   
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/javascript")
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var OrgNodes;
+
+             $(document).on('show.bs.modal', '.modal', function (event) {
+                var zIndex = 1040 + (10 * $('.modal:visible').length);
+                $(this).css('z-index', zIndex);
+                setTimeout(function () {
+                    $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+                }, 0);
+            });
+
+              $.ajax({
+                type: "GET"
+                //, dataType: "json"
+                 , url: "@Url.Content("/OrganizationStructure/GetUserIdentityInfo")"
+                  , success: function (d) {
+                      console.log(d.data);
+                      $("#txtUserCodeNo").val(d.data.UserCodeNo);
+                      $("#txtUserName").val(d.data.UserName);
+                      $("#txtUserIDNo").val(d.data.UserName);
+                      $("#txtUserOrganizationName").val(d.data.OrganizationName);
+                     ShowOrg();
+                 }
+                 , error: function (xhr, status, error) {
+                    alert(error.message);
+                 }
+            });
+
+
+
+         //   chart.on('redraw', function (sender) {
+         //       alert('');
+         //});
+        });
+
+         function ShowOrg() {
+             $.ajax({
+                type: "GET"
+                //, dataType: "json"
+                 , url: "@Url.Content("/OrganizationStructure/GetOrganizationsUnderManager/")"
+                 , success: function (d) {
+                     OrgNodes = d.data;
+                     BindOrg(OrgNodes);
+                     //console.log(OrgNodes);
+                 }
+                 , error: function (xhr, status, error) {
+                    alert(error.message);
+                 }
+            });
+        }
+
+         function BindOrg(OrgNodes) {
+
+            for (var i = 0; i < OrgNodes.length; i++) {
+                var node = OrgNodes[i];
+                if (node.ManagerCodeNo != null) {
+                    node.tags = ["Done"];
+                }
+                 //else
+                 //    console.log(node.ManagerCodeNo);
+                //switch (node.ManagerCodeNo) {
+                //    case "QA":
+                //        node.tags = ["QA"];
+                //        break;
+                //    case "Marketer":
+                //    case "Designer":
+                //    case "Sales Manager":
+                //        node.tags = ["Marketing"];
+                //        break;
+                }
+
+
+
+        // custom template
+        //            OrgChart.templates.myTemplate = Object.assign({}, OrgChart.templates.ana);
+        //    OrgChart.templates.myTemplate.size = [200, 200];
+        //    OrgChart.templates.myTemplate.node = '<circle cx="100" cy="100" r="100" fill="#4D4D4D" stroke-width="1" stroke="#1C1C1C"></circle>';
+
+
+        //OrgChart.templates.myTemplate.ripple = {
+        //    radius: 100,
+        //    color: "#0890D3",
+        //    rect: null
+        //};
+        //OrgChart.templates.myTemplate.field_0 = '<text style="font-size: 24px;" fill="#ffffff" x="100" y="90" text-anchor="middle">{val}</text>';
+        //OrgChart.templates.myTemplate.field_1 = '<text style="font-size: 16px;" fill="#ffffff" x="100" y="60" text-anchor="middle">{val}</text>';
+        //OrgChart.templates.myTemplate.img_0 = '<clipPath id="ulaImg"><circle cx="100" cy="150" r="40"></circle></clipPath><image preserveAspectRatio="xMidYMid slice" clip-path="url(#ulaImg)" xlink:href="{val}" x="60" y="110"  width="80" height="80"></image>';
+        //OrgChart.templates.myTemplate.edge = '<path  stroke="#686868" stroke-width="1px" fill="none" edge-id="[{id}][{child-id}]" d="M{xa},{ya} C{xb},{yb} {xc},{yc} {xd},{yd}"/>';
+        //OrgChart.templates.myTemplate.plus =
+        //     '<rect x="0" y="0" width="36" height="36" rx="12" ry="12" fill="#2E2E2E" stroke="#aeaeae" stroke-width="1"></rect>'
+        //    + '<line x1="4" y1="18" x2="32" y2="18" stroke-width="1" stroke="#aeaeae"></line>'
+        //    + '<line x1="18" y1="4" x2="18" y2="32" stroke-width="1" stroke="#aeaeae"></line>';
+        //OrgChart.templates.myTemplate.minus =
+        //     '<rect x="0" y="0" width="36" height="36" rx="12" ry="12" fill="#2E2E2E" stroke="#aeaeae" stroke-width="1"></rect>'
+        //    + '<line x1="4" y1="18" x2="32" y2="18" stroke-width="1" stroke="#aeaeae"></line>';
+        //OrgChart.templates.myTemplate.expandCollapseSize = 36;
+        //OrgChart.templates.myTemplate.nodeMenuButton = '<g style="cursor:pointer;" transform="matrix(1,0,0,1,93,15)" control-node-menu-id="{id}"><rect x="-4" y="-10" fill="#000000" fill-opacity="0" width="22" height="22"></rect><line x1="0" y1="0" x2="0" y2="10" stroke-width="2" stroke="#0890D3" /><line x1="7" y1="0" x2="7" y2="10" stroke-width="2" stroke="#0890D3" /><line x1="14" y1="0" x2="14" y2="10" stroke-width="2" stroke="#0890D3" /></g>';
+        //OrgChart.templates.myTemplate.exportMenuButton = '<div style="position:absolute;right:{p}px;top:{p}px; width:40px;height:50px;cursor:pointer;" control-export-menu=""><hr style="background-color: #0890D3; height: 3px; border: none;"><hr style="background-color: #0890D3; height: 3px; border: none;"><hr style="background-color: #0890D3; height: 3px; border: none;"></div>';
+        //OrgChart.templates.myTemplate.pointer = '<g data-pointer="pointer" transform="matrix(0,0,0,0,100,100)"><g transform="matrix(0.3,0,0,0.3,-17,-17)"><polygon fill="#0890D3" points="53.004,173.004 53.004,66.996 0,120"/><polygon fill="#0890D3" points="186.996,66.996 186.996,173.004 240,120"/><polygon fill="#0890D3" points="66.996,53.004 173.004,53.004 120,0"/><polygon fill="#0890D3" points="120,240 173.004,186.996 66.996,186.996"/><circle fill="#0890D3" cx="120" cy="120" r="30"/></g></g>';
+
+
+            OrgChart.templates.ana.ManagerName = '<text style="font-size: 18px;" fill="#ffffff" x="240" y="30" text-anchor="right">{val}</text>';
+            OrgChart.templates.ana.ManagerCodeNo = '<text style="font-size: 12px;" fill="#ffffff" x="240" y="50" text-anchor="right">{val}</text>';
+            OrgChart.templates.ana.OrganizationName = '<text text-overflow="ellipsis" style="font-size: 12px;" fill="#ffffff" x="125" y="100" text-anchor="middle">{val}</text>';
+            OrgChart.templates.ana.ManagerImage = '<image preserveAspectRatio="xMidYMid slice" xlink:href="{val}" x="5" y="5" width="80" height="80"></image>';
+                 //OrgChart.templates.ana.ManagerImage = '<clipPath id="ulaImg"><circle cx="100" cy="150" r="40"></circle></clipPath><image preserveAspectRatio="xMidYMid slice" clip-path="url(#ulaImg)" xlink:href="{val}" x="60" y="110"  width="80" height="80"></image>';
+            OrgChart.templates.ana.ManagerCodeID = '<input type="hidden" value="{val}" />';
+            OrgChart.templates.ana.ManagerIDNo = '<input type="hidden" value="{val}" />';
+                OrgChart.templates.ana.FullManagerName = '<input type="hidden" value="{val}" />';
+                 OrgChart.templates.ana.tags= '"{val}"'
+             //OrgChart.templates.ana.nodeMenuButton = '<g style="cursor:pointer;" transform="matrix(1,0,0,1,93,15)" control-node-menu-id="{id}"><rect x="240" y="50" fill="#000000" fill-opacity="0" width="22" height="22"></rect><line x1="0" y1="0" x2="0" y2="10" stroke-width="2" stroke="#0890D3" /><line x1="7" y1="0" x2="7" y2="10" stroke-width="2" stroke="#0890D3" /><line x1="14" y1="0" x2="14" y2="10" stroke-width="2" stroke="#0890D3" /></g>';
+
+            var editForm = function () {
+                this.nodeId = null;
+            };
+
+            editForm.prototype.init = function (obj) {
+                var that = this;
+                this.obj = obj;
+                //this.editForm = $("#editForm");
+                this.editForm = document.getElementById("editForm")
+                this.ManagerName =  $("#txtEmployeeNameAr");
+                this.OrganizationName = $("#lblOrganizationName");
+                this.ManagerCodeNo = $("#txtEmployeeCodeNo");
+                this.ManagerCodeID = $("#hdnFldEmployeeCodeID");
+                this.ManagerIDNo = $("#txtEmployeeIDNo");
+                this.OrganizationID = $("#hdnFldOrganizationID");
+                this.cancelButton = $("#btnCancel");
+                //this.saveButton = document.getElementById("btnSave");
+
+                this.saveButton = $("#btnSave");
+
+                this.cancelButton.on("click", function () {
+                    that.hide();
+                });
+
+                //this.saveButton.on("click", function () {
+                //    var node = chart.get(that.nodeId);
+                //    //node.ManagerName = that.nameInput.value;
+                //    //node.OrganizationName = that.titleInput.value;
+
+                //    chart.updateNode(node);
+                //    that.hide();
+                //});
+            };
+
+            editForm.prototype.show = function (nodeId) {
+                this.nodeId = nodeId;
+                var node = chart.get(nodeId);
+                this.ManagerName.val(node.ManagerName);
+                this.OrganizationName.html(node.OrganizationName);
+                this.ManagerCodeNo.val(node.ManagerCodeNo);
+                this.ManagerCodeID.val(node.ManagerCodeID);
+                this.ManagerIDNo.val(node.ManagerIDNo);
+                this.OrganizationID.val(node.id);
+                //this.FullManagerName.val(node.FullManagerName);
+
+                //console.log(node);
+
+                ShowModal("#divAssigningManagerToOrgModal");
+
+                //var left = document.body.offsetWidth / 2 - 150;
+                //this.editForm.style.display = "block";
+                //this.editForm.style.left = left + "px";
+                //var node = chart.get(nodeId);
+                //this.nameInput.value = node.ManagerName;
+                //this.titleInput.value = node.OrganizationName;
+            };
+
+            editForm.prototype.hide = function (showldUpdateTheNode) {
+                //this.editForm.style.display = "none";
+                ShowOrg();
+            };
+
+
+            var chart = new OrgChart(document.getElementById("divOrgChart"), {
+                mouseScrool: OrgChart.action.none,
+                layout: OrgChart.tree,
+                mouseScrool: OrgChart.action.scroll,
+                showYScroll: OrgChart.scroll.visible,
+            //showXScroll: OrgChart.scroll.visible,
+                 //scaleInitial: "1.5",
+                //scaleInitial: OrgChart.match.height,
+                //layout: OrgChart.match.bo,//OrgChart.match.height
+                // orientation: OrgChart.tree,
+                template: "ana",
+                enableSearch: false,
+                nodeMenu: {
+                    edit: { text: "@Resources.Globalization.EditText" },
+                    add: { text: "@Resources.Globalization.AddText" },
+                    remove: { text: "@Resources.Globalization.DeleteText" }
+                },
+             //   nodeMenu:{
+            	//svg:{text: "Add"},
+             // csv:{text: "Edit"},
+             // remove:{text: "Remove"}
+            //},
+                tags:{
+                    FirstLevel:{
+              	        nodeMenu:{
+                	        add: { text: "@Resources.Globalization.AddText" },
+                	        //set_target: { text: "Set Target for Emp", onClick: function(){ alert('set target') } }
+              	        }
+                    },
+                    SecondLevel:{
+              	        nodeMenu:{
+                            edit: { text: "@Resources.Globalization.EditText", },
+                	        //update_target_status: { text: "Edit Emp Details", onClick: function(){ alert('update target') }  }
+              	        }
+                    }
+                },
+                editUI: new editForm(),
+                nodeBinding: {
+                    ManagerName: "ManagerName",
+                    OrganizationName: "OrganizationName",
+                    ManagerImage : "ManagerImage",
+                    ManagerCodeNo: "ManagerCodeNo",
+                    ManagerCodeID: "ManagerCodeID",
+                    tags:"tags"
+                    //ManagerIDNo: "ManagerIDNo",
+                    //FullManagerName: "FullManagerName",
+                    //nodeMenu :"nodeMenuButton"
+                },
+                nodes : OrgNodes
+                //nodes: [
+                //    { id: 1, ManagerName: "فهد العبودي", FullManagerName: "فهد ناصر محمد العبودي" ,ManagerCodeNo:"90012454", OrganizationName: "الإدارة العامة للحاسب الآلي وتقنية المعلومات" , tags:["FirstLevel"], ManagerIDNo:"12345679891", ManagerCodeID:1, ManagerImage: "https://cdn.balkan.app/shared/empty-img-white.svg"  },
+                //    { id: 2, ManagerName: "عبدالعزيز الدوسري", FullManagerName: "عبدالعزيز خالد الوبران" , ManagerCodeNo:"90034000", OrganizationName: "إدارة الشتغيل والصيانة", tags:["SecondLevel"],  ManagerIDNo:"12345679891", ManagerCodeID:2, pid: 1 , ManagerImage: "http://localhost:32788/Content/Images/90025159.jpg" },
+                //    { id: 3, ManagerName: "ماجد العمري", FullManagerName: "ماجد ضحوي العمري" , ManagerCodeNo:"90034054", OrganizationName: "إدارة النظم والتطبيقات" , tags:["SecondLevel"], ManagerIDNo:"12345679891", ManagerCodeID:3 , pid: 1, ManagerImage: "http://localhost:32788/Content/Images/90025159.jpg" }
+                //]
+            });
+
+            }
+    </script>
+
+</body>
+</html>
+
+
+

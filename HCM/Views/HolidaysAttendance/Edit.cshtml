@@ -1,0 +1,275 @@
+﻿@model HCM.Models.HolidaysAttendanceViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.EditHolidayAttendanceText;
+}
+
+<script type="text/javascript">
+
+    function OkFunction() {
+    }
+
+    $(document).ready(function () {
+        BindHolidayAttendanceEmployees();
+
+        $("#btnAdd").click(function () {
+            var Employee = {};
+            if ($("#txtEmployeeCodeNo").val() != '') {
+
+                EmployeeCareerHistory = {
+                    EmployeeCareerHistoryID: $("#hdnFldEmployeeCareerHistoryID").val(),
+                    EmployeeCode: {
+                        EmployeeCodeID: $("#hdnFldEmployeeCodeID").val(),
+                        EmployeeCodeNo: $("#txtEmployeeCodeNo").val(),
+                        Employee: {
+                            FirstNameAr: $("#txtEmployeeNameAr").val()
+                        }
+                    },
+                    JoinDate: $("#txtHiringDate").val()
+                }
+
+            }
+
+            var HolidayAttendanceDetailRequest =
+            {
+
+                EmployeeCareerHistory: EmployeeCareerHistory,
+            };
+            var HolidayAttendanceRequest =
+         {
+             HolidayAttendanceID: '@Model.HolidayAttendanceID',
+             HolidayAttendanceDetailRequest: HolidayAttendanceDetailRequest,
+         };
+            $.ajax({
+                type: "POST"
+                //, dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                , contentType: "application/json; charset=utf-8"
+                , url: "@Url.Content("~/HolidaysAttendance/CreateHolidayAttendanceDetailDB")"
+                , data: JSON.stringify(HolidayAttendanceRequest)
+                , success: function () {
+                    AddingSuccess();
+                    BindHolidayAttendanceEmployees();
+                }
+            , error: function (xhr, status, error) {
+                AddingFailure();
+            }
+            });
+        });
+        $("#ddlHolidayType").on('change', function (event) {
+            var MaturityYearID = $("#ddlMaturityYear").val();
+            var HolidayTypeID = $("#ddlHolidayType").val();
+            if (MaturityYearID != '' && HolidayTypeID != '') {
+                $.ajax({
+                    type: "POST"
+                    , url: "@Url.Content("~/HolidaysAttendance/GetHolidayAttendanceDates/")" + MaturityYearID + "/" + HolidayTypeID
+                    , success: function (d) {
+                        debugger;
+                        if (d.IsExist) {
+                            $('#txtHolidaySettingStartDate').val(d.HolidaySettingStartDate);
+                            $('#txtHolidaySettingEndDate').val(d.HolidaySettingEndDate);
+                            $('#HolidaySetting_HolidaySettingID').val(d.HolidaySettingID);
+                        }
+                        else {
+                             $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationNoSelectDataText))');
+                        }
+                    }
+                , error: function (xhr, status, error) {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationThereIsNoHolidaySettingText))');
+                }
+                });
+            }
+            else
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationYearMustSelectText))');
+        });
+        });
+
+        function OnSuccess() {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function AddingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText))');
+        ResetEmployeeData();
+    }
+
+    function AddingFailure() {
+        OnFailure();
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+    function BindHolidayAttendanceEmployees() {
+        $("#tblHolidayAttendanceEmployees").DataTable({
+            destroy: true,
+            "searching": false,
+            "ordering": false,
+            "paging": false,
+            "ajax": {
+                "url": "/HolidaysAttendance/GetHolidayAttendanceEmployeesByHolidayAttendanceID/" + '@Model.HolidayAttendanceID',
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.Employee.EmployeeNameAr",
+                    "autowidth": true
+                }
+            ]
+        });
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.EditHolidayAttendanceText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EditHolidayAttendanceDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Edit", "HolidaysAttendance", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.HolidayAttendanceBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>
+                            <label> @Resources.Globalization.MaturityYearBalanceText </label>
+                        <td>
+                            <label> @Resources.Globalization.HolidayTypeText </label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(model => model.HolidaySetting.MaturityYear.MaturityYearID, new SelectList(new HCMBLL.MaturityYearsBalancesBLL().GetMaturityYearsBalances(), "MaturityYearID", "MaturityYear"), new { @id = "ddlMaturityYear", @style = "width:100%" })
+                            @Html.ValidationMessageFor(model => model.HolidaySetting.MaturityYear, "", new { @class = "text-danger" })
+                            @Html.HiddenFor(model => model.HolidayAttendanceID)
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.HolidaySetting.HolidayType.HolidayTypeID, new SelectList(new HCMBLL.HolidaysTypesBLL().GetHolidaysTypes(), "HolidayTypeID", "HolidayTypeName"), new { @id = "ddlHolidayType", @style = "width:100%" })
+                            @Html.ValidationMessageFor(model => model.HolidaySetting.HolidayType, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label> @Resources.Globalization.HolidaySettingStartDateText </label>
+                        <td>
+                            <label> @Resources.Globalization.HolidaySettingPeriodText </label>
+                        </td>
+                        <td>
+                            <label> @Resources.Globalization.HolidaySettingEndDateText </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.HolidaySetting.HolidaySettingStartDate, new
+                       {
+                           @class = "form-control",
+                           @id = "txtHolidaySettingStartDate",
+                           @readonly = "readonly",
+                           @Value = Model.HolidaySetting.HolidaySettingStartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                       })
+                            @Html.ValidationMessageFor(model => model.HolidaySetting.HolidaySettingStartDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @*<input type="number" id="txtHolidayAttendancePeriod" min="1" class="form-control" />*@
+                            @Html.TextBoxFor(model => model.HolidaySetting.HolidaySettingPeriod, new { @class = "form-control", @id = "txtHolidayAttendancePeriod", @type = "number", @readonly = "readonly" })
+                            @Html.HiddenFor(model => model.HolidaySetting.HolidaySettingID)
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.HolidaySetting.HolidaySettingEndDate, new
+                                                                       {
+                                                                           @class = "form-control",
+                                                                           @id = "txtHolidaySettingEndDate",
+                                                                           @readonly = "readonly",
+                                                                           @Value = ((DateTime)Model.HolidaySetting.HolidaySettingEndDate).ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                                                       })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Resources.Globalization.OrganizationParentText</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                     
+                        <td colspan="3">
+                            @Html.Partial("~/Views/Shared/_OrganizationStructurePopup.cshtml", new OrganizationStructureViewModel() { 
+                        OrganizationID=Model.Organization.OrganizationID,
+                        OrganizationName = Model.Organization.OrganizationName
+                       })
+                        </td>
+                    
+                        <td>
+                        
+                        </td>
+                        <td>
+                     
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+            <input id="btnAdd" type="button" class="btn btn-default" value="@Resources.Globalization.AddText" />
+            <table id="tblHolidayAttendanceEmployees" class="table table-responsive table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                        <td>@Resources.Globalization.EmployeeNameArText</td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "HolidaysAttendance"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@
+

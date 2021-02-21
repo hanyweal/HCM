@@ -1,0 +1,90 @@
+﻿@model HCM.Models.EmployeesVacationsOpeningBalancesViewModel
+@using HCMBLL.Enums;
+@using HCM.Models;
+<script type="text/javascript">
+    function AddVacationDaysOpeningBalance() {
+        debugger;
+        EmployeeCodeID = $('#hdnFldEmployeeCodeID').val();
+        OpeningDays = $('#txtVacationOpeningDays').val();
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/EmployeesVacationsOpeningBalances/AddVacationDaysOpeningBalance/")" + EmployeeCodeID + "/" + OpeningDays,
+            success: function (result) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+            },
+            error: function (xhr, status, error) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+            }
+        });
+    }
+
+    function BindEmployeeVacationsOpeningBalance(EmployeeCodeID) {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/EmployeesVacationsOpeningBalances/BindEmployeeVacationsOpeningBalance/")" + EmployeeCodeID + "/" + 1,
+            success: function (result) {
+                debugger;
+                $('#txtVacationOpeningDays').val(result.OpeningBalance);
+            }
+        });
+    }
+
+    function Reset() {
+         $('#txtVacationOpeningDays').val("");
+    }
+
+</script>
+<table id="tblEmployeeVacations" class="table table-responsive table-striped" style="width:50%">
+    <tbody>
+        <tr>
+            <td>
+                <div class="tab-content clearfix">
+                    <div id="TabValidVacations" class="tab-pane active padding-5">
+
+                        <table id="tblValidVacations" class="table table-responsive table-hover" style="width:100%">
+                            <tr>
+                                <td class="col-md-4">
+                                    <label class="control-label">@Resources.Globalization.CountOfVacationDaysText</label>
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.OpeningBalance, new { @class = "col-md-4 form-control", @id = "txtVacationOpeningDays", @type = "number" })
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-right">
+                                    <button type="submit" class="btn btn-default" name="ButtonType" value="AddOpeningBalance">@Resources.Globalization.SaveText</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div class="modal fade" id="divVacationDetailsModal">
+    <div class="modal-dialog" style="width:1100px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                </div>
+            </div>
+            <div class="modal-body">
+                <iframe id="iframeContent" style="width:100%;height:550px;border:none;"></iframe>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

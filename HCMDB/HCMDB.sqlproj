@@ -1,0 +1,341 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>HCMDB</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{92b61498-16e1-440f-b7b9-d7183176eab3}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>HCMDB</RootNamespace>
+    <AssemblyName>HCMDB</AssemblyName>
+    <ModelCollation>1033,CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+    <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+    <GenerateCreateScript>True</GenerateCreateScript>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="dbo\Views\" />
+    <Folder Include="dbo\Functions\" />
+    <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="dbo\Scripts" />
+    <Folder Include="Snapshots" />
+    <Folder Include="dbo\Scripts\Sprint for changes requests in promotions module" />
+    <Folder Include="dbo\Scripts\Sprints for night shift" />
+    <Folder Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12" />
+    <Folder Include="dbo\Scripts\Sprints for night shift\2 - sprint 05-12 to 18 -12" />
+    <Folder Include="dbo\Scripts\Sprints for night shift\3 - sprint 02-01 to 16 - 01" />
+    <Folder Include="dbo\Scripts\Sprints for night shift\4 - sprint 17-01 to 01- 02" />
+    <Folder Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12\First Notes and Issues" />
+    <Folder Include="dbo\Scripts\Sprints for night shift\2 - sprint 05-12 to 18 -12\First Notes and Issues" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\EvaluationPoints.sql" />
+    <Build Include="dbo\Tables\PromotionsRecordsStatus.sql" />
+    <Build Include="dbo\Tables\EvaluationsQuarters.sql" />
+    <Build Include="dbo\Tables\Qualifications.sql" />
+    <Build Include="dbo\Tables\EventTypes.sql" />
+    <Build Include="dbo\Tables\QualificationsDegrees.sql" />
+    <Build Include="dbo\Tables\ExactSpecializations.sql" />
+    <Build Include="dbo\Tables\QualificationsTypes.sql" />
+    <Build Include="dbo\Tables\Ranks.sql" />
+    <Build Include="dbo\Tables\PassengerOrdersOld.sql" />
+    <Build Include="dbo\Tables\RanksCategories.sql" />
+    <Build Include="dbo\Tables\RanksTicketsClasses.sql" />
+    <Build Include="dbo\Tables\StopWorks.sql" />
+    <Build Include="dbo\Tables\Scholarships.sql" />
+    <Build Include="dbo\Tables\ScholarshipsActions.sql" />
+    <Build Include="dbo\Tables\ScholarshipsDetails.sql" />
+    <Build Include="dbo\Tables\Allowances.sql" />
+    <Build Include="dbo\Tables\ScholarshipsTypes.sql" />
+    <Build Include="dbo\Tables\SenioritysPointsDeclarations.sql" />
+    <Build Include="dbo\Tables\SickVacationsTypes.sql" />
+    <Build Include="dbo\Tables\AllowancesCalculationTypes.sql" />
+    <Build Include="dbo\Tables\SMSLogs.sql" />
+    <Build Include="dbo\Tables\SportsSeasons.sql" />
+    <Build Include="dbo\Tables\FinancialYears.sql" />
+    <Build Include="dbo\Tables\StopWorksCategories.sql" />
+    <Build Include="dbo\Tables\Genders.sql" />
+    <Build Include="dbo\Tables\StopWorksTypes.sql" />
+    <Build Include="dbo\Tables\GeneralSpecializations.sql" />
+    <Build Include="dbo\Tables\TempNormalVacationsBalances.sql" />
+    <Build Include="dbo\Tables\EmployeesDegreesUpgrades.sql" />
+    <Build Include="dbo\Tables\GovernmentDeductionsTypes.sql" />
+    <Build Include="dbo\Tables\GovernmentFunds.sql" />
+    <Build Include="dbo\Tables\TicketsClasses.sql" />
+    <Build Include="dbo\Tables\GovernmentFundsTypes.sql" />
+    <Build Include="dbo\Tables\Transfers.sql" />
+    <Build Include="dbo\Tables\HolidaysAttendance.sql" />
+    <Build Include="dbo\Tables\TransfersTypes.sql" />
+    <Build Include="dbo\Tables\HolidaysAttendanceDetails.sql" />
+    <Build Include="dbo\Tables\TTTTempNormalVacationsBalances.sql" />
+    <Build Include="dbo\Tables\RanksCategoriesVacationsBalances.sql" />
+    <Build Include="dbo\Tables\Vacations.sql" />
+    <Build Include="dbo\Tables\HolidaysSettings.sql" />
+    <Build Include="dbo\Tables\VacationsActions.sql" />
+    <Build Include="dbo\Tables\HolidaysTypes.sql" />
+    <Build Include="dbo\Tables\VacationsDetails.sql" />
+    <Build Include="dbo\Tables\InternshipScholarships.sql" />
+    <Build Include="dbo\Tables\Teachers.sql" />
+    <Build Include="dbo\Tables\VacationsTypes.sql" />
+    <Build Include="dbo\Tables\InternshipScholarshipsDetails.sql" />
+    <Build Include="dbo\Tables\InternshipScholarshipsTypes.sql" />
+    <Build Include="dbo\Tables\Jobs.sql" />
+    <Build Include="dbo\Tables\JobsAllowances.sql" />
+    <Build Include="dbo\Tables\JobsCategories.sql" />
+    <Build Include="dbo\Tables\JobsCategoriesQualifications.sql" />
+    <Build Include="dbo\Tables\JobsGeneralGroups.sql" />
+    <Build Include="dbo\Tables\JobsGroups.sql" />
+    <Build Include="dbo\Tables\AllowancesAmountTypes.sql" />
+    <Build Include="dbo\Tables\JobsKinds.sql" />
+    <Build Include="dbo\Tables\Assignings.sql" />
+    <Build Include="dbo\Tables\KSACities.sql" />
+    <Build Include="dbo\Tables\AssigningsReasons.sql" />
+    <Build Include="dbo\Tables\PromotionCardsPrinting.sql" />
+    <Build Include="dbo\Tables\KSARegions.sql" />
+    <Build Include="dbo\Tables\AssigningsTypes.sql" />
+    <Build Include="dbo\Tables\Lenders.sql" />
+    <Build Include="dbo\Tables\BasicSalaries.sql" />
+    <Build Include="dbo\Tables\MaritalStatus.sql" />
+    <Build Include="dbo\Tables\Branches.sql" />
+    <Build Include="dbo\Tables\MaturityYearsBalances.sql" />
+    <Build Include="dbo\Tables\BusinessCategories.sql" />
+    <Build Include="dbo\Tables\BusinessRules.sql" />
+    <Build Include="dbo\Tables\NormalVacationsTypes.sql" />
+    <Build Include="dbo\Tables\BusinessSubCategories.sql" />
+    <Build Include="dbo\Tables\OrganizationsJobs.sql" />
+    <Build Include="dbo\Tables\CareersDegrees.sql" />
+    <Build Include="dbo\Tables\InsteadDeportations.sql" />
+    <Build Include="dbo\Tables\OrganizationsJobsStatus.sql" />
+    <Build Include="dbo\Tables\CareersHistoryTypes.sql" />
+    <Build Include="dbo\Tables\OrganizationsStructures.sql" />
+    <Build Include="dbo\Tables\ChangeDetailsLogs.sql" />
+    <Build Include="dbo\Tables\OverTimes.sql" />
+    <Build Include="dbo\Tables\ChangeLogs.sql" />
+    <Build Include="dbo\Tables\OverTimesDays.sql" />
+    <Build Include="dbo\Tables\Countries.sql" />
+    <Build Include="dbo\Tables\OverTimesDetails.sql" />
+    <Build Include="dbo\Tables\Delegations.sql" />
+    <Build Include="dbo\Tables\PassengerOrders.sql" />
+    <Build Include="dbo\Tables\DelegationsDetails.sql" />
+    <Build Include="dbo\Tables\PassengerOrdersItineraries.sql" />
+    <Build Include="dbo\Tables\DelegationsKinds.sql" />
+    <Build Include="dbo\Tables\PassengerOrdersTypes.sql" />
+    <Build Include="dbo\Tables\DelegationsTypes.sql" />
+    <Build Include="dbo\Tables\Periods.sql" />
+    <Build Include="dbo\Tables\Employees.sql" />
+    <Build Include="dbo\Tables\PromotionsCandidatesAddedWays.sql" />
+    <Build Include="dbo\Tables\EmployeesAllowances.sql" />
+    <Build Include="dbo\Tables\PromotionsDecisions.sql" />
+    <Build Include="dbo\Tables\EmployeesCareersHistory.sql" />
+    <Build Include="dbo\Tables\PromotionsJobsCategories.sql" />
+    <Build Include="dbo\Tables\EmployeesCodes.sql" />
+    <Build Include="dbo\Tables\PromotionsPeriods.sql" />
+    <Build Include="dbo\Tables\EmployeesEvaluations.sql" />
+    <Build Include="dbo\Tables\PromotionsRecords.sql" />
+    <Build Include="dbo\Tables\EmployeesEvaluationsDetails.sql" />
+    <Build Include="dbo\Tables\PromotionsRecordsActionsTypes.sql" />
+    <Build Include="dbo\Tables\EmployeesExperiences.sql" />
+    <Build Include="dbo\Tables\PromotionsRecordsEmployees.sql" />
+    <Build Include="dbo\Tables\EmployeesQualifications.sql" />
+    <Build Include="dbo\Tables\PromotionsRecordsEmployeesEducationsDetails.sql" />
+    <Build Include="dbo\Tables\EmployeesTypes.sql" />
+    <Build Include="dbo\Tables\PromotionsRecordsEmployeesEvaluationsDetails.sql" />
+    <Build Include="dbo\Tables\EmployeesVacationsOpeningBalances.sql" />
+    <Build Include="dbo\Tables\PromotionsRecordsEmployeesSeniorityDetails.sql" />
+    <Build Include="dbo\Tables\EndOfServices.sql" />
+    <Build Include="dbo\Tables\PromotionsRecordsJobsVacancies.sql" />
+    <Build Include="dbo\Tables\EndOfServicesCases.sql" />
+    <Build Include="dbo\Tables\PromotionsRecordsLogs.sql" />
+    <Build Include="dbo\Tables\EndOfServicesReasons.sql" />
+    <Build Include="dbo\Tables\PromotionsRecordsQualificationsKinds.sql" />
+    <Build Include="dbo\Tables\EndOfServicesVacations.sql" />
+    <Build Include="dbo\Tables\PromotionsRecordsQualificationsPoints.sql" />
+    <Build Include="dbo\Views\rndView.sql" />
+    <Build Include="dbo\Views\vwEmployeesCodes.sql" />
+    <Build Include="dbo\Views\vwCurrentEmployeesCareer.sql" />
+    <Build Include="dbo\Views\vwEmployeesCareersHistory.sql" />
+    <Build Include="dbo\Views\vwEmployeesQualifications.sql" />
+    <Build Include="dbo\Views\vwEmployeesCareers.sql" />
+    <Build Include="dbo\Views\vwOrganizationsJobs.sql" />
+    <Build Include="dbo\Views\vwPassengerOrdersDetails.sql" />
+    <Build Include="dbo\Functions\RandFn.sql" />
+    <Build Include="dbo\Functions\fn_PickRandom.sql" />
+    <Build Include="dbo\Functions\fnGetCandidatesAlreadyPromotedCountByPromotionPeriodID.sql" />
+    <Build Include="dbo\Functions\fnGetCurrentQualification.sql" />
+    <Build Include="dbo\Functions\fnGetModDaysFromTotalDays.sql" />
+    <Build Include="dbo\Functions\fnGetModMonthsFromTotalDays.sql" />
+    <Build Include="dbo\Functions\fnGetPeriodBetweenTwoDates.sql" />
+    <Build Include="dbo\Functions\fnGetPreviousConsumedDelegationByEmployeeCodeID.sql" />
+    <Build Include="dbo\Functions\fnGetPreviousConsumedVacationByEmployeeCodeID.sql" />
+    <Build Include="dbo\Functions\fnGetPromotionRecordCountByPromotionPeriodID.sql" />
+    <Build Include="dbo\Functions\fnGetYearsFromTotalDays.sql" />
+    <Build Include="dbo\Functions\GetEvaluationPointID.sql" />
+    <Build Include="dbo\Functions\GetHiringDateByEmployeeCodeID.sql" />
+    <Build Include="dbo\Functions\fnSplit.sql" />
+    <Build Include="dbo\Functions\fnGetLastEmployeeQualificationByEmployeeCodeID.sql" />
+    <Build Include="dbo\Functions\FnGetChildren.sql" />
+    <Build Include="dbo\Functions\FnGetParent.sql" />
+    <Build Include="dbo\Stored Procedures\spGetPassengerOrdersByEmployeeCodeIDOld.sql" />
+    <Build Include="dbo\Stored Procedures\spGetPassengerOrderByPassengerOrderIDOld.sql" />
+    <Build Include="dbo\Stored Procedures\spStopWorksByEndedStatusAndEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetChangeLogs.sql" />
+    <Build Include="dbo\Stored Procedures\spEndOfServices.sql" />
+    <Build Include="dbo\Stored Procedures\spGetActivePromotionPeriod.sql" />
+    <Build Include="dbo\Stored Procedures\spGetAssigningByAssigningID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetAssigningsByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetCandidatesByPromotionRecordID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetCurrentCareerByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetCurrentJobPeriodByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetDelegationByDelegationID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetDelegationDetailsByDelegationID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetDelegationDetailsByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetDeservedEmployeesToBeIncludedPromotion.sql" />
+    <Build Include="dbo\Stored Procedures\spGetEmployeeAllowancesByEndOfServiceID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetEmployeeByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetEmployeeCareerHistoryByEndOfServiceID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetEmployeeDetailsByEndOfServiceID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetPromotionPeriodByPromotionPeriodID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetEmployeeQualificationsByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetEmployeesAllowancesByEmployeeAllowanceID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetEmployeesAllowancesByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetEndOfServiceByEndOfServiceID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetEvaluationByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetExperienceByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetGovernmentFundsByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetGovernmentFundsByGovernmentFundsID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetInsteadDeportationByID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetGovernmentFundsDeactivationByGovernmentFundsID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetInternshipScholarshipByInternshipScholarshipID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetInternshipScholarshipDetailsByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetInternshipScholarshipDetailsByInternshipScholarshipID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetJobsVacanciesByPromotionRecordID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetJobVacanciesByRankAndCategory.sql" />
+    <Build Include="dbo\Stored Procedures\spGetJobVacanciesByRankID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetJoiningPeriodBasedOnActivePromotionPeriod.sql" />
+    <Build Include="dbo\Stored Procedures\spGetLenderByLenderID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetLendersByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetOverTimeDetailsByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetOverTimesByOverTimeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetOverTimesDetailsByOverTimeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetPassengerOrderByPassengerOrderID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetPassengerOrdersByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetPassengerOrdersItinerariesByPassengerOrderID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetPromotionRecordByPromotionRecordID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetPromotionRecordsByPromotionPeriodID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetPromotionRecordsCount.sql" />
+    <Build Include="dbo\Stored Procedures\spGetPromotionsDecisions.sql" />
+    <Build Include="dbo\Stored Procedures\spGetQualificationByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetQualificationsByPromotionRecordID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetScholarshipByID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetScholarshipByScholarshipDetailID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetScholarshipsByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetSickVacationsPaidAmount.sql" />
+    <Build Include="dbo\Stored Procedures\spGetStopWorkByID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetTransfersByTransferID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetVacationByVacationDetailID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetVacationCreationRecordByVacationID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetVacationsByEmployeeCodeID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetVacationsByEndOfServiceID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetVacationsByVacationID.sql" />
+    <Build Include="dbo\Stored Procedures\spUndoPromotionRecordClosing.sql" />
+    <None Include="dbo\Scripts\Task-76 - toggleButton on PromotionPreference for 2 extraPoints.sql" />
+    <None Include="dbo\Scripts\Task-98 - Apply Privileges on Employee Evaluations Page.sql" />
+    <None Include="dbo\Scripts\Task-99 - Apply Privileges on Employee Experiences Page.sql" />
+    <None Include="dbo\Scripts\Task-100 - Apply Privileges on Employee Qualifications Page.sql" />
+    <None Include="dbo\Scripts\Sprint for changes requests in promotions module\Task-119- ByExamResult.sql" />
+    <None Include="dbo\Scripts\Sprint for changes requests in promotions module\Task-109- vacation report date-duration.sql" />
+    <None Include="dbo\Scripts\Task-134 - Contractor Basic Salaries for Salary Definition WebAPI.sql" />
+    <None Include="dbo\Scripts\vwActualEmployeesBasedOnAssignings.sql" />
+    <Build Include="dbo\Tables\SectorsTypes.sql" />
+    <Build Include="dbo\Tables\EmployeeExperiencesWithDetails.sql" />
+    <None Include="dbo\Scripts\Task-137 - Contractor Basic Salaries New Fields and Index.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12\Task - 226 - Ending the last assigning ... promoted.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12\Task - 200 - Vacation Exam ... .sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12\Task 199 Vacation Marraige ....sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12\Task - 229 - report -- finished assigning.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12\Task - 219 - End Lender.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12\Task - 203 - Show Vacation Normal Type Report.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12\Task - 221 - Private Promotion.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12\First Notes and Issues\Task - 257 - report -- Employee Experiences Details.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12\Task - 243 -Changing in validation balance.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12\First Notes and Issues\Task - 261 - Higher Promotion.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\3 - sprint 02-01 to 16 - 01\Adding new action in vacation actions - Edit action.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\4 - sprint 17-01 to 01- 02\Task - 313 - Creation of new table EServicesProxies.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\4 - sprint 17-01 to 01- 02\Task - 318 - Service to Cancel EServicesProxies By System.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dbo\Scripts\Task-94 - One change in business of fetching the candidates in promotion record.sql" />
+    <None Include="dbo\Scripts\Task-18 - Adding job name when the manager wants to place any employee under him.sql" />
+    <None Include="dbo\Scripts\Sprint for changes requests in promotions module\Task-114- Changes in jobs vacancies report.sql" />
+    <None Include="dbo\Scripts\Sprint for changes requests in promotions module\Task-116-Changes in include candidates by Job category.sql" />
+    <None Include="dbo\Scripts\Sprint for changes requests in promotions module\Task-117-Saving new two columns in PromotionsRecordsEmployees table.sql" />
+    <None Include="dbo\Scripts\TempBasicSalaryTable.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12\Task - 201 - Creation of a new e service for normal vacation requests.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\2 - sprint 05-12 to 18 -12\Task - 241 -Creation of new page to manager to take decision for e vacatio.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\2 - sprint 05-12 to 18 -12\Task - 236 - 239 GovernmentFunds.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\2 - sprint 05-12 to 18 -12\Task -251 -spGetExperienceByEmployeeCodeIDsql.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\2 - sprint 05-12 to 18 -12\Task - 266 - Sending SMS to employee after authorized person decision on h.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\1 - sprint 21-11 to 04 -12\First Notes and Issues\Task - 243 -Changing in validation balance.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\2 - sprint 05-12 to 18 -12\Task - 209 - Adding new field to employee name.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\3 - sprint 02-01 to 16 - 01\Task - 269 - Adding business validation when the employee will transfare .sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\2 - sprint 05-12 to 18 -12\First Notes and Issues\Task - 284 - Changing the authorized person decisio.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\2 - sprint 05-12 to 18 -12\First Notes and Issues\Task 296 Removing the old jobs.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\3 - sprint 02-01 to 16 - 01\Task - 309 - Cancellation of any pending  e vacation request in case of b.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\4 - sprint 17-01 to 01- 02\Task - 317 - Creation of database structure _design_ of jobs operations.sql" />
+    <None Include="dbo\Scripts\Task - 272 - Ending the internal assigning by manager of organization in e services.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\4 - sprint 17-01 to 01- 02\Task - 330 - Adding history of managers of organizations.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\4 - sprint 17-01 to 01- 02\Task - 271 - Creation of direct action _new internal assigning_ from e ser.sql" />
+    <None Include="dbo\Scripts\Sprints for night shift\4 - sprint 17-01 to 01- 02\Task -  323 - Update jobOrganization-jobsOperation SP.sql" />
+  </ItemGroup>
+</Project>

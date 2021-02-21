@@ -1,0 +1,446 @@
+﻿@model HCM.Models.DelegationsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.EditDelegationText;
+}
+
+<script type="text/javascript">
+
+    function OkFunction() {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Delegations/PrintDelegation/")' + '@Model.DelegationID');
+        ShowModal("#divReportModal");
+    }
+
+    function BindingDelegationType(DelegationType) {
+        if (DelegationType == '@Convert.ToInt32(DelegationsTypesEnum.Internal)') {
+            $('.internal').show();
+            $('.external').hide();
+        }
+        else {
+            $('.internal').hide();
+            $('.external').show();
+        }
+    }
+
+    $(document).ready(function () {
+
+        var DelegationType = '@Model.DelegationType.DelegationTypeID';
+        BindingDelegationType(DelegationType);
+        BindDelegationEmployees();
+        $("#btnAdd").click(function () {
+            var Employee = {};
+            if ($("#txtEmployeeCodeNo").val() != '') {
+                Employee = {
+                    EmployeeCareerHistory: {
+                        EmployeeCareerHistoryID: $("#hdnFldEmployeeCareerHistoryID").val(),
+                        EmployeeCode: {
+                            EmployeeCodeID: $("#hdnFldEmployeeCodeID").val(),
+                            EmployeeCodeNo: $("#txtEmployeeCodeNo").val(),
+                            Employee: {
+                                FirstNameAr: $("#txtEmployeeNameAr").val()
+                            }
+                        }
+                    },
+                    IsPassengerOrderCompensation: $('#chkIsPassengerOrderCompensation').prop("checked")
+                }
+            }
+
+            var ObjToPassForAdd =
+            {
+                DelegationID: '@Model.DelegationID',
+                DelegationStartDate: $('#txtDelegationStartDate').val(),
+                DelegationEndDate: $('#txtDelegationEndDate').val(),
+                DelegationPeriod: $('#txtDelegationPeriod').val(),
+                DelegationDistancePeriod: $('#txtDelegationDistancePeriod').val(),
+                DelegationKind: { DelegationKindID: $('#ddlDelegationKinds').val() },
+                DelegationDetailRequest: Employee
+            };
+
+            $.ajax({
+                type: "POST"
+                //, dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                , contentType: "application/json; charset=utf-8"
+                , url: "@Url.Content("~/Delegations/CreateDelegationDetailDB")"
+                , data: JSON.stringify(ObjToPassForAdd)
+                , success: function () {
+                    AddingSuccess();
+                }
+                , error: function (xhr, status, error) {
+                    AddingFailure();
+                }
+            });
+        });
+
+        (function () {
+            var previous;
+
+            $('#ddlDelegationKinds').on('focus', function () {
+
+                previous = this.value;
+
+            }).change(function () {
+
+                //alert(previous);
+                var rowsCount = GetRowsCount("#tblDelegationEmployees");
+                if (rowsCount > 0) {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.WarningCannotChangeBecauseEmployeeAdded))');
+                    this.value = previous;
+                }
+                else {
+                    previous = this.value;
+                }
+                //alert(rowsCount);
+
+            });
+        })();
+
+        $('#ddlDelegationTypes').on('change', function (event) {
+            var DelegationType = $('#ddlDelegationTypes').val();
+            BindingDelegationType(DelegationType);
+        });
+
+        //$('#txtDelegationPeriod').on('change', function (event) {
+        //    GetDelegationEndDate();
+        //});
+
+        var DelegationKind = $('#ddlDelegationKinds').val();
+        if (DelegationKind == '@Convert.ToInt32(DelegationsKindsEnum.Tasks)') {
+            $('#tblDelegationBalance').show();
+        }
+        else {
+            $('#tblDelegationBalance').hide();
+        }
+
+        GetCities();
+    });
+
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function AddingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText))');
+
+        // rebind tha data
+        BindDelegationEmployees();
+
+        //reset tha fields
+        $("#txtDelegationBalance").val('');
+        $("#txtDelegationRemainingBalance").val('');
+        $("#txtDelegationConsumedBalance").val('');
+        ResetEmployeeData();
+    }
+
+    function AddingFailure() {
+        OnFailure();
+    }
+
+    function GetDelegationEndDate() {
+
+        @*var DelegationStartDate = new Date($('#txtDelegationStartDate').val()),
+            DelegationPeriod = parseInt("0" + $('#txtDelegationPeriod').val(), 10) - 1;;
+
+        if (!isNaN(DelegationStartDate.getTime())) {
+            DelegationStartDate.setDate(DelegationStartDate.getDate() + DelegationPeriod);
+            $('#txtDelegationEndDate').val($.datepicker.formatDate('yy/mm/dd', DelegationStartDate));
+        }
+        else {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationInvalidDateText))');
+        }*@
+    }
+    
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+        GetDelegationBalance(EmployeeCodeID);
+    }
+
+    function GetDelegationBalance(EmployeeCodeID) {
+        $.ajax({
+            type: "POST"
+            //, dataType: "json"
+             , url: "@Url.Content("/Delegations/GetDelegationBalanceByEmployeeCodeID/")" + EmployeeCodeID + "/" + $('#txtDelegationStartDate').val() + "/" + $('#txtDelegationStartDate').val()
+            , success: function (d) {
+                $("#txtDelegationBalance").val(d.data.EmployeeDelegation.DelegationBalance);
+                $("#txtDelegationConsumedBalance").val(d.data.EmployeeDelegation.DelegationConsumedBalance);
+                $("#txtDelegationRemainingBalance").val(d.data.EmployeeDelegation.DelegationRemainingBalance);
+            }
+        , error: function (xhr, status, error) {
+            alert(error.message);
+        }
+        });
+    }
+
+    function BindDelegationEmployees() {
+        $("#tblDelegationEmployees").DataTable({
+            destroy: true,
+            "searching": false,
+            "ordering": false,
+            "paging": false,
+            "ajax": {
+                "url": "/Delegations/GetDelegationEmployeesByDelegationID/" + '@Model.DelegationID',
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.Employee.EmployeeNameAr",
+                    "autowidth": true
+                },
+                        {
+                            "data": "IsPassengerOrderCompensation",
+                            "autowidth": false,
+                            "render": RenderCheckBox
+                        }
+            ]
+        });
+    }
+
+    function GetCities() {
+        var KSARegionID = $("#ddlKSARegions").val();
+        $.ajax({
+            type: "get"
+            , dataType: "json"
+            , url: "/KSACities/GetKSACities/" + KSARegionID
+            , success: function (d) {
+                $("#ddlKSACities").html("");
+                var cities = d.data;
+                $.each(cities, function (i, city) {
+                    $("#ddlKSACities").append($('<option></option>').val(city.KSACityID).html(city.KSACityName));
+                });
+
+                if ('@Model.KSACity.KSACityID' > 0) {
+                    $('#ddlKSACities').val('@Model.KSACity.KSACityID');
+                }
+
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.EditDelegationText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EditDelegationDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @*<a id="OpenBusinessConditions">
+                        <span class="glyphicon glyphicon-print" title="اضغط لمعرفة الشروط الخاصة لتعديل تكليف"></span>
+                    </a>*@
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Edit", "Delegations", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.DelegationBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.DelegationsTypes, new { @class = "control-label" })
+                            @Html.HiddenFor(model => model.DelegationID)
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.DelegationsKinds, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.DelegationDistancePeriod, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(model => model.DelegationType.DelegationTypeID, new SelectList(new HCMBLL.DelegationsTypesBLL().GetDelegationsTypes(), "DelegationTypeID", "DelegationTypeName"), new { @id = "ddlDelegationTypes", @style = "width:100%" })
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.DelegationKind.DelegationKindID, new SelectList(new HCMBLL.DelegationsKindsBLL().GetDelegationsKinds(), "DelegationKindID", "DelegationKindName"), new { @id = "ddlDelegationKinds", @style = "width:100%" })
+                            @*@Html.HiddenFor(model => model.DelegationKind.DelegationKindID, new { @val = $('')})*@
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.DelegationDistancePeriod, new { @class = "form-control", @id = "txtDelegationDistancePeriod", @type = "number", @value = "1" })
+                            @Html.ValidationMessageFor(model => model.DelegationDistancePeriod, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.DelegationStartDate, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.DelegationPeriod, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.DelegationEndDate, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.DelegationStartDate, new
+                                                                                {
+                                                                                    @class = "form-control",
+                                                                                    @id = "txtDelegationStartDate",
+                                                                                    @readonly = "readonly",
+                                                                                    @Value = Model.DelegationStartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                                                                })
+                            @Html.ValidationMessageFor(model => model.DelegationStartDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @*<input type="number" id="txtDelegationPeriod" min="1" class="form-control" />*@
+                            @Html.TextBoxFor(model => model.DelegationPeriod, new { @class = "form-control", @id = "txtDelegationPeriod", @type = "number", @readonly = "readonly" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.DelegationEndDate, new
+                                                                                {
+                                                                                    @class = "form-control",
+                                                                                    @id = "txtDelegationEndDate",
+                                                                                    @readonly = "readonly",
+                                                                                    @Value = Model.DelegationEndDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                                                                })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.DelegationReason, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            @Html.TextAreaFor(model => model.DelegationReason, new { @class = "form-control", @id = "txtDelegationReason" })
+                        </td>
+                    </tr>
+                    <tr class="internal">
+                        <td>
+                            @Html.LabelFor(model => model.KSARegions, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.KSACities, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="internal">
+                        <td>
+                            @Html.DropDownListFor(model => model.KSARegion.KSARegionID, new SelectList(new HCMBLL.KSARegionsBLL().GetKSARegions(), "KSARegionID", "KSARegionName"), new { @id = "ddlKSARegions", @style = "width:100%", @onchange = "GetCities()" })
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.KSACity.KSACityID, new SelectList(new HCMBLL.KSACitiesBLL().GetKSACities(), "KSACityID", "KSACityName"), new { @id = "ddlKSACities", @style = "width:100%" })
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="external">
+                        <td>
+                            @Html.LabelFor(model => model.Countries, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="external">
+                        <td>
+                            @Html.DropDownListFor(model => model.Country.CountryID, new SelectList(new HCMBLL.CountriesBLL().GetCountries(), "CountryID", "CountryName"), new { @id = "ddlCountries", @style = "width:100%" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+            <table id="tblDelegationBalance" class="table table-responsive table-condensed table-striped">
+                <tr>
+                    <td>
+                        <label class="control-label">@Resources.Globalization.DelegationBalanceText</label>
+                    </td>
+                    <td>
+                        <label class="control-label">@Resources.Globalization.DelegationConsumedBalanceText</label>
+                    </td>
+                    <td>
+                        <label class="control-label">@Resources.Globalization.DelegationRemainingBalanceText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="text" id="txtDelegationBalance" class="form-control" readonly="readonly" />
+                    </td>
+                    <td>
+                        <input type="text" id="txtDelegationConsumedBalance" class="form-control" readonly="readonly" />
+                    </td>
+                    <td>
+                        <input type="text" id="txtDelegationRemainingBalance" class="form-control" readonly="readonly" />
+                    </td>
+                </tr>
+            </table>
+
+            <div class="row">
+                <div class="col-md-10">
+                    @Html.CheckBoxFor(c => c.DelegationDetailRequest.IsPassengerOrderCompensation, new { @id = "chkIsPassengerOrderCompensation" })
+                    @Html.LabelFor(c => c.DelegationDetailRequest.IsPassengerOrderCompensation, Resources.Globalization.IsPassengerOrderCompensation)
+                </div>
+                <div class="col-md-2 text-right">
+                    <input id="btnAdd" type="button" class="btn btn-default" value="@Resources.Globalization.AddText" />
+                </div>
+
+            </div>
+
+
+            <table id="tblDelegationEmployees" class="table table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                        <td>@Resources.Globalization.EmployeeNameArText</td>
+                        <td>@Resources.Globalization.IsPassengerOrderCompensation؟</td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                @*<input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />*@
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Delegations"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@
+
+
+
+

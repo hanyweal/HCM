@@ -1,0 +1,111 @@
+﻿
+
+@{
+    ViewBag.Title = Resources.Globalization.TransfersText;
+}
+
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+
+<script>
+
+    function PrintTransfer(TransferID) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Transfers/PrintTransfer/")' + TransferID);
+        ShowModal("#divReportModal");
+    }
+    
+    $(document).ready(function () {
+        
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+        
+        $("#tblEmployeeTransfer").DataTable({
+            //"destroy":true,
+              dom: 'Bfrtip',
+            "ajax": {
+                "url": "/Transfers/GetTransfers",
+                "type": "get",
+                "datatype": "json"
+            },
+              "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "TransferID",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.Employee.EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "TransferType.TransferType",
+                    "autowidth": true
+                },
+                {
+                    "data": "TransferDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "TransferID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "Transfers")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" /></a>'
+                    }
+                },
+                {
+                    "data": "TransferID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "Transfers")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                    }
+                },
+                {
+                    "data": "TransferID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = 'PrintTransfer(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" /></a>'
+                    }
+                },
+            ]
+        });
+    });
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchEmployeeTransferDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblEmployeeTransfer" class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.SequenceNoText</td>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                    <td>@Resources.Globalization.TransferTypeText</td>
+                    <td>@Resources.Globalization.TransferDateText</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+

@@ -1,0 +1,419 @@
+﻿@model HCM.Models.EServicesProxiesViewModel
+@using HCMBLL;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums;
+@using HCM.Models;
+
+@{
+    Layout = "~/Views/Shared/_EServiecsLayout.cshtml";
+    ViewBag.Title = Resources.Globalization.EServicesProxiesText;
+}
+
+<script type="text/javascript">
+
+    var chart = null;
+    var EServiceTypeID;
+    var totalNodes = 0;
+    var IsCallbackRegister = false;
+    extentedFuncOnClickService = "BindOrgChart";        // defined in _EServicesTypes.cshtml
+
+    $(document).ready(function () {
+        $('#divValidation').hide();        
+        $('#tblActiveProxy').hide();
+        //ScrollToDiv('divTop');
+
+        $('#txtStartDate').on('focus', function () { }).calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            //onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]'
+        });
+
+        $("#btnAdd").click(function () {
+
+            var obj =
+            {
+                StartDate: $('#txtStartDate').val(),
+                FromEmployee: { EmployeeID: 0, EmployeeCodeID: '@Model.WindowsEmployeeCode.EmployeeCodeID' },
+                ToEmployee: { EmployeeID: 0, EmployeeCodeID: $('#hdnFldEmployeeCodeID').val() },
+                Notes: $('#txtNotes').val(),
+                EServiceType: { EServiceTypeID: EServiceTypeID }
+            };
+
+            $.ajax({
+                type: "POST",
+                //, dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                contentType: "application/json; charset=utf-8",
+                url: "@Url.Content("~/EServicesProxies/CreateEServiceProxy")",
+                data: JSON.stringify(obj),
+                success: OnSuccess,
+                error: OnFailure
+            });
+        });
+
+    });
+
+    function BindOrgChart(eServiceTypeID) {
+        $("#divLoaderOrg").show();
+        EServiceTypeID = eServiceTypeID;
+        chart = null;
+
+        BindActiveProxy();
+        //$('.service').removeClass('shadow_green');
+        //$('.' + eServiceTypeID).addClass('shadow_green');
+
+        $.ajax({
+            type: "GET",
+            url: "@Url.Content("/EServicesProxies/GetAllEmployeesManagersByOrganizationID/")" + EServiceTypeID,
+            success: function (d) {
+                totalNodes = d.total;
+                LoadOrgChart(d.data);
+            },
+            error: OnFailure
+        });
+    }
+
+    function BindActiveProxy() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Content("/EServicesProxies/GetActiveEServiceProxy/")" + EServiceTypeID,
+            success: function (d) {
+                //console.log('d', d.data);                
+                if (d.data.ToEmployee) {
+                    $('#tblActiveProxy').show();
+                    $('#txtEServiceProxyToEmployeeName').val(d.data.ToEmployee.EmployeeNameAr);
+                    $('#txtEServiceProxyStartDate').val(RenderDate(d.data.StartDate));
+                }
+                else {
+                    $('#tblActiveProxy').hide();
+                }
+            },
+            error: OnFailure
+        });
+    }
+
+    function OpenPopupToCreateProxy(EmployeeCodeID) {
+
+        // No action needed for Top Manager of his organization
+        if ('@Model.WindowsEmployeeCode.EmployeeCodeID' == EmployeeCodeID) {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationEServicesProxiesLoginManagerIsSameAsProxyEmployeeText), "")');
+            return;
+        }
+
+        //var nodeDetail = chart.get(EmployeeCodeID);        
+        //console.log('nodeDetail', nodeDetail);
+
+        $('#hdnFldEmployeeCodeID').val(EmployeeCodeID);
+        GetEmployeeData(EmployeeCodeID);    // this defined in _EmployeesPopup
+        SetEmployeePopupToReadonly();       // this defined in _EmployeesPopup
+        $('#txtStartDate').val('');
+        $('#txtNotes').val('');
+        ShowModal("#divToCreateProxy");
+    }
+
+    function OnSuccess(data) {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "CallbackAfterSuccess")');
+        //console.log('success data', data);
+        if (chart) {
+            chart.updateNode(data.node);
+            DestroyModal('#divToCreateProxy');
+            BindActiveProxy();
+        }
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');        
+        //$('#tblActiveProxy').hide();
+    }
+
+    function CallbackAfterSuccess() {
+
+    }
+
+    function LoadOrgChart(data) {
+        $('#divValidation').hide();
+
+        OrgChart.SEARCH_PLACEHOLDER = '@Resources.Globalization.SearchText';
+        OrgChart.RES.IT_IS_LONELY_HERE_LINK = "";
+
+        OrgChart.templates.cool = Object.assign({}, OrgChart.templates.ana);
+        OrgChart.templates.cool.defs = '<filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="cool-shadow"><feOffset dx="0" dy="4" in="SourceAlpha" result="shadowOffsetOuter1" /><feGaussianBlur stdDeviation="10" in="shadowOffsetOuter1" result="shadowBlurOuter1" /><feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.1 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1" /><feMerge><feMergeNode in="shadowMatrixOuter1" /><feMergeNode in="SourceGraphic" /></feMerge></filter>';
+
+        OrgChart.templates.cool.size = [310, 190];        
+        OrgChart.templates.cool.node = '<rect filter="url(#cool-shadow)" x="0" y="0" height="190" width="310" fill="#ffffff" stroke-width="1" stroke="#eeeeee" rx="10" ry="10"></rect>' // main rectangle
+            + '<rect fill="#ffffff" x="10" y="10" width="200" height="100" rx="10" ry="10" filter="url(#cool-shadow)"></rect>' // name rectangle
+            + '<rect stroke="#eeeeee" stroke-width="1" x="10" y="120" width="220" fill="#ffffff" rx="10" ry="10" height="60"></rect>'   // auth rectangle
+            + '<rect stroke="#eeeeee" stroke-width="1" x="240" y="120" width="60" fill="#ffffff" rx="10" ry="10" height="60"></rect>'   // button rect
+            + '<text style="font-size: 11px;" fill="#afafaf" x="220" y="145">@Resources.Globalization.EmployeeJobNameText</text > ';
+            //+ '<image xlink:href="http://mic-app-test:8034/content/images/done.jpg" x="20" y="65" width="32" height="32"></image>';
+
+        OrgChart.templates.cool.img = '<clipPath id="{randId}">'
+            + '<rect fill="#ffffff" stroke="#039BE5" stroke-width="5" x="220" y="10" rx="10" ry="10" width="80" height="100"></rect>'
+            + '</clipPath>'
+            + '<image preserveAspectRatio="xMidYMid slice" clip-path="url(#{randId})" xlink:href="{val}" x="220" y="10" width="80" height="100"></image>'
+            + '<rect fill="none" stroke="#F57C00" stroke-width="2" x="220" y="10" rx="10" ry="10" width="80" height="100"></rect>';
+
+        OrgChart.templates.cool.orgname = '<text style="font-size: 12px;" text-overflow="ellipsis" fill="#afafaf" x="205" y="30" width="190">{val}</text>';
+        OrgChart.templates.cool.name = '<text style="font-size: 11px;" fill="#000" x="205" y="50">{val}</text>';
+        OrgChart.templates.cool.CurrentJobName = '<text style="font-size: 12px;" text-overflow="ellipsis" fill="#F57C00" x="220" y="165">{val}</text>';
+        OrgChart.templates.cool.IsProxyAssignedImg = '<image xlink:href="{val}" x="20" y="65" width="32" height="32"></image>';//'<rect x="180" y="130" width="40" height="40" fill="#ffffff" stroke="#F57C00" rx="10" ry="10"></rect>'        
+        OrgChart.templates.cool.btnImg = '<g class="svg-btn" style="cursor:pointer;"><rect x="250" y="130" width="40" height="40" fill="#F57C00" rx="10" ry="10"></rect>'
+            + '<image xlink:href="{val}" x="262" y="142" width="16" height="16"></image></g>'
+        OrgChart.templates.cool.IsYourAuthText = '<text style="font-size: 14px;" fill="#F57C00" x="200" y="85" >{val}</text>';
+        OrgChart.templates.cool.svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="background-color:#F2F2F2;display:block;" width="{w}" height="{h}" viewBox="{viewBox}">{content}</svg>';
+
+        //OrgChart.MIZED_LAYOUT_ALL_NODES = false;
+
+        chart = new OrgChart(document.getElementById("divOrgChart"), {
+            lazyLoading: true,
+            scaleInitial: 0.65,//OrgChart.match.height, 1.4, //
+            showXScroll: OrgChart.scroll.visible,
+            showYScroll: OrgChart.scroll.visible,
+            mouseScrool: OrgChart.action.zoom,
+            nodeMouseClick: OrgChart.action.none,
+            layout: OrgChart.tree,//.mixed,
+            enableSearch: true,
+            sticky: false,
+            //orientation: OrgChart.orientation.top,
+            toolbar: {
+                fullScreen: true,
+                zoom: true,
+                fit: true,
+                expandAll: true,
+                layout: true
+            },
+            //tags: {
+            //    "subLevels0": {
+            //        subLevels: 0
+            //    },
+            //    "subLevels1": {
+            //        subLevels: 1
+            //    },
+            //    "subLevels2": {
+            //        subLevels: 2
+            //    },
+            //    "subLevels3": {
+            //        subLevels: 3
+            //    },
+            //    "subLevels4": {
+            //        subLevels: 4
+            //    }
+            //},
+            //collapse: {
+            //    level: 2,
+            //    allChildren: true
+            //},
+            template: 'cool',
+            nodeBinding: {
+                id: 'id',
+                pid: 'pid',
+                orgname: 'OrganizationName',
+                name: 'EmployeeName',
+                CurrentJobName: 'CurrentJobName',
+                //authpersonimg: 'Picture',
+                IsProxyAssignedImg : 'IsProxyAssignedImg',
+                btnImg: 'btnImg', 
+                img: 'Picture',
+                //NameRect: 'nodeBg',
+            }
+        });
+
+        chart.on('init', function (sender) {
+            $("#divLoaderOrg").hide();
+        });
+
+        console.log('data', data);
+        chart.load(data);
+        chart.fit();
+
+        if (data.length <= 0) {
+            $('#divValidation').show();
+            $("#divLoaderOrg").hide(); 
+            ScrollToDiv('divTop');
+        }
+        else {
+            ScrollToDiv('divOrgChart');
+        }
+
+        chart.on('redraw', function () {
+
+            $('.svg-btn').unbind('click').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                var nodeDetail = chart.get(this.parentNode.getAttribute('node-id'));
+                OpenPopupToCreateProxy(nodeDetail.EmployeeCodeID);//(this.parentNode.getAttribute('node-id'));
+            });
+
+        });
+
+    }
+
+</script>
+
+<div id="divTop" class="alert alert-success">
+    <p style="font-size:larger">@Resources.Globalization.EServicesProxiesText</p>
+</div>
+
+<div id="divMain" class="panel panel-info" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EServicesProxiesDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @*@Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.EServicesAuthorizations })*@
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("CreateEServiceProxy", "EServicesProxies", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }, new { id = "frmEServicesProxy" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <div class="row">
+                <div class="col-md-2">
+                    <b>@Resources.Globalization.OrganizationNameText</b>
+                </div>
+                <div class="col-md-5">
+                    @Html.Action("GetWindowsUserOrganizationStructures", "BaseEServices")
+                </div>
+                <div class="col-md-5"></div>
+            </div>
+
+            <hr />
+
+            <span class="control-label"><b>@Resources.Globalization.ServiceTypeText</b></span>
+            <div class="row">
+                <div class="col-md-8">
+                    @Html.Partial("~/Views/Shared/_EServicesTypes.cshtml", Model.EServiceTypes)
+                    @*@foreach (var item in Model.EServiceTypes)
+        {
+            <a onclick="BindOrgChart('@item.EServiceTypeID');">
+                <div class="col-md-3">
+                    <div class="wrapper_service">
+                        <div id="form_centent_service" class="service @item.EServiceTypeID">
+                            <div class="fade_In_service">
+                                @item.EServiceTypeName
+                            </div>
+                            <div id="form_footer_service">
+                                <img src='@string.Format("/Content/Images/{0}.png", @item.EServiceTypeName)' height="64" width="64" />
+                                <input type="hidden" name="hdnEServiceTypeID" value="@item.EServiceTypeID" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        }*@
+                </div>
+                <div class="col-md-4">
+
+                </div>
+            </div>
+            
+            <br />
+            <table id="tblActiveProxy" class="table table-condensed table-striped">
+                <tr>
+                    <th colspan="2">
+                        <span class="control-label"><b>@Resources.Globalization.ActiveEServiceProxyText</b></span>
+                    </th>
+                </tr>
+                <tr>
+                    <td>
+                        @Resources.Globalization.EServicesProxiesToEmployeeNameText
+                    </td>
+                    <td>
+                        @Resources.Globalization.StartDateText
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input id="txtEServiceProxyToEmployeeName" type="text" class="form-control" readonly />
+                    </td>
+                    <td>
+                        <input id="txtEServiceProxyStartDate" type="text" class="form-control" readonly />
+                    </td>
+                </tr>
+            </table> 
+
+            <hr />
+            <div id="divValidation" class="alert alert-info">
+                @Resources.Globalization.NoOrganizationFoundInProxiesText
+            </div>
+
+            <div id="divOrgChart" style="width:100%; height:700px" />
+
+        }
+    </div>
+</div>
+
+<div id="divLoaderOrg" class="overlay">
+    <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+</div>
+
+<input type="hidden" id="hdnFldEmployeeCodeID" />
+<div class="modal fade" id="divToCreateProxy">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content modal-lg">
+            <div class="modal-body">
+                <div class="panel panel-default" style="padding:0px">
+                    <div class="panel-heading">
+                        @Resources.Globalization.EServicesProxiesCreateText
+                    </div>
+                    <div class="panel-body">
+                        @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new HCM.Models.EmployeesViewModel() { })
+                        
+                        <table class="table table-responsive table-condensed table-striped" style="margin-bottom:0px;">
+                            <tr>
+                                <td class="col-md-4">
+                                    @Html.LabelFor(model => model.StartDate, new { @class = "control-label" })
+                                </td>
+                                <td class="col-md-4">
+                                </td>
+                                <td class="col-md-4">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @id = "txtStartDate", @readonly = "readonly" })
+                                </td>
+                                <td class="col-md-4">
+                                </td>
+                                <td class="col-md-4">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12" colspan="3">
+                                    @Html.LabelFor(model => model.Notes, new { @class = "control-label" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-md-12" colspan="3">
+                                    @Html.TextAreaFor(model => model.Notes, new { @class = "form-control", @id = "txtNotes" })
+                                </td>
+                            </tr>                            
+                        </table>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-md-9"></div>
+                            <div class="col-md-3">
+                                <input id="btnAdd" type="submit" class="btn btn-default" value="@Resources.Globalization.AddText" />
+                                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*<div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>*@
+        </div>
+    </div>
+</div>

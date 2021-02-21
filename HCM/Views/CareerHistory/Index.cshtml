@@ -1,0 +1,373 @@
+﻿@using HCM.Classes.Enums
+
+@{
+    ViewBag.Title = Resources.Globalization.CareerHistoryText;
+    bool IsCreatePermission = new HCM.Classes.Helpers.PSAHelper().IsUpdatePermission(Request.Url.ToString());
+    bool IsUpdatePermission = new HCM.Classes.Helpers.PSAHelper().IsUpdatePermission(Request.Url.ToString());
+    bool IsDeletePermission = new HCM.Classes.Helpers.PSAHelper().IsUpdatePermission(Request.Url.ToString());
+}
+
+<script type="text/javascript">
+
+    var LocalEmployeeCodeID = 0;
+    $(document).ready(function () {
+
+        extentedFuncForEmployeePopup = "BindCareerHistory";
+        extentedFuncForEmployeePopupReset = "ResetCareerHistory";
+
+        GetCareerHistoryTypes();
+        GetCareerDegrees();
+
+        $("#btnSave").click(function () {
+            var ObjToPassForAdd =
+            {
+                EmployeeCodeID: $('#hdnFldEmployeeCodeID').val(),
+                EmployeeCareerHistoryID: $('#hdnFldEmployeeCareerHistoryID').val(),
+                CareerDegreeID: $('#ddlCareersDegrees').val(),
+                CareerHistoryTypeID: $('#ddlCareersHistoryTypes').val(),
+                JoinDate: $('#txtJoinDate').val(),
+                OrganizationJobID: $('#hdnFldOrganizationJobID').val(),
+            };
+
+            $.ajax({
+                type: "POST",
+                //, dataType: "json"  :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                contentType: "application/json; charset=utf-8",
+                url: "@Url.Content("~/CareerHistory/Save")",
+                data: JSON.stringify(ObjToPassForAdd),
+                success: OnSuccess,
+                error: OnFailure
+            });
+        });
+
+        $("#btnUpdateDegree").click(function () { 
+
+            $.ajax({
+                type: "POST",
+                //, dataType: "json"  :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                contentType: "application/json; charset=utf-8",
+                url: "@Url.Content("~/CareerHistory/UpdateCareerDegree/")" + $('#hdnFldEmployeeCareerHistoryID').val() + "/" + $('#ddlCareersDegrees').val(),
+                //data: JSON.stringify(ObjToPassForAdd),
+                success: function (result) {
+                    DestroyModal('#divOrganizationsJobsModal');
+                    OnSuccess();
+                },
+                error: OnFailure
+            });
+
+        });
+
+    });
+
+    function RemoveCareerHistory(EmployeeCareerHistoryID) {
+
+        var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val();
+        $.confirm({
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            content: '@Resources.Globalization.CareerHistoryConfirmationText',
+            animation: 'zoom',
+            boxWidth: '280px',
+            useBootstrap: false,
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $.ajax({
+                            type: 'POST',
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            url: "@Url.Content("~/CareerHistory/DeleteEmployeeCareerHistoryByEmployeeCareerHistoryID/")" + EmployeeCareerHistoryID + "/" + EmployeeCodeID,
+                            success: function (result) {
+                                BindCareerHistory(EmployeeCodeID);
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+                            },
+                            error: function (xhr, status, error) {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+                            }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+    }
+
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText),"OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error"))');
+    }
+
+    function OkFunction() {
+        //DestroyModal("#divOrganizationsJobsModal");
+        BindCareerHistory(LocalEmployeeCodeID);
+    }
+
+    function ResetCareerHistory() {
+        $('#tblCareerHistory').DataTable().clear().draw();
+    }
+
+    function BindCareerHistory(EmployeeCodeID) {
+
+        EmployeeCodeID = $('#hdnFldEmployeeCodeID').val();
+        if (EmployeeCodeID) {
+            $('#tblCareerHistory').DataTable({
+                "autoWidth": false,
+                "ordering": false,
+                "ajax": {
+                    "url": "/Employees/GetCareerHistoryByEmployeeCodeID",
+                    "type": "get",
+                    "data": { id: EmployeeCodeID },
+                    "datatype": "json"
+                },
+                "columns": [
+                    {
+                        "data": "CareerHistoryType.CareerHistoryTypeName",
+                        "autoWidth": false,
+                    },
+                    {
+                        "data": "OrganizationJob.OrganizationStructure.OrganizationName",
+                        "autoWidth": false,
+                    },
+                    {
+                        "data": "OrganizationJob.Rank.RankName",
+                        "autoWidth": false
+                    },
+                    {
+                        "data": "OrganizationJob.Job.JobName",
+                        "autoWidth": false
+                    },
+                    {
+                        "data": "OrganizationJob.JobNo",
+                        "autoWidth": false
+                    },
+                    {
+                        "data": "CareerDegree.CareerDegreeName",
+                        "autoWidth": false
+                    },
+                    {
+                        "data": "JoinDate",
+                        "autoWidth": false,
+                        "render": RenderDate
+                    },
+                    {
+                        "data": "IsActive",
+                        "autowidth": false,
+                        "render": RenderCheckBox
+                    },
+                    {
+                        "data": "OrganizationJob.OrganizationJobID",
+                        "autowidth": false,
+                        "visible": '@IsUpdatePermission' == 'False' ? false : true,
+                        "render": function (data, type, row) {
+                            var hh = "divOrganizationsJobsModal";
+                            var lnk = '<a onClick="OpenModalToUpdateDegree(' + row.EmployeeCareerHistoryID + ',' + row.JoinDate.replace(/\/Date\((.*?)\)\//gi, "$1") + ', ' + '\'' + row.OrganizationJob.JobNo + '\'' + ', ' + '\'' + row.OrganizationJob.OrganizationStructure.OrganizationName + '\'' + ', ' + '\'' + row.OrganizationJob.Job.JobName + '\'' + ', ' + '\'' + row.OrganizationJob.Rank.RankName + '\'' + ', ' + row.OrganizationJob.OrganizationJobID + ', ' + row.CareerHistoryType.CareerHistoryTypeID + ', ' + row.CareerDegree.CareerDegreeID + ')"><span class="glyphicon glyphicon-saved" /></a>';
+                            return lnk;
+                        }
+                    },
+                    {
+                        "data": "OrganizationJob.OrganizationJobID",
+                        "autowidth": false,
+                        "visible": '@IsUpdatePermission' == 'False' ? false : true,
+                        "render": function (data, type, row) {
+                            var hh = "divOrganizationsJobsModal";
+                            var lnk = '<a onClick="ShowJobInfo(' + row.EmployeeCareerHistoryID + ',' + row.JoinDate.replace(/\/Date\((.*?)\)\//gi, "$1") + ', ' + '\'' + row.OrganizationJob.JobNo + '\'' + ', ' + '\'' + row.OrganizationJob.OrganizationStructure.OrganizationName + '\'' + ', ' + '\'' + row.OrganizationJob.Job.JobName + '\'' + ', ' + '\'' + row.OrganizationJob.Rank.RankName + '\'' + ', ' + row.OrganizationJob.OrganizationJobID + ', ' + row.CareerHistoryType.CareerHistoryTypeID + ', ' + row.CareerDegree.CareerDegreeID + ')"><span class="glyphicon glyphicon-edit" /></a>';
+                            return lnk;
+                        }
+                    },
+                    {
+                        "data": "EmployeeCareerHistoryID",
+                        "autowidth": false,
+                        "render": function (data, type, row) {
+                            Url = 'RemoveCareerHistory(' + data + ');';
+                            return '<a id="btnRemove" onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                        }
+                    },
+                ],
+                destroy: true,
+            });
+        }
+    }
+    
+    function OpenOrganizationsJobsModalToCreate() {
+        ResetOrganizationJob();
+        $("#hdnFldEmployeeCareerHistoryID").val(0);
+        $("#txtJoinDate").val('');
+        $("#ddlCareersHistoryTypes").val('');
+        $("#ddlCareersDegrees").val('');
+        $('#divTitle').html('');
+
+        $("#txtJoinDate").removeAttr('disabled');
+        $("#txtJoinDate").attr('style', 'background-color:white;');
+        $("#ddlCareersHistoryTypes").removeAttr('disabled'); 
+        ReadOnlyOrganizationsJobs(false);        // this func defined in _OrganizationJobPopup.cshtml
+        $("#btnSave").show();
+        $("#btnUpdateDegree").hide();
+
+        ShowModal("#divOrganizationsJobsModal");
+    }
+
+    function ShowJobInfo(EmployeeCareerHistoryID, JoinDate, JobNo, OrganizationName, JobName, RankName, OrganizationJobID, CareerHistoryTypeID, CareerDegreeID) {
+        $("#hdnFldEmployeeCareerHistoryID").val(EmployeeCareerHistoryID);
+        $("#txtJoinDate").val(RenderDate(JoinDate));
+        $("#ddlCareersHistoryTypes").val(CareerHistoryTypeID);
+        $("#ddlCareersDegrees").val(CareerDegreeID);
+        $("#hdnFldOrganizationJobID").val(OrganizationJobID);
+        $("#txtJobName").val(JobName);
+        $("#txtOrganizationName").val(OrganizationName);
+        $("#txtJobNo").val(JobNo);
+        $("#txtRankName").val(RankName);
+        
+        $("#txtJoinDate").removeAttr('disabled');
+        $("#txtJoinDate").attr('style', 'background-color:white;');
+        $("#ddlCareersHistoryTypes").removeAttr('disabled'); 
+        ReadOnlyOrganizationsJobs(false);        // this func defined in _OrganizationJobPopup.cshtml
+        $("#btnSave").show();
+        $("#btnUpdateDegree").hide();
+
+        $('#divTitle').html('@Resources.Globalization.CareerHistoryUpdateTitleText');
+        ShowModal("#divOrganizationsJobsModal");
+    }
+
+    function OpenModalToUpdateDegree(EmployeeCareerHistoryID, JoinDate, JobNo, OrganizationName, JobName, RankName, OrganizationJobID, CareerHistoryTypeID, CareerDegreeID) {
+        $("#hdnFldEmployeeCareerHistoryID").val(EmployeeCareerHistoryID);
+        $("#txtJoinDate").val(RenderDate(JoinDate));
+        $("#ddlCareersHistoryTypes").val(CareerHistoryTypeID);
+        $("#ddlCareersDegrees").val(CareerDegreeID);
+        $("#hdnFldOrganizationJobID").val(OrganizationJobID);
+        $("#txtJobName").val(JobName);
+        $("#txtOrganizationName").val(OrganizationName);
+        $("#txtJobNo").val(JobNo);
+        $("#txtRankName").val(RankName);
+
+        $("#txtJoinDate").attr('disabled', 'true');
+        $("#txtJoinDate").removeAttr('style');
+        $("#ddlCareersHistoryTypes").attr('disabled', 'true'); 
+        ReadOnlyOrganizationsJobs(true);        // this func defined in _OrganizationJobPopup.cshtml
+        $("#btnSave").hide();
+        $("#btnUpdateDegree").show();
+
+        $('#divTitle').html('@Resources.Globalization.CareerHistoryUpgradeDegreeTitleText');
+        ShowModal("#divOrganizationsJobsModal");
+    }
+
+    function GetCareerHistoryTypes() {
+        $.ajax({
+            type: "get"
+            , dataType: "json"
+            , url: "/CareerHistory/GetCareersHistoryTypes"
+            , success: function (d) {
+                $("#ddlCareersHistoryTypes").html("");
+                var types = d.data;
+                $.each(types, function (i, type) {
+                    $("#ddlCareersHistoryTypes").append($('<option></option>').val(type.CareerHistoryTypeID).html(type.CareerHistoryTypeName));
+                });
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function GetCareerDegrees() {
+        $.ajax({
+            type: "get"
+           , dataType: "json"
+           , url: "/CareerHistory/GetCareersDegrees"
+           , success: function (d) {
+               $("#ddlCareersDegrees").html("");
+               var types = d.data;
+               $.each(types, function (i, type) {
+                   $("#ddlCareersDegrees").append($('<option></option>').val(type.CareerDegreeID).html(type.CareerDegreeName));
+               });
+           }
+           , error: function (xhr, status, error) {
+               alert(error.message);
+           }
+        });
+    }
+
+</script>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <span class="control-label">@Resources.Globalization.EmployeesText</span>
+    </div>
+    <div class="panel-body">
+        @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new HCM.Models.EmployeesViewModel() { })
+    </div>
+</div>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <span class="control-label">@Resources.Globalization.CareerHistoryText</span>
+    </div>
+    <div class="panel-body">
+        @if (IsCreatePermission)
+        { 
+            <a onclick="OpenOrganizationsJobsModalToCreate();">@Resources.Globalization.CreateNewText</a>
+            <br />
+        }
+        <table id="tblCareerHistory" class="table table-responsive table-hover dataTable" style="width:100%">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.CareerHistoryTypeNameText</td>
+                    <td>@Resources.Globalization.OrganizationNameText</td>
+                    <td>@Resources.Globalization.RankNameText</td>
+                    <td>@Resources.Globalization.JobNameText</td>
+                    <td>@Resources.Globalization.JobNoText</td>
+                    <td>@Resources.Globalization.CareerDegreeNameText</td>
+                    <td>@Resources.Globalization.JoinDateText</td>
+                    <td>@Resources.Globalization.IsCurrentCareerHistoryText</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="divOrganizationsJobsModal">
+    <div class="modal-dialog" style="width:1100px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    <span id="divTitle"></span>
+                </div>
+            </div>
+            <div class="modal-body">
+                @Html.Partial("~/Views/Shared/_RecordOfCareerHistoryData.cshtml")
+                <table style="width:100%">
+                    <tr>
+                        <td class="col-md-4">
+                        </td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4">
+                            <input type="button" id="btnSave" value="@Resources.Globalization.SaveText" class="btn btn-default" />
+                            <input type="button" id="btnUpdateDegree" value="@Resources.Globalization.UpdateDegreeText" class="btn btn-default" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+
+
+

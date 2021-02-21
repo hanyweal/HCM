@@ -1,0 +1,144 @@
+﻿
+@{
+    ViewBag.Title = Resources.Globalization.LendersText;
+}
+
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+
+<script>
+
+    function PrintLender(LenderID) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Lenders/PrintLender/")' + LenderID);//ReportViewerASPX
+        ShowModal("#divReportModal");
+    }
+
+    $(document).ready(function () {
+
+        @*$.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }*@
+
+        $("#tblLender").DataTable({
+              dom: 'Bfrtip',
+            "ajax": {
+                "url": "/Lenders/GetLenders",
+                "type": "get",
+                "datatype": "json"
+            },
+             "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "LenderStartDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "LenderEndDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "LenderOrganization",
+                    "autowidth": true
+                },
+                {
+                    "data": "KSACity",
+                    "autowidth": true
+                },
+                {
+                    "data": "IsFinished",
+                    "autowidth": true,
+                    "render": RenderCheckBox
+                },
+                 {
+                     "data": "LenderID",
+                     "autowidth": true,
+                     "render": function (data, type, row) {
+                         Url = '@Url.Action("Details", "Lenders")' + "/" + data;
+                         return '<a href="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                     },
+                    "orderable": false
+                 },
+                {
+                    "data": "LenderID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "Lenders")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    },
+                    "orderable": false
+                },
+                {
+                    "data": "LenderID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "Lenders")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    },
+                    "orderable": false
+                },
+                {
+                    "data": "LenderID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("End", "Lenders")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-ban-circle" title="' + '@Resources.Globalization.EndLendersText' + '"/></a>'
+                    },
+                    "orderable": false
+                },
+                {
+                    "data": "LenderID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = 'PrintLender(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" title="' + '@Resources.Globalization.PrintText' + '"/></a>'
+                    },
+                    "orderable": false
+                },
+            ]
+        });
+    });
+</script>
+
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchLenderDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblLender" class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                    <td>@Resources.Globalization.LenderStartDateText</td>
+                    <td>@Resources.Globalization.LenderEndDateText</td>
+                    <td>@Resources.Globalization.LenderOrganizationText</td>
+                    <td>@Resources.Globalization.KSACityText</td>
+                    <td>@Resources.Globalization.LenderIsFinishedText</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+

@@ -1,0 +1,37 @@
+﻿--GO
+--CREATE TABLE [dbo].[JobsOperationsTypes](
+--	[JobOperationTypeID] [int] IDENTITY(1,1) NOT NULL,
+--	[JobOperationTypeName] [nvarchar](500) NULL,
+-- CONSTRAINT [PK_JobsOperationsTypes] PRIMARY KEY CLUSTERED 
+--(
+--	[JobOperationTypeID] ASC
+--)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+--) ON [PRIMARY]
+--GO
+--ALTER TABLE [dbo].[OrganizationsJobs]  WITH CHECK ADD  CONSTRAINT [FK_OrganizationsJobs_OrganizationsJobs] FOREIGN KEY([OrganizationJobParentID])
+--REFERENCES [dbo].[OrganizationsJobs] ([OrganizationJobID])
+--GO
+--ALTER TABLE [dbo].[OrganizationsJobs] CHECK CONSTRAINT [FK_OrganizationsJobs_OrganizationsJobs]
+--GO
+--ALTER TABLE OrganizationsJobs
+--ADD OrganizationJobParentID INT NULL,
+--JobOperationTypeID INT NULL,
+--JobOperationDate DATE NULL,
+--IsActive BIT NULL
+--GO 
+--ALTER TABLE [dbo].[OrganizationsJobs]  WITH CHECK ADD  CONSTRAINT [FK_OrganizationsJobs_JobsOperationsTypes] FOREIGN KEY([JobOperationTypeID])
+--REFERENCES [dbo].[JobsOperationsTypes] ([JobOperationTypeID])
+--GO
+--INSERT INTO [JobsOperationsTypes]
+--VALUES (N'إستحداث'),(N'تحوير'),(N'خفض'),(N'رفع '),(N'نقل'),(N'إلغاء'),(N'تعديل')
+--GO
+--UPDATE OJ SET OJ.IsActive=1,OJ.JobOperationDate=GETDATE(),OJ.JobOperationTypeID=1 FROM OrganizationsJobs OJ 
+--GO
+--ALTER TABLE OrganizationsJobs
+--ALTER COLUMN JobOperationTypeID INT NOT NULL
+--GO
+--ALTER TABLE OrganizationsJobs
+--ALTER COLUMN JobOperationDate DATE NOT NULL
+--GO
+--ALTER TABLE OrganizationsJobs
+--ALTER COLUMN IsActive BIT NOT NULL

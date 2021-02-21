@@ -1,0 +1,279 @@
+﻿@model HCM.Models.OrganizationStructureViewModel
+@using HCM.Models
+@{
+    ViewBag.Title = Resources.Globalization.OrganizationStructureText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool IsCreatePermission = new HCM.Classes.Helpers.PSAHelper().IsCreatePermission(Request.Url.ToString());
+    bool IsUpdatePermission = new HCM.Classes.Helpers.PSAHelper().IsUpdatePermission(Request.Url.ToString());
+    bool IsDeletePermission = new HCM.Classes.Helpers.PSAHelper().IsDeletePermission(Request.Url.ToString());
+}
+<style>
+      .ui-autocomplete-input {
+          /*border: none;
+    font-size: 14px;
+    width: 300px;
+    height: 24px;
+    margin-bottom: 5px;
+    padding-top: 2px;
+    border: 1px solid #DDD !important;
+    padding-top: 0px !important;*/
+          z-index: 1511;
+          position: relative;
+      }
+
+      .ui-menu .ui-menu-item a {
+          font-size: 12px;
+      }
+
+      .ui-autocomplete {
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 1510 !important;
+          float: left;
+          display: none;
+          min-width: 160px;
+          width: 160px;
+          padding: 4px 0;
+          margin: 2px 0 0 0;
+          list-style: none;
+          background-color: #ffffff;
+          border-color: #ccc;
+          border-color: rgba(0, 0, 0, 0.2);
+          border-style: solid;
+          border-width: 1px;
+          -webkit-border-radius: 2px;
+          -moz-border-radius: 2px;
+          border-radius: 2px;
+          -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+          -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+          -webkit-background-clip: padding-box;
+          -moz-background-clip: padding;
+          background-clip: padding-box;
+          *border-right-width: 2px;
+          *border-bottom-width: 2px;
+      }
+
+      .ui-menu-item > a.ui-corner-all {
+          display: block;
+          padding: 3px 15px;
+          clear: both;
+          font-weight: normal;
+          line-height: 18px;
+          color: #555555;
+          white-space: nowrap;
+          text-decoration: none;
+      }
+
+      .ui-state-hover, .ui-state-active {
+          color: #ffffff;
+          text-decoration: none;
+          background-color: #0088cc;
+          border-radius: 0px;
+          -webkit-border-radius: 0px;
+          -moz-border-radius: 0px;
+          background-image: none;
+      }
+</style>
+
+<script type="text/javascript">
+
+    var chart;
+    $(document).ready(function () {
+        
+        //$(document).on('show.bs.modal', '.modal', function () {
+        //    var zIndex = 1040 + (10 * $('.modal:visible').length);
+        //    $(this).css('z-index', zIndex);
+        //    setTimeout(function () {
+        //        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+        //    }, 0);
+        //});
+
+        //$(document).on('show.bs.modal', '.modal', function () {
+        //    $('.modal:visible').length && $(document.body).addClass('modal-open');
+        //});
+
+        $("#divLoaderOrg").show();
+
+        $.ajax({
+            type: "GET",
+            url: "@Url.Content("/OrganizationStructure/GetOrganizationChart/")",
+            success: function (d) {
+                BindOrgChart(d.data);
+            },
+            error: OnFailure
+        });
+
+    });
+
+    function BindOrgChart(data) {
+
+        OrgChart.templates.diva.field_0 = '<text width="185" style="font-size: 14px;" fill="#ffffff" x="100" y="125" text-anchor="middle">{val}</text>';
+        OrgChart.templates.diva.field_1 = '<text width="185" style="font-size: 12px;" fill="#ffffff" x="100" y="145" text-anchor="middle">{val}</text>';
+
+        //OrgChart.MIZED_LAYOUT_ALL_NODES = false;
+        chart = new OrgChart(document.getElementById("divOrgChart"), {
+            lazyLoading:true,
+            scaleInitial: 0.7,//OrgChart.match.height,
+            showXScroll: OrgChart.scroll.visible,
+            showYScroll: OrgChart.scroll.visible,
+            mouseScrool: OrgChart.action.zoom,
+            nodeMouseClick: OrgChart.action.none,
+            layout: OrgChart.tree,//.mixed,
+            enableSearch: true,
+            sticky: false,
+            toolbar: {
+                fullScreen: true,
+                zoom: true,
+                fit: true,
+                expandAll: true,
+                layout: true
+            },
+            nodeMenu: {
+                AddChild: {
+                    icon: OrgChart.icon.add(18, 18, '#039BE5'),
+                    text: "@Resources.Globalization.AddText",
+                    onClick: AddChildOrg
+                },
+                EditOrg: {
+                    icon: OrgChart.icon.edit(18, 18, '#039BE5'),
+                    text: "@Resources.Globalization.EditText",
+                    onClick: EditOrg
+                },
+                ChangeManager: {
+                    icon: OrgChart.icon.edit(18, 18, '#039BE5'),
+                    text: "@Resources.Globalization.AssigningManagerToOrgText",
+                    onClick: ChangeManager
+                },
+                ChangeParent: {
+                    icon: OrgChart.icon.details(18, 18, '#039BE5'),
+                    text: "@Resources.Globalization.UpdateOrganizationParentText",
+                    onClick: ChangeParent
+                },
+            },
+            //tags:{
+            //    "subLevels0":{
+            //  	    subLevels:0
+            //    },
+            //    "subLevels1":{
+            //  	    subLevels:1
+            //    },
+            //    "subLevels2":{
+            //  	    subLevels:2
+            //    }
+            //},
+            //menu: {
+            //    pdf: { text : "Export PDF" },
+            //    png: { text : "Export PNG" }
+            //},
+            collapse: {
+                level: 2,
+                allChildren: true
+            },
+            template: "diva",//"mery",
+            nodeBinding: {
+                field_0: "OrganizationName",
+                field_1: "ManagerName",
+                img_0: "ManagePic"
+            },
+            //nodes: data
+        });
+
+        chart.on('init', function (sender) {
+            $("#divLoaderOrg").hide();
+        });
+
+        chart.load(data);
+    }
+
+    function AddChildOrg(nodeId) {
+        //alert(nodeId);
+        $('#hdnFldOrganizationID').val(nodeId);
+        ShowModal("#divModalAddChild");
+    }
+
+    function EditOrg(nodeId) {
+        $('#hdnFldOrganizationID').val(nodeId);
+        GetOrganizationByOrganizationID(nodeId);            // defined in _UpdateOrganization partial view
+        ShowModal("#divModalUpdateOrganization");
+    }
+
+    function ChangeManager(nodeId) {
+        $('#hdnFldOrganizationID').val(nodeId); 
+        GetOrgByOrganizationID(nodeId);                     // defined in _ChangeOrganizationManager partial view
+        ShowModal("#divModalUpdateOrganizationManager");
+    }
+
+    function ChangeParent(nodeId) {
+        $('#hdnFldOrganizationID').val(nodeId);
+        GetByOrganizationID(nodeId);                        // defined in _ChangeParent partial view
+        ShowModal("#divModalChangeParent");
+        $("#txtOrganizationParentCode").autocomplete("option", "appendTo", ".eventInsForm");
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "/Error")');
+    }
+
+</script>
+
+<div class="modal fade" id="divModalAddChild">
+    <div class="modal-dialog">
+        <div class="modal-content modal-lg">
+            <div class="modal-body">
+                @Html.Partial("~/Views/OrganizationStructure/_AddChild.cshtml")
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divModalUpdateOrganization">
+    <div class="modal-dialog">
+        <div class="modal-content modal-lg">
+            <div class="modal-body">
+                @Html.Partial("~/Views/OrganizationStructure/_UpdateOrganization.cshtml")
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divModalChangeParent">
+    <div class="modal-dialog">
+        <div class="modal-content modal-lg">
+            <div class="modal-body">
+                @Html.Partial("~/Views/OrganizationStructure/_ChangeParent.cshtml")
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="divModalUpdateOrganizationManager">
+    <div class="modal-dialog" style="width:1000px">
+        <div class="modal-content modal-lg">
+            <div class="modal-body">
+                @Html.Partial("~/Views/OrganizationStructure/_ChangeOrganizationManager.cshtml")
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="hdnFldOrganizationID" />
+<div id="divLoaderOrg" class="overlay">
+    <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+</div>
+<div id="divOrgChart" style="width:100%; height:700px" />
+
+@Scripts.Render("~/bundles/orgChart")

@@ -1,0 +1,452 @@
+﻿@using HCMBLL.Enums;
+@using HCM.Models;
+
+@{
+    ViewBag.Title = "Index";
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        BindData();
+    });
+
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+    }
+
+    function BindData() {
+        BindQualificationsDegrees();
+        BindQualifications();
+        BindGeneralSpecializations();
+        BindExactSpecializations();
+    }
+
+    function BindQualificationsDegrees() {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Qualifications/GetQualificationsDegrees")",
+            success: function (result) {
+
+                $("#tblQualificationsDegrees").DataTable({
+                      "dom": 'Bfrtip',
+                    "destroy": true,
+                    "searching": true,
+                    "ordering": true,
+                    "data": result.data,
+                      "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+                    "columns": [
+                        //{
+                        //    "data": "QualificationDegreeID",
+                        //    "autowidth": false,
+                        //},
+                        {
+                            "data": "QualificationDegreeName",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        {
+                            "data": "QualificationDegreeID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = '@Url.Action("EditQualificationDegree", "Qualifications")' + "/" + data;
+                                return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                            }
+                        },
+                        {
+                            "data": "QualificationDegreeID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = '@Url.Action("DeleteQualificationDegree", "Qualifications")' + "/" + data;
+                                return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                            }
+                        },
+                    ]
+                });
+            }
+        });
+    }
+    function BindQualifications() {
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Qualifications/GetQualifications")",
+            success: function (result) {
+                $("#tblQualifications").DataTable({
+                       "dom": 'Bfrtip',
+                    "destroy": true,
+                    "searching": true,
+                    "ordering": true,
+                    "data": result.data,
+                    "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+                    "columns": [
+                       //{
+                       //    "data": "QualificationID",
+                       //    "autowidth": false,
+                       //},
+                       {
+                           "data": "QualificationDegreeName",
+                           "autowidth": false,
+                       },
+                       {
+                            "data": "QualificationName",
+                            "autowidth": false,
+                       },
+                       {
+                           "data": "DirectPoints",
+                           "autowidth": false,
+
+                       },
+                       {
+                           "data": "IndirectPoints",
+                           "autowidth": false,
+                       },
+                       {
+                           "data": "CreatedBy",
+                           "autowidth": false,
+                       },
+                       {
+                           "data": "CreatedDate",
+                           "autowidth": false,
+                           "render": RenderDateTime
+                       },
+                       {
+                           "data": "QualificationID",
+                           "autowidth": false,
+                           "render": function (data, type, row) {
+                               Url = '@Url.Action("EditQualification", "Qualifications")' + "/" + data;
+                               return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                           }
+                       },
+                       {
+                           "data": "QualificationID",
+                           "autowidth": false,
+                           "render": function (data, type, row) {
+                               Url = '@Url.Action("DeleteQualification", "Qualifications")' + "/" + data;
+                               return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                           }
+                       },
+
+                    ]
+                });
+            }
+        });
+
+    }
+
+    function BindGeneralSpecializations() {
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Qualifications/GetGeneralSpecializations")",
+            success: function (result) {
+                $("#tblGeneralSpecializations").DataTable({
+                       "dom": 'Bfrtip',
+                    "destroy": true,
+                    "searching": true,
+                    "ordering": true,
+                    "data": result.data,
+                     "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+                    "columns": [
+                        //{
+                        //    "data": "GeneralSpecializationID",
+                        //    "autowidth": false,
+                        //},
+                        {
+                            "data": "QualificationDegreeName",
+                            "autowidth": false,
+
+                        },
+                        {
+                            "data": "QualificationName",
+                            "autowidth": false,
+
+                        },
+                         {
+                             "data": "GeneralSpecializationName",
+                             "autowidth": false,
+                         },
+                        {
+                            "data": "DirectPoints",
+                            "autowidth": false,
+
+                        },
+                        {
+                            "data": "IndirectPoints",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        {
+                            "data": "GeneralSpecializationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = '@Url.Action("EditGeneralSpecialization", "Qualifications")' + "/" + data;
+                                return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                            }
+                        },
+                        {
+                            "data": "GeneralSpecializationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = '@Url.Action("DeleteGeneralSpecialization", "Qualifications")' + "/" + data;
+                                return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                            }
+                        },
+
+                    ]
+                });
+            }
+        });
+
+    }
+
+    function BindExactSpecializations() {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Qualifications/GetExactSpecializations")",
+            success: function (result) {
+                $("#tblExactSpecializations").DataTable({
+                     "dom": 'Bfrtip',
+                    "destroy": true,
+                    "searching": true,
+                    "ordering": true,
+                    "data": result.data,
+                     "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+                    "columns": [
+                        //{
+                        //    "data": "ExactSpecializationID",
+                        //    "autowidth": false,
+                        //},
+                        {
+                            "data": "QualificationDegreeName",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "QualificationName",
+                            "autowidth": false,
+                        },
+                        {
+                             "data": "GeneralSpecializationName",
+                             "autowidth": false,
+                        },
+                        {
+                            "data": "ExactSpecializationName",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        {
+                            "data": "ExactSpecializationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = '@Url.Action("EditExactSpecialization", "Qualifications")' + "/" + data;
+                                return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                            }
+                        },
+                        {
+                            "data": "ExactSpecializationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = '@Url.Action("DeleteExactSpecialization", "Qualifications")' + "/" + data;
+                                return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                            }
+                        },
+                    ]
+                });
+            }
+    });
+    }
+
+</script>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.QualificationsSettingsText
+    </div>
+    <div class="panel-body">
+        @Html.AntiForgeryToken()
+        <table class="table table-responsive table-striped" style="width:100%">
+            <tbody>
+                <tr>
+                    <td>
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#TabQualificationsDegrees" data-toggle="tab">@Resources.Globalization.QualificationDegreeNameText</a>
+                            </li>
+                            <li>
+                                <a href="#TabQualifications" data-toggle="tab">@Resources.Globalization.QualificationNameText</a>
+                            </li>
+                            <li>
+                                <a href="#TabGeneralSpecializations" data-toggle="tab">@Resources.Globalization.GeneralSpecializationNameText</a>
+                            </li>
+                            <li>
+                                <a href="#TabExactSpecializations" data-toggle="tab">@Resources.Globalization.ExactSpecializationNameText</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content clearfix">
+                            <div id="TabQualificationsDegrees" class="tab-pane active padding-5">
+                                <div id="divQualificationsDegrees">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <a href="~/Qualifications/CreateQualificationDegree">@Resources.Globalization.CreateNewText</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <table id="tblQualificationsDegrees" class="table table-responsive table-hover" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    @*<td>@Resources.Globalization.SequenceNoText</td>*@
+                                                    <td>@Resources.Globalization.QualificationDegreeNameText</td>
+                                                    <td>@Resources.Globalization.CreatedByText </td>
+                                                    <td>@Resources.Globalization.CreatedDateText</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="TabQualifications" class="tab-pane padding-5">
+                                <div id="divQualifications">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <a href="~/Qualifications/CreateQualification">@Resources.Globalization.CreateNewText</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <table id="tblQualifications" class="table table-responsive table-hover" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    @*<td>@Resources.Globalization.SequenceNoText</td>*@
+                                                    <td>@Resources.Globalization.QualificationDegreeNameText</td>
+                                                    <td>@Resources.Globalization.QualificationNameText</td>
+                                                    <td>@Resources.Globalization.DirectPointsText</td>
+                                                    <td>@Resources.Globalization.IndirectPointsText</td>
+                                                    <td>@Resources.Globalization.CreatedByText </td>
+                                                    <td>@Resources.Globalization.CreatedDateText</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="TabGeneralSpecializations" class="tab-pane padding-5">
+                                <div id="divGeneralSpecializations">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <a href="~/Qualifications/CreateGeneralSpecialization">@Resources.Globalization.CreateNewText</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <table id="tblGeneralSpecializations" class="table table-responsive table-hover" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    @*<td>@Resources.Globalization.SequenceNoText</td>*@
+                                                    <td>@Resources.Globalization.QualificationDegreeNameText</td>
+                                                    <td>@Resources.Globalization.QualificationNameText</td>
+                                                    <td>@Resources.Globalization.GeneralSpecializationNameText</td>
+                                                    <td>@Resources.Globalization.DirectPointsText</td>
+                                                    <td>@Resources.Globalization.IndirectPointsText</td>
+                                                    <td>@Resources.Globalization.CreatedByText </td>
+                                                    <td>@Resources.Globalization.CreatedDateText</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="TabExactSpecializations" class="tab-pane padding-5">
+                                <div id="divExactSpecializations">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <a href="~/Qualifications/CreateExactSpecialization">@Resources.Globalization.CreateNewText</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <table id="tblExactSpecializations" class="table table-responsive table-hover" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    @*<td>@Resources.Globalization.SequenceNoText</td>*@
+                                                    <td>@Resources.Globalization.QualificationDegreeNameText</td>
+                                                    <td>@Resources.Globalization.QualificationNameText</td>
+                                                    <td>@Resources.Globalization.GeneralSpecializationNameText</td>
+                                                    <td>@Resources.Globalization.ExactSpecializationNameText</td>
+                                                    <td>@Resources.Globalization.CreatedByText </td>
+                                                    <td>@Resources.Globalization.CreatedDateText</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

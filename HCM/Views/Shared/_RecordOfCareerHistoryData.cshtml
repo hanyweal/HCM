@@ -1,0 +1,38 @@
+﻿@model HCM.Models.CareerHistoryViewModel
+<table class="table table-responsive table-hover table-striped" style="width:100%">
+    <thead>
+        <tr>
+            <td class="col-md-4">
+                <label class="control-label">@Resources.Globalization.CareerHistoryTypeNameText</label>
+            </td>
+            <td class="col-md-4">
+                <label class="control-label">@Resources.Globalization.CareerDegreeNameText</label>
+            </td>
+            <td class="col-md-4">
+                <label class="control-label">@Resources.Globalization.JoinDateText</label>
+            </td>
+        </tr>
+        <tr>
+            <td class="col-md-4">
+                @Html.DropDownListFor(model => model.CareerHistoryTypeID, new SelectList(new HCMBLL.CareersHistoryTypesBLL().GetCareersHistoryTypes(), "CareerHistoryTypeID", "CareerHistoryTypeName"), new { @id = "ddlCareersHistoryTypes", @style = "width:100%" })
+                @*<select id="ddlCareersHistoryTypes" style="width:100%"></select>*@
+            </td>
+            <td class="col-md-4">
+                @Html.DropDownListFor(model => model.CareerDegreeID, new SelectList(new HCMBLL.CareersDegreesBLL().GetCareersDegrees(), "CareerDegreeID", "CareerDegreeName"), new { @id = "ddlCareersDegrees", @style = "width:100%" })
+                @*<select id="ddlCareersDegrees" style="width:100%"></select>*@
+            </td>
+            <td class="col-md-4">
+                @Html.TextBoxFor(model => model.JoinDate, new { @class = "form-control TxtHijriPicker", @id = "txtJoinDate", @readonly = "readonly" })
+                @*<input id="txtJoinDate" type="text" class="form-control TxtHijriPicker">*@
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                @Html.Partial("~/Views/Shared/_OrganizationsJobsPopup.cshtml", new HCM.Models.OrganizationsJobsViewModel() { })
+            </td>
+        </tr>
+    </thead>
+</table>
+
+
+

@@ -1,0 +1,580 @@
+﻿@model HCM.Models.PromotionsRecordsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL
+@using HCMBLL.Enums
+@using System.Configuration
+@{
+    ViewBag.Title = Resources.Globalization.ManagePromotionRecordText;
+}
+<link href="~/Content/font-awesome-5.7/css/all.min.css" rel="stylesheet" />
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //$("#divToolbar").load('@RazorHelper.ShowPormotionToolbar(this, (PromotionsRecordsToolbarEnum)Model.PromotionRecordToolbarID)', AppendToolbar('@Convert.ToInt32(Model.PromotionRecordToolbarID)'));
+        $("#divToolbar").load('@RazorHelper.ShowPormotionToolbar(this, (PromotionsRecordsToolbarEnum)Model.PromotionRecordToolbarID)', AppendToolbar);
+
+        ReadOnlyModeJobsCategories();
+
+        BindCandidates();
+        $("#tblCandidates thead").hide();
+         @*$('#txtPromotionRecordDate').on('focus', function () {
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@ConfigurationManager.AppSettings["DateFormatRTL"]',
+        });*@
+
+    });
+
+    function BindCandidates() {
+        $("#tblCandidates").DataTable({
+            "ajax": {
+                "url": "/PromotionsRecords/GetPromotionsRecordsEmployeesByPromotionRecordID/" + '@Model.PromotionRecordID',
+                "type": "get",
+                "datatype": "json",
+                "data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+            "serverSide": true,
+            "sorting": false,
+            "destroy": true,
+            "processing": true,
+            //"pageSize": 1,
+            //"lengthMenu": [[1,1], [1,10]],
+            "createdRow": function (row, data, dataIndex) {
+                if (data.IsRemovedAfterIncluding)
+                    $(row).find('td:first').addClass("alert alert-warning");
+                else if (data.PromotionRecordJobVacancyID)
+                    $(row).find('td:first').addClass("alert alert-success");
+                else
+                    $(row).find('td:first').addClass("alert alert-info");
+            },
+            "columns": [
+                  {
+                      "autoWidth": false,
+                      //"class":"alert alert-info",
+                      "render": function (data, type, row) {
+                          var removeLink = '';
+                          var extraPtsLink = '';
+                          var css = '';
+                          var printLink = '';
+                          var detailsLink = '';
+                          var detailsLinkUrl = '';
+                          var seqNum = '';
+
+                          if (row.IsRemovedAfterIncluding)
+                              css = "warning";
+                          else if (row.PromotionRecordJobVacancyID)
+                              css = "success";
+                          else
+                              css = "info";
+                          
+                          if (row.PromotionRecordStatusEnum == '@Convert.ToInt32(PromotionsRecordsStatusEnum.Open)') {
+
+                              if (row.IsRemovedAfterIncluding)
+                                  removeLink = '<div title="@Resources.Globalization.PromotionRecordEmployeeIncludedAfterRemovedTooltipText" class="toggle btn btn-default off" data-toggle="toggle" style="width: 66.1506px; height: 33.0682px;"><input type="checkbox" onchange="IncludeAgainAfterRemoved(' + row.PromotionRecordEmployeeID + ')" data-toggle="toggle"><div class="toggle-group"><label class="btn btn-primary toggle-on"><i class="fas fa-user-times"></i></label><label class="btn btn-default active toggle-off ' + css + '"><i class="fas fa-user-plus"></i></label><span class="toggle-handle btn btn-default"></span></div></div>';
+                              else
+                                  removeLink = '<div title="@Resources.Globalization.PromotionRecordEmployeeRemoveTooltipText" class="toggle btn btn-primary" data-toggle="toggle" style="width: 66.1875px; height: 33px;"><input type="checkbox" onchange="OpenPromotionRecordEmployeeRemovePopup(' + row.PromotionRecordEmployeeID + ')"  data-toggle="toggle"><div class="toggle-group"><label class="btn btn-primary toggle-on ' + css + '"><i class="fas fa-user-times"></i></label><label class="btn btn-default active toggle-off"><i class="fas fa-user-plus"></i></label><span class="toggle-handle btn btn-default"></span></div></div>';
+
+                              var html = '', css = '';
+                              var pts = '@ConfigurationManager.AppSettings["ActualTaskPerformancePoints"].ToString()';
+
+                              if (row.ActualTaskPerformancePoints > 0)
+                                  html = '<div title="@Resources.Globalization.PromotionRecordRemoveActualTaskPerformancePointsTooltipText" class="toggle btn btn-primary" data-toggle="toggle" style="width: 66.1875px; height: 33px;"><input type="checkbox" onchange="RemoveActualTaskPerformancePoints(' + row.PromotionRecordEmployeeID + ')"  data-toggle="toggle"><div class="toggle-group"><label class="btn btn-primary toggle-on ' + css + '">' + pts + ' <i class="fas fa-minus"></i></label><label class="btn btn-default active toggle-off">' + pts + ' <i class="fas fa-plus"></i></label><span class="toggle-handle btn btn-default"></span></div></div>';
+                              else
+                                  html = '<div title="@Resources.Globalization.PromotionRecordAddActualTaskPerformancePointsTooltipText" class="toggle btn btn-default off" data-toggle="toggle" style="width: 66.1506px; height: 33.0682px;"><input type="checkbox" onchange="AddActualTaskPerformancePoints(' + row.PromotionRecordEmployeeID + ')" data-toggle="toggle"><div class="toggle-group"><label class="btn btn-primary toggle-on">' + pts + ' <i class="fas fa-minus"></i></label><label class="btn btn-default active toggle-off ' + css + '">' + pts + ' <i class="fas fa-plus"></i></label><span class="toggle-handle btn btn-default"></span></div></div>';
+
+                              extraPtsLink = '<span id="btnActualTaskPerformancePoints' + row.PromotionRecordEmployeeID + '">' + html + '</span>';
+                              
+                              RenderActualTaskPerformancePointsButton(row.PromotionRecordEmployeeID, row.ActualTaskPerformancePoints);
+                          }
+
+                          if (row.PromotionRecordStatusEnum != '@Convert.ToInt32(PromotionsRecordsStatusEnum.Open)') {
+
+                              detailsLinkUrl = "ShowEmployeeDetails(" + row.EmployeeCareerHistoryID
+                                                         + "," + row.EmployeeCodeID
+                                                         + ",'" + row.EmployeeCodeNo
+                                                         + "','" + row.EmployeeNameAr
+                                                         + "','" + row.RankName
+                                                         + "','" + RenderDate(row.JoinDate)
+                                                         + "','" + row.AddedWayName
+                                                         + "','" + row.CreatedBy
+                                                         + "','" + row.ManualAddedReason
+                                                         + "','" + row.CreatedDate
+                                                         + "'," + row.PromotionPeriodID
+                                                         + ",'Manage'"
+                                                         + "," + row.PromotionRecordEmployeeID
+                                                         + "," + row.AddedWayID
+                                                         + ");";
+
+                              detailsLink = "<a onclick=\"" + detailsLinkUrl + "\"><span Class='glyphicon glyphicon-info-sign' title='" + '@Resources.Globalization.DetailsText' + "'/></a>";
+                          }
+
+                          if (row.PromotionRecordStatusEnum != '@Convert.ToInt32(PromotionsRecordsStatusEnum.Open)' && row.PromotionRecordJobVacancyID) {
+                              seqNum = "@Resources.Globalization.SequenceNoText :<span class='bold'>" + row.PromotionRecordEmployeeID + "</span>";
+                          }
+
+                          var content =
+                              '<div class="panel panel-default" style="padding:0px; margin:0px;">' +
+                                  '<div class="panel-heading">' +
+                                        '<div class="row">' +
+                                            '<div class="col-md-2">@Resources.Globalization.EmployeeCodeNoText</div>' +
+                                            '<div class="col-md-1 bold">' + row.EmployeeCodeNo + '</div>' +
+                                            @*'<div class="col-md-2">@Resources.Globalization.EmployeeIDNoText</div>' +
+                                            '<div class="col-md-1 bold">' + row.EmployeeIDNo + '</div>' +*@
+                                            '<div class="col-md-2">@Resources.Globalization.EmployeeNameArText</div>' +
+                                            '<div class="col-md-3 bold">' + row.EmployeeNameAr + '</div>' +
+                                            '<div class="col-md-2">' + seqNum + '</div>' +
+                                            '<div class="col-md-2 text-left">' + removeLink + ' ' + extraPtsLink + ' ' + printLink + ' ' + detailsLink + '</div>' +
+                                        '</div>' +
+                                  '</div>' +
+                                  '<div class="panel-body panel-body-shrink">' +
+                                      '<table class="table table-responsive table-condensed table-striped" style="margin:0px;">' +
+                                          '<tr><td colspan="6"><div class=" bold" ><i class="fa fa-user"></i> @Resources.Globalization.EmployeeCurrentCareerDetailsText</div></td></tr>' +
+                                          '<tr>' +
+                                            '<td class="col-md-2 ">@Resources.Globalization.RankNameText</td>' +
+                                            '<td class="col-md-2 bold">' + row.RankName + '</td>' +
+                                            '<td class="col-md-2 ">@Resources.Globalization.JobCategoryNameText</td>' +
+                                            '<td class="col-md-2 bold" >' + row.JobCategoryName + '</td>' +
+
+                                            (row.PromotionRecordStatusEnum == '@Convert.ToInt32(PromotionsRecordsStatusEnum.Open)' ?                                            
+                                                '<td id="lblActualTaskPerformancePoints' + row.PromotionRecordEmployeeID + '" class="col-md-2">' + (row.ActualTaskPerformancePoints == 0 ? '' : '@Resources.Globalization.ActualTaskPerformancePoints') + '</td>' +
+                                                '<td id="txtActualTaskPerformancePoints' + row.PromotionRecordEmployeeID + '" class="col-md-2 bold">' + (row.ActualTaskPerformancePoints == 0 ? '' : row.ActualTaskPerformancePoints) + '</td>'
+                                            :
+                                                '<td id="lblActualTaskPerformancePoints' + row.PromotionRecordEmployeeID + '" class="col-md-2"></td>' +
+                                                '<td id="txtActualTaskPerformancePoints' + row.PromotionRecordEmployeeID + '" class="col-md-2 bold"></td>'      
+                                            ) +
+                                          '</tr>' +
+                                          '<tr>' +
+                                            '<td class="col-md-2">@Resources.Globalization.JoinDateText</td>' +
+                                            '<td class="col-md-2 bold">' + RenderDate(row.JoinDate) + '</td>' +
+                                            '<td class="col-md-2">@Resources.Globalization.OrganizationNameText</td>' +
+                                            '<td class="col-md-2 bold">' + row.OrganizationName + '</td>' +
+                                            '<td class="col-md-2">@Resources.Globalization.PromotionCandidateAddedWayText</td>' +
+                                            '<td class="col-md-2 bold">' + row.AddedWayName + '</td>' +
+                                          '</tr>' +
+                                          '<tr>' +
+                                            '<td class="col-md-2">@Resources.Globalization.LastQualificationDegreeText</td>' +
+                                            '<td class="col-md-2 bold">' + row.LastQualificationDegreeName + '</td>' +
+                                            '<td class="col-md-2">@Resources.Globalization.LastQualificationText</td>' +
+                                            '<td class="col-md-2 bold">' + row.LastQualificationName + '</td>' +
+                                            '<td class="col-md-2">@Resources.Globalization.LastGeneralSpecializationText</td>' +
+                                            '<td class="col-md-2 bold">' + row.LastGeneralSpecializationName + '</td>' +
+                                          '</tr>' +
+                                          '<tr>' +
+                                            '<td class="col-md-2">@Resources.Globalization.JobNoText</td>' +
+                                            '<td class="col-md-2 bold">' + row.JobNo + '</td>' +
+                                            '<td class="col-md-2">@Resources.Globalization.JobCodeText</td>' +
+                                            '<td class="col-md-2 bold">' + row.JobCode + '</td>' +
+                                            '<td class="col-md-2">@Resources.Globalization.JobNameText</td>' +
+                                            '<td class="col-md-2 bold">' + row.JobName + '</td>' +
+                                          '</tr>' +
+                                          '<tr><td colspan="6"><div class=" bold" ><i class="fa fa-user-tie"></i> @Resources.Globalization.EmployeeNewCareerDetailsText</div></td></tr>' +
+                                          '<tr>' +
+                                            '<td class="col-md-2 ">@Resources.Globalization.RankNameText</td>' +
+                                            '<td class="col-md-2 bold">' + row.NewRankName + '</td>' +
+                                            '<td class="col-md-2 ">@Resources.Globalization.JobCategoryNameText</td>' +
+                                            '<td class="col-md-2 bold" >' + row.NewJobCategoryName + '</td>' +
+                                            '<td class="col-md-2">@Resources.Globalization.OrganizationNameText</td>' +
+                                            '<td class="col-md-2 bold">' + row.NewOrganizationName + '</td>' +
+                                          '</tr>' +
+                                          '<tr>' +
+                                            '<td class="col-md-2">@Resources.Globalization.JobNoText</td>' +
+                                            '<td class="col-md-2 bold">' + row.NewJobNo + '</td>' +
+                                            '<td class="col-md-2">@Resources.Globalization.JobCodeText</td>' +
+                                            '<td class="col-md-2 bold">' + row.NewJobCode + '</td>' +
+                                            '<td class="col-md-2">@Resources.Globalization.JobNameText</td>' +
+                                            '<td class="col-md-2 bold">' + row.NewJobName + '</td>' +
+                                          '</tr>' +
+                                          (row.PromotionRecordStatusEnum != '@Convert.ToInt32(PromotionsRecordsStatusEnum.Open)' ?
+                                          '<tr >' +
+                                            '<td class="col-md-2">@Resources.Globalization.TotalEducationPointsText </td>' +
+                                            '<td class="col-md-2 bold">' + row.TotalEducationPoints + '</td>' +
+                                            '<td class="col-md-2">@Resources.Globalization.TotalSeniorityPointsText</td>' +
+                                            '<td class="col-md-2 bold">' + row.TotalSeniorityPoints + '</td>' +
+                                            '<td class="col-md-2">@Resources.Globalization.TotalEvaluationPointsText</td>' +
+                                            '<td class="col-md-2 bold">' + row.TotalEvaluationPoints + '</td>' +
+                                          '</tr>' +
+                                          '<tr >' +
+                                            '<td class="col-md-2">@Resources.Globalization.ActualTaskPerformancePoints</td>' +
+                                            '<td class="col-md-2 bold">' + row.ActualTaskPerformancePoints+ '</td>' +
+                                            '<td class="col-md-2">@Resources.Globalization.TotalPointsText </td>' +
+                                            '<td class="col-md-2 bold">' + row.TotalPoints + '</td>' +
+                                            (row.IsByExamResult == '1' ?   
+                                            '<td class="col-md-2">@Resources.Globalization.PromotionRecordByExamResultText</td>' +
+                                            '<td class="col-md-2 bold">' + row.ByExamResult + '</td>'
+                                            :
+                                            '<td class="col-md-2"></td>' +
+                                            '<td class="col-md-2 bold"></td>'
+                                            ) +    
+                                          '</tr>' +
+                                          '<tr >' +
+                                            '<td class="col-md-2">@Resources.Globalization.PromotionDecisionNameText</td>' +
+                                            '<td class="col-md-2 bold">' + row.PromotionDecisionName + '</td>' +
+                                            '<td class="col-md-2">' + row.PromotionDecisionSupportTitle + '</td>' +
+                                            '<td class="col-md-2 bold">' + row.PromotionDecisionSupportValue  + '</td>' +
+                                            '<td class="col-md-2"></td>' +
+                                            '<td class="col-md-2 bold"></td>' +
+                                          '</tr>' : "") +
+                                           (row.RemovedByName.length > 0 ?
+                                          '<tr>' +
+                                            '<td class="col-md-2">@Resources.Globalization.RemovingReasonText</td>' +
+                                            '<td class="col-md-2 bold">' + row.RemovingReason + '</td>' +
+                                            '<td class="col-md-2">@Resources.Globalization.RemovedByNameText</td>' +
+                                            '<td class="col-md-2 bold">' + row.RemovedByName + '</td>' +
+                                            '<td class="col-md-2"></td>' +
+                                            '<td class="col-md-2 bold"></td>' +
+                                          '</tr>' : "") +
+                                      '</table>' +
+                                  '</div>' +
+                                '</div>';
+                          return content;
+                      }
+                  },
+            ]
+        });
+    }
+
+    function RenderActualTaskPerformancePointsButton(PromotionRecordEmployeeID, ActualTaskPerformancePoints) {
+
+        var html = '', css = '';
+        var pts = '@ConfigurationManager.AppSettings["ActualTaskPerformancePoints"].ToString()';
+
+        if (ActualTaskPerformancePoints > 0)
+            html = '<div title="@Resources.Globalization.PromotionRecordRemoveActualTaskPerformancePointsTooltipText" class="toggle btn btn-primary" data-toggle="toggle" style="width: 66.1875px; height: 33px;"><input type="checkbox" onchange="RemoveActualTaskPerformancePoints(' + PromotionRecordEmployeeID + ')"  data-toggle="toggle"><div class="toggle-group"><label class="btn btn-primary toggle-on ' + css + '">' + pts + ' <i class="fas fa-minus"></i></label><label class="btn btn-default active toggle-off">' + pts + ' <i class="fas fa-plus"></i></label><span class="toggle-handle btn btn-default"></span></div></div>';
+        else
+            html = '<div title="@Resources.Globalization.PromotionRecordAddActualTaskPerformancePointsTooltipText" class="toggle btn btn-default off" data-toggle="toggle" style="width: 66.1506px; height: 33.0682px;"><input type="checkbox" onchange="AddActualTaskPerformancePoints(' + PromotionRecordEmployeeID + ')" data-toggle="toggle"><div class="toggle-group"><label class="btn btn-primary toggle-on">' + pts + ' <i class="fas fa-minus"></i></label><label class="btn btn-default active toggle-off ' + css + '">' + pts + ' <i class="fas fa-plus"></i></label><span class="toggle-handle btn btn-default"></span></div></div>';
+
+        $('#btnActualTaskPerformancePoints' + PromotionRecordEmployeeID).html(html);
+
+        var txt = '@Resources.Globalization.ActualTaskPerformancePoints';
+        var val = ActualTaskPerformancePoints;
+
+        if (ActualTaskPerformancePoints == 0) {
+            txt = '';
+            val = '';
+        }
+
+        $("#lblActualTaskPerformancePoints" + PromotionRecordEmployeeID)
+            .fadeOut(1000, function () {
+                $("#lblActualTaskPerformancePoints" + PromotionRecordEmployeeID).html(txt);
+                $("#lblActualTaskPerformancePoints" + PromotionRecordEmployeeID).fadeIn(400);
+            });
+
+        $("#txtActualTaskPerformancePoints" + PromotionRecordEmployeeID)
+            .fadeOut(1000, function () {
+                $("#txtActualTaskPerformancePoints" + PromotionRecordEmployeeID).html(val);
+                $("#txtActualTaskPerformancePoints" + PromotionRecordEmployeeID).fadeIn(400);
+            });
+    }
+
+    function IncludeAgainAfterRemoved(PromotionRecordEmployeeID) {
+
+        $.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: '@Resources.Globalization.PromotionRecordEmployeeIncludeAgainAfterRemovedCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+
+                        var RemoveRequestObj = {
+                            PromotionRecordEmployeeID: PromotionRecordEmployeeID,
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            //dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage',
+                            contentType: "application/json; charset=utf-8",
+                            url: "/PromotionsRecords/IncludeAgainAfterRemovedByPromotionRecordEmployeeID/" + PromotionRecordEmployeeID,
+                            //data: JSON.stringify(RemoveRequestObj),
+                            success: OnSuccessIncludeAgainAfterRemoved,
+                            error: function (xhr, status, error) {
+                                OnFailure();
+                            }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    }
+    
+    function AddActualTaskPerformancePoints(PromotionRecordEmployeeID) {
+        
+        var pts = '@ConfigurationManager.AppSettings["ActualTaskPerformancePoints"].ToString()';
+        $.ajax({
+            type: "POST",
+            //dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage',
+            contentType: "application/json; charset=utf-8",
+            url: "/PromotionsRecords/AddActualTaskPerformancePointsByPromotionRecordEmployeeID/" + PromotionRecordEmployeeID,
+            //data: JSON.stringify(RemoveRequestObj),
+            success: function (){
+                //$("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "")');
+                //BindCandidates();               // function defined in Manage.cshtml
+                RenderActualTaskPerformancePointsButton(PromotionRecordEmployeeID, pts);
+            },
+            error: function (xhr, status, error) {
+                OnFailure();
+            }
+        });
+
+        @*$.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: '@Resources.Globalization.PromotionRecordAddActualTaskPerformancePointsCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+     
+                        
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });*@
+
+    }
+    
+    function RemoveActualTaskPerformancePoints(PromotionRecordEmployeeID) {
+        
+        $.ajax({
+            type: "POST",
+            //dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage',
+            contentType: "application/json; charset=utf-8",
+            url: "/PromotionsRecords/RemoveActualTaskPerformancePointsByPromotionRecordEmployeeID/" + PromotionRecordEmployeeID,
+            //data: JSON.stringify(RemoveRequestObj),
+            success: function (){
+                //$("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "")');
+                //BindCandidates();               // function defined in Manage.cshtml
+                RenderActualTaskPerformancePointsButton(PromotionRecordEmployeeID, 0);
+            },
+            error: function (xhr, status, error) {
+                OnFailure();
+            }
+        });
+
+        @*$.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: '@Resources.Globalization.PromotionRecordAddActualTaskPerformancePointsCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+     
+                        
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });*@
+
+    }
+     
+    function OnSuccessIncludeAgainAfterRemoved(d) {
+
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.PromotionRecordEmployeeIncludeAgainAfterRemovedDoneAlertText), "")');
+        BindCandidates();               // function defined in Manage.cshtml
+
+        $("#divPromotionsRecordsEmployeesRemoveModal")
+			.fadeOut(1000, function () {
+			    DestroyModal("#divPromotionsRecordsEmployeesRemoveModal");
+			});
+    }
+     
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.ManagePromotionRecordText</p>
+@Html.Partial("~/Views/PromotionsRecords/_PromotionsRecordsStatus.cshtml")
+<br />
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.ManagePromotionRecordDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="row padding-5">
+            <div class="col-md-12">
+                @*@RazorHelper.RenderToolbar(HCM.Classes.Enums.PromotionsRecordsToolbarEnum.Preference)*@
+                <div id="divToolbar"></div>
+                @*<div class="btn-group">
+                        @Html.Partial("~/Views/Shared/_JobsVacanciesPopup.cshtml")
+                        @Html.Partial("~/Views/PromotionsRecords/_EditPromotionRecordQualificationPoints.cshtml")
+                        <button id="btnAddCandidateManually" class="btn btn-default" type="button" title="@Resources.Globalization.ClickToAddCandidateManuallyTooltip">
+                            <span class="glyphicon glyphicon-plus" style="font-size:8pt;padding:0"></span>
+                            <span class="glyphicon glyphicon-user"></span>
+                            @Resources.Globalization.AddCandidateManuallyText
+                        </button>
+                        <button id="btnPreferencePromotionRecord" class="btn btn-default" type="button" title="@Resources.Globalization.PromotionRecordPreferencesText">
+                            <span class="glyphicon glyphicon-filter"></span>
+                            @Resources.Globalization.PromotionRecordPreferencesText
+                        </button>
+                        <button id="btnInstallPromotionRecord" class="btn btn-default" type="button" title="@Resources.Globalization.PromotionRecordInstallationText">
+                            <span class="glyphicon glyphicon-screenshot"></span>
+                            @Resources.Globalization.PromotionRecordInstallationText
+                        </button>
+                        <button id="btnClosePromotionRecord" class="btn btn-default" type="button" title="@Resources.Globalization.PromotionRecordClosingText">
+                            <span class="glyphicon glyphicon-floppy-saved"></span>
+                            @Resources.Globalization.PromotionRecordClosingText
+                        </button>
+                        <button id="btnDeletePromotionRecord" class="btn btn-default" type="button" title="@Resources.Globalization.PromotionRecordDeletingText">
+                            <span class="glyphicon glyphicon-remove-circle"></span>
+                            @Resources.Globalization.PromotionRecordDeletingText
+                        </button>
+                        <button id="btnPrintPromotionRecord" class="btn btn-default" type="button" title="@Resources.Globalization.PromotionRecordPrintingText">
+                            <span class="glyphicon glyphicon-print"></span>
+                            @Resources.Globalization.PromotionRecordPrintingText
+                        </button>
+                    </div>*@
+            </div>
+        </div>
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <table class="table table-responsive table-condensed table-striped" style="width:100%">
+            <tbody>
+
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.PromotionRecordNo, new { @class = "control-label" })
+                    </td>
+                    <td>
+                        @Html.LabelFor(model => model.PromotionRecordDate, new { @class = "control-label" })
+                    </td>
+                    <td>
+                        @Html.LabelFor(model => model.RankID, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.PromotionRecordStatus, new { @class = "control-label" })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-3">
+                        @Html.TextBoxFor(model => model.PromotionRecordNo, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.HiddenFor(model => model.PromotionRecordID.Value, new { @id = "hdnFldPromotionRecordID", @class = "form-control", @readonly = "readonly" })
+                        @Html.HiddenFor(model => model.PromotionRecordStatus.PromotionRecordStatusID, new { @id = "hdnFldPromotionRecordStatusID", @class = "form-control", @readonly = "readonly" })
+                        @Html.HiddenFor(model => model.PromotionRecordToolbarID, new { @id = "hdnFldPromotionRecordToolbarID", @class = "form-control", @readonly = "readonly" })
+                    </td>
+                    <td class="col-md-3">
+                        @Html.TextBoxFor(model => model.PromotionRecordDate, new
+                                                                            {
+                                                                                @class = "form-control",
+                                                                                @id = "txtPromotionRecordDate",
+                                                                                @readonly = "readonly",
+                                                                                @Value = Model.PromotionRecordDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                                                            })
+                        @Html.ValidationMessageFor(model => model.PromotionRecordDate, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="col-md-3">
+                        @Html.TextBoxFor(model => model.RankName, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.HiddenFor(model => model.RankID, new { @id = "hdnFldRankID", @class = "form-control", @readonly = "readonly" })
+                    </td>
+                    <td class="col-md-3">
+                        @Html.TextBoxFor(model => model.PromotionRecordStatus.PromotionRecordStatusName, new { @id = "txtPromotionRecordStatusName", @class = "form-control", @readonly = "readonly" })
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.YearID, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.PromotionPeriodID, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-3">
+                        <label class="control-label">@Resources.Globalization.PromotionStartDateText</label>
+                    </td>
+                    <td class="col-md-3">
+                        <label class="control-label">@Resources.Globalization.PromotionEndDateText</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-3">
+                        @Html.TextBoxFor(model => model.PromotionPeriod.Year.MaturityYear, new { @class = "form-control", @readonly = "readonly" })
+                    </td>
+                    <td class="col-md-3">
+                        @Html.TextBoxFor(model => model.PromotionPeriod.Period.PeriodName, new { @class = "form-control", @readonly = "readonly" })
+                    </td>
+                    <td class="col-md-3">
+                        @Html.TextBoxFor(model => model.PromotionPeriod.PromotionStartDate, new
+                                           {
+                                               @id = "txtPromotionPeriodStartDate",
+                                               @class = "form-control",
+                                               @readonly = "readonly",
+                                               @Value = Model.PromotionPeriod.PromotionStartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                           })
+                    </td>
+                    <td class="col-md-3">
+                        @Html.TextBoxFor(model => model.PromotionPeriod.PromotionEndDate, new
+                                           {
+                                               @id = "txtPromotionPeriodEndDate",
+                                               @class = "form-control",
+                                               @readonly = "readonly",
+                                               @Value = Model.PromotionPeriod.PromotionEndDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                           })
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        @Html.Partial("~/Views/Shared/_JobsCategoriesPopup.cshtml", new HCM.Controllers.JobsCategoriesController().GetJobsCategoryByJobCategoryID(Model.JobCategoryID))
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table id="tblCandidates" class="table table-responsive table-hover" style="width:100%">
+            @*<thead>
+                    <tr>
+                        <td></td>
+                    </tr>
+                </thead>*@
+        </table>
+
+        <div class="panel-footer">
+            @using (Html.BeginForm("Index", "PromotionsRecords"))
+            {
+                <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+            }
+        </div>
+    </div>
+
+</div>
+@Html.Partial("~/Views/PromotionsRecords/_PromotionCandidateDetails.cshtml")
+@Html.Partial("~/Views/PromotionsRecords/_Common.cshtml")
+@Html.Partial("~/Views/PromotionsRecords/_PromotionRecordEmployeeRemove.cshtml") 

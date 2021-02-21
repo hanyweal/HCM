@@ -1,0 +1,164 @@
+﻿@{
+    ViewBag.Title = Resources.Globalization.GovernmentFundsText;
+}
+<script>
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblGovernmentFunds").DataTable({
+            //"destroy":true,            
+            "ajax": {
+                "url": "/GovernmentFunds/GetGovernmentFunds",
+                "type": "get",
+                "datatype": "json",
+                "data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.  
+            },          
+            "serverSide": true,
+            "columns": [
+                {
+                    "data": "GovernmentFundID",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "GovernmentDeductionTypeName",
+                    "autowidth": true
+                },
+                {
+                    "data": "GovernmentFundTypeName",
+                    "autowidth": true
+                },
+                {
+                    "data": "MonthlyDeductionAmount",
+                    "autowidth": true
+                },
+                {
+                    "data": "TotalDeductionAmount",
+                    "autowidth": true
+                },
+                {
+                    "data": "DeductionStartDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "IsActive",
+                    "autowidth": true,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "GovernmentFundID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Details", "GovernmentFunds")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                    },
+                    "orderable": false
+                },
+                {
+                    "data": "GovernmentFundID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "GovernmentFunds")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit"  title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    },
+                    "orderable": false
+                },
+                {
+                    "data": "GovernmentFundID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Deactivation", "GovernmentFunds")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-ban-circle" title="' + '@Resources.Globalization.DeactivationText' + '"/></a>'
+                    },
+                    "orderable": false
+                },
+                {
+                    "data": "GovernmentFundID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "GovernmentFunds")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    },
+                    "orderable": false
+                },
+                {
+                    "data": "GovernmentFundID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = 'PrintGovernmentFund(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" title="' + '@Resources.Globalization.PrintText' + '"/></a>'
+                    },
+                    "orderable": false
+                },
+            ]
+        });
+
+          $("#ExportExcelButton").click(function () {
+                 $.ajax({
+                     type: "GET"
+                      , contentType: "application/json;"
+                      , url: "/GovernmentFunds/ExportExcel"
+                      , success: function (response)
+                      {
+                          var url = "/WebForms/Reports/FileDownload.aspx?fileName=" + response.DownLoadFile;
+                          window.location.href = url;
+                      }
+                      , error: function (xhr, status, error) {
+
+                      }
+                 });
+             });
+    });
+
+    function PrintGovernmentFund(GovernmentFundID) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/GovernmentFunds/PrintGovernmentFund/")' + GovernmentFundID);//ReportViewerASPX
+        ShowModal("#divReportModal");
+    }
+</script>
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchGovernmentFundsDescText
+    </div>
+    <input id="ExportExcelButton" type="button" style="float:left" value="@Resources.Globalization.ExportToExcelText" />
+    <div class="panel-body">
+        <table id="tblGovernmentFunds" class="table table-responsive table-hover dataTable">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.SequenceNoText</td>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                    <td>@Resources.Globalization.GovernmentDeductionsTypesText</td>
+                    <td>@Resources.Globalization.GovernmentFundsTypesText</td>
+                    <td>@Resources.Globalization.MonthlyDeductionAmountText</td>
+                    <td>@Resources.Globalization.TotalDeductionAmountText</td>
+                    <td>@Resources.Globalization.DeductionStartDateText</td>
+                    <td>@Resources.Globalization.IsActiveText</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+

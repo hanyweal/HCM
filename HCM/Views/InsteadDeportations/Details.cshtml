@@ -1,0 +1,110 @@
+﻿@model HCM.Models.InsteadDeportationsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.DetailsInsteadDeportationText;
+}
+<script type="text/javascript">
+
+    function OkFunction() {
+        window.location.href = "/InsteadDeportations/Index";
+    }
+     
+</script>
+<p style="font-size:larger">@Resources.Globalization.DetailsInsteadDeportationText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.DetailsInsteadDeportationDescText
+    </div>
+    <div class="panel-body">
+        
+            @Html.AntiForgeryToken()
+            <span class="control-label">@Resources.Globalization.InsteadDeportationBasicInfoText</span>
+           <br />
+
+            <span class="control-label">@Resources.Globalization.EmployeeText</span>
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.Label(@Resources.Globalization.EmployeeCodeNoText, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.EmployeeCareersHistory.EmployeeCode.EmployeeCodeNo)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.Label(@Resources.Globalization.EmployeeNameArText, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.EmployeeCareersHistory.EmployeeCode.Employee.EmployeeNameAr)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <span class="control-label">@Resources.Globalization.AllowanceText</span>
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.DeportationDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.DeportationDate, new
+                                                                                {
+                                                                                    @Value = Model.DeportationDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                                                                })
+                            @Html.HiddenFor(model => model.InsteadDeportationID)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.Label(@Resources.Globalization.InsteadDeportationAmountText, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.Amount)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.Label(@Resources.Globalization.NotesText, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.Note)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.CreatedBy, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.CreatedBy)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.CreatedDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.CreatedDate)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "InsteadDeportations"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

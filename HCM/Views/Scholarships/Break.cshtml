@@ -1,0 +1,148 @@
+﻿@model HCM.Models.ScholarshipsBreakViewModel
+
+@{
+    ViewBag.Title = "Extend";
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#txtScholarshipPeriod').on('change', function (event) {
+            console.log($(this).val());
+            console.log('@Model.ScholarshipPeriod');
+            if (parseInt($(this).val()) > parseInt('@Model.ScholarshipPeriod')) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Warning, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationScholarshipPeriodText + @Model.ScholarshipPeriod))');
+                $(this).val('@Model.ScholarshipPeriod')
+                GetScholarshipEndDate();
+                return;
+            }
+            GetScholarshipEndDate();
+        });
+    });
+
+    function GetScholarshipEndDate() {
+        var ScholarshipStartDate = $("#txtScholarshipStartDate").val();
+        var ScholarshipPeriod = $("#txtScholarshipPeriod").val();
+        if (ScholarshipStartDate != '' && ScholarshipPeriod != '') {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Content("~/Scholarships/GetScholarshipEndDate/")" + ScholarshipPeriod + "/" + ScholarshipStartDate,
+                success: function (d) {
+                    $('#txtScholarshipEndDate').val(d.Data.data);
+                },
+                error: function (xhr, status, error) {
+                    AddingFailure();
+                }
+            });
+        }
+        else
+            $('#txtScholarshipEndDate').val('');
+    }
+
+    function OkFunction() {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Scholarships/PrintScholarship/")' + '@Model.ScholarshipID');
+        ShowModal("#divReportModal");
+    }
+
+    function OnSuccess() {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        BindScholarshipDetails();
+    }
+
+</script>
+
+
+<p style="font-size:larger">@Resources.Globalization.ScholarshipBreakText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.ScholarshipBreakDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @*@Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.Delegations })*@
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Break", "Scholarships", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <div id="divScholarshipBreak">
+                <table class="table table-responsive" style="width:100%">
+                    <tr class="col-md-12">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.ScholarshipStartDate, new { @class = "control-label" })
+                            @Html.HiddenFor(model => model.ScholarshipID)
+                            @Html.HiddenFor(model => model.ScholarshipTypeID)
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.ScholarshipStartDate, new
+                    {
+                        @class = "form-control",
+                        @id = "txtScholarshipStartDate",
+                        @readonly = "readonly",
+                        @Value = Model.ScholarshipStartDate.HasValue ? Model.ScholarshipStartDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                    })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.ScholarshipPeriod, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.ScholarshipPeriod, new { @class = "form-control", @id = "txtScholarshipPeriod", @type = "number" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.ScholarshipEndDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.ScholarshipEndDate, new
+                    {
+                        @class = "form-control",
+                        @id = "txtScholarshipEndDate",
+                        @readonly = "readonly",
+                        @Value = Model.ScholarshipEndDate.HasValue ? Model.ScholarshipEndDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                    })
+                        </td>
+                    </tr>
+
+                    <tr class="col-md-12">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.Notes, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextAreaFor(model => model.Notes, new { @class = "form-control", @id = "txtNotes" })
+                        </td>
+                    </tr>
+                </table>
+                <table class="table table-responsive" style="width:100%">
+                    <tr>
+                        <td class="col-md-6" style="text-align:left">
+                            <input type="submit" id="btnSave" value="@Resources.Globalization.SaveText" class="btn btn-default" />
+                        </td>
+                        <td class="col-md-6" style="text-align:right">
+                            <input type="reset" id="btnReset" value="@Resources.Globalization.ResetText" class="btn btn-default" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        }
+
+        @Html.Partial("~/Views/Scholarships/_ScholarshipDetails.cshtml", new HCM.Models.ScholarshipsViewModel() { ScholarshipID = @Model.ScholarshipID })
+    </div>
+</div>

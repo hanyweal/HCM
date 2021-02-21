@@ -1,0 +1,225 @@
+﻿@model MvcSiteMapProvider.Web.Html.Models.MenuHelperModel
+@using System.Web.Mvc.Html
+@using MvcSiteMapProvider.Web.Html.Models
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#tree').treeview({
+            data: getTree(),
+            levels: 1, // for default expanded
+            backColor: 'white',
+            //expandIcon: "glyphicon glyphicon-triangle-right",
+            //collapseIcon: "glyphicon glyphicon-triangle-bottom",
+            showBorder: true,
+            enableLinks: true,
+            selectedBackColor: '#2D3E50'
+            //backColor: 'green'
+        });
+
+    });
+
+    function getTree() {
+        // logic to retrieve, or generate tree structure
+        var tree = [
+        {
+            text: "إعدادات النظام",
+            nodes:
+                [
+                    {
+                        text: "@Resources.Globalization.CountryText",
+                        href: "/Countries/Index",
+                    },
+                    {
+                        text: "@Resources.Globalization.KSACitiesText",
+                        href: "/KSACities/Index",
+                    },
+                    {
+                        text: "@Resources.Globalization.RanksTicketsClassesText",
+                        href: "/RanksTicketsClasses/Index",
+                    },
+                    {
+                        text: "@Resources.Globalization.GovernmentFundsTypesText",
+                        href: "/GovernmentFundsTypes/Index",
+                    },
+                    {
+                        text: "@Resources.Globalization.AllowanceSettingsText",
+                        nodes: [
+                        {
+                            text: "@Resources.Globalization.AllowanceText",
+                            href: "/Allowances/Index",
+                        },
+                        {
+                            text: "@Resources.Globalization.JobAllowanceText",
+                            href: "/JobsAllowances/Index",
+                        },
+                        ]
+                    },
+                ]
+        },
+        {
+            text: "@Resources.Globalization.EmployeesText",
+            icon: "glyphicon glyphicon-user",//, selectedIcon: "glyphicon glyphicon-stop",
+            href: "/Employees/Index",
+            nodes:
+                [
+                    {
+                        text: "@Resources.Globalization.EmployeeProfileText",
+                        href: "/Employees/EmployeeProfile",
+                    },
+                    {
+                        text: "@Resources.Globalization.CreateEmployeeCodeNoText",
+                        href: "/Employees/CreateEmployeeCodeNo",
+                    },
+                    {
+                        text: "@Resources.Globalization.EditEmployeeNameText",
+                        href: "/Employees/EditEmployeeName",
+                    },
+                    {
+                        text: "@Resources.Globalization.EditEmployeeMobileNoText",
+                        href: "/Employees/EditMobileNo",
+                    },
+                ]
+        },
+        {
+            text: "@Resources.Globalization.JobsManagmentText",
+            nodes:
+                [
+                    {
+                        text: "@Resources.Globalization.JobsText",
+                        href: "/Jobs/Index",
+                    },
+                    {
+                        text: "@Resources.Globalization.OrganizationsJobsText",
+                        href: "/OrganizationJob/Index",
+                    }
+                ]
+        },
+        {
+            text: "@Resources.Globalization.OrganizationStructureText",
+            href: "/OrganizationStructure/Index",
+        },
+        {
+            text: "@Resources.Globalization.AssigningsLendersText",
+            nodes: [
+            {
+                text: "@Resources.Globalization.AssigningsText",
+                href: "/Assignings/Index",
+            },
+            {
+                text: "@Resources.Globalization.LendersText",
+                href: "/Lenders/Index",
+            },
+            ]
+        },
+        {
+            text: "@Resources.Globalization.CareerHistoryText",
+            href: "/CareerHistory/Index",
+        },
+        {
+            text: "@Resources.Globalization.ExpensesText",
+            nodes: [
+            {
+                text: "@Resources.Globalization.DelegationsText",
+                href: "/Delegations/Index",
+            },
+            {
+                text: "@Resources.Globalization.PassengerOrdersText",
+                href: "/PassengerOrders/Index",
+            },
+            {
+                text: "@Resources.Globalization.OverTimesText",
+                href: "/OverTimes/Index",
+            },
+            {
+                text: "@Resources.Globalization.GovernmentFundsText",
+                href: "/GovernmentFunds/Index",
+            },
+            {
+                text: "@Resources.Globalization.EmployeeAllowanceText",
+                href: "/EmployeesAllowances/Index",
+            },
+            {
+                text: "@Resources.Globalization.InternshipScholarshipsText",
+                href: "/InternshipScholarships/Index",
+            },
+            ]
+        },
+        {
+            text: "@Resources.Globalization.ApproveMangamentText",
+            nodes: [
+            {
+                text: "@Resources.Globalization.ExpensesApprovalText",
+                nodes: [
+                {
+                    text: "@Resources.Globalization.DelegationsText",
+                    href: "/Approvals/DelegationApproval",
+                },
+              @*{
+                    text: "@Resources.Globalization.PassengerOrdersText",
+                    //href: "/PassengerOrders/Index",
+                },*@
+                {
+                    text: "@Resources.Globalization.OverTimesText",
+                    href: "/approvals/OverTimeApproval",
+
+                },
+                @*  {
+                    text: "@Resources.Globalization.GovernmentFundsText",
+                    //href: "/GovernmentFunds/Index",
+                },
+                {
+                    text: "@Resources.Globalization.EmployeeAllowanceText",
+                    //href: "/EmployeesAllowances/Index",
+                },
+                {
+                    text: "@Resources.Globalization.InternshipScholarshipsText",
+                    //href: "/InternshipScholarships/Index",
+                },*@
+                ]
+
+            },
+            ]
+        },
+        {
+            text: "@Resources.Globalization.ScholarshipsText",
+            href: "/Scholarships/Index",
+        },
+        {
+            text: "@Resources.Globalization.VacationsText",
+            href: "/Vacations/Index",
+        },
+        {
+            text: "@Resources.Globalization.TransfersText",
+            href: "/Transfers/Index",
+        },
+        ];
+        return tree;
+    }
+
+</script>
+
+<div id="tree" style="width:100%"></div>
+
+
+@*
+    @foreach (SiteMapNodeModel node in Model.Nodes)
+    {
+        if (node.Parent != null)
+        {
+            //string url = node.IsClickable ? node.Url : "#";
+
+            <div class="divMenuItems">
+                <a href='@Url.Action(node.Action, node.Controller)'>
+                    <img src='@Url.Content("~/Content/images/" + node.Title + ".png")' class="img-circle">
+                </a>
+                <br />
+                <label>@node.Title</label>
+            </div>
+        }
+    }
+*@
+
+
+

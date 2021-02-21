@@ -1,0 +1,663 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6DEF05DA-E88D-4AE8-AA01-5B09FEDC969A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HCMDAL</RootNamespace>
+    <AssemblyName>HCMDAL</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CommonUtilities, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7df96efd6545b688, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\CommonUtilities\v4.0_1.0.0.0__7df96efd6545b688\CommonUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Allowances.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AllowancesAmountTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ContractorsBasicSalariesDAL.cs" />
+    <Compile Include="BusinessSubCategoriesDAL.cs" />
+    <Compile Include="AllowancesCalculationTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AllowancesCalculationTypesDAL.cs" />
+    <Compile Include="ContractorsBasicSalaries.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesOldJobs.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesOldJobsDAL.cs" />
+    <Compile Include="OrganizationsManagersDAL.cs" />
+    <Compile Include="EmployeeExperiencesWithDetails.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeeExperiencesWithDetailsDAL.cs" />
+    <Compile Include="EmployeesNormalVacationsBalances.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesUnderPrivateCompanies.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EServicesAuthorizations.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EServicesProxiesDAL.cs" />
+    <Compile Include="EServicesAuthorizationsDAL.cs" />
+    <Compile Include="EServicesProxies.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EServicesProxiesStatus.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EServicesTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EServicesProxiesStatusDAL.cs" />
+    <Compile Include="EVacationRequestsStatus.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EVacationsRequests.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EVacationsRequestsDAL.cs" />
+    <Compile Include="EvaluationsQuartersDAL.cs" />
+    <Compile Include="EmployeesUnderPrivateCompaniesDAL.cs" />
+    <Compile Include="GovernmentFundsDeactiveReasons.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GovernmentFundsDeactiveReasonsDAL.cs" />
+    <Compile Include="InsteadDeportationsDAL.cs" />
+    <Compile Include="EmployeesDegreesUpgradesDAL.cs" />
+    <Compile Include="Assignings.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AssigningsReasons.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AssigningsTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BasicSalaries.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Branches.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BusinessCategories.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BusinessRules.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BusinessSubCategories.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CareersDegrees.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CareersHistoryTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeDetailsLogs.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeLogs.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Countries.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Delegations.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DelegationsDetails.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DelegationsKinds.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DelegationsTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Employees.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesAllowances.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesCareersHistory.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesCodes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesDegreesUpgrades.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesEvaluations.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesEvaluationsDAL.cs" />
+    <Compile Include="EmployeesEvaluationsDetails.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesEvaluationsDetailsDAL.cs" />
+    <Compile Include="EmployeesExperiences.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesQualifications.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesVacationsOpeningBalances.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EndOfServices.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EndOfServicesCases.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EndOfServicesReasons.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EndOfServicesVacations.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EvaluationPoints.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EvaluationPointsDAL.cs" />
+    <Compile Include="EvaluationsQuarters.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EventTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ExactSpecializations.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ExactSpecializationsDAL.cs" />
+    <Compile Include="FinancialYears.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Genders.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GeneralSpecializations.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GovernmentDeductionsTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GovernmentFunds.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GovernmentFundsTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="HolidaysAttendance.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="HolidaysAttendanceDetails.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="HolidaysSettings.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="HolidaysTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="InsteadDeportations.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="InternshipScholarships.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="InternshipScholarshipsDetails.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="InternshipScholarshipsTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Jobs.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="JobsAllowances.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="JobsCategories.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="JobsCategoriesQualifications.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="JobsGeneralGroups.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="JobsGroups.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="JobsKinds.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="JobsOperationsTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="JobsOperationsTypesDAL.cs" />
+    <Compile Include="KSACities.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KSARegions.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Lenders.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MaritalStatus.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MaturityYearsBalances.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="NormalVacationsTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OrganizationsJobs.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OrganizationsJobsStatus.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OrganizationsManagers.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OrganizationsStructures.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OverTimes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OverTimesDays.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OverTimesDetails.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PassengerOrders.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PassengerOrdersEscorts.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PassengerOrdersItineraries.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PassengerOrdersEscortsDAL.cs" />
+    <Compile Include="PassengerOrdersOldDAL.cs" />
+    <Compile Include="PassengerOrdersTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Periods.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionCardsPrinting.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionCardsPrintingDAL.cs" />
+    <Compile Include="PromotionsCandidatesAddedWays.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsDecisions.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsJobsCategories.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsPeriods.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsRecords.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsRecordsActionsTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsRecordsEmployees.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsRecordsEmployeesEducationsDetails.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsRecordsEmployeesEvaluationsDetails.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsRecordsEmployeesSeniorityDetails.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsRecordsJobsVacancies.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsRecordsLogs.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsRecordsQualificationsKinds.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsRecordsQualificationsPoints.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PromotionsRecordsStatus.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Qualifications.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="QualificationsDegrees.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="QualificationsTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Ranks.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RanksCategories.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RanksCategoriesVacationsBalances.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RanksCategoriesVacationsBalancesDAL.cs" />
+    <Compile Include="RanksTicketsClasses.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Scholarships.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ScholarshipsActions.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SectorsTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SectorsTypesDAL.cs" />
+    <Compile Include="EServicesTypesDAL.cs" />
+    <Compile Include="TeachersDAL.cs" />
+    <Compile Include="ScholarshipsDetails.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ScholarshipsTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SenioritysPointsDeclarations.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SickVacationsTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SMSLogs.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="spGetDeservedEmployeesToBeIncludedPromotion_Result.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SportsSeasons.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="StopWorks.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="StopWorksCategories.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="StopWorksTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Teachers.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TempEmployeesBasicSalaries.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TempEmployeesBasicSalariesDAL.cs" />
+    <Compile Include="EmployeesNormalVacationsBalancesDAL.cs" />
+    <Compile Include="PromotionsRecordsActionsTypesDAL.cs" />
+    <Compile Include="EndOfServicesVacationsDAL.cs" />
+    <Compile Include="PromotionsRecordsLogsDAL.cs" />
+    <Compile Include="OrganizationsJobsStatusDAL.cs" />
+    <Compile Include="PeriodsDAL.cs" />
+    <Compile Include="PromotionsDecisionsDAL.cs" />
+    <Compile Include="PromotionsRecordsJobsVacanciesDAL.cs" />
+    <Compile Include="PromotionsRecordsEmployeesSeniorityDetailsDAL.cs" />
+    <Compile Include="PromotionsRecordsEmployeesEvaluationsDetailsDAL.cs" />
+    <Compile Include="PromotionsRecordsEmployeesEducationsDetailsDAL.cs" />
+    <Compile Include="PromotionsRecordsQualificationsPointsDAL.cs" />
+    <Compile Include="PromotionsRecordsEmployeesDAL.cs" />
+    <Compile Include="EmployeesExperiencesDAL.cs" />
+    <Compile Include="EndOfServicesDAL.cs" />
+    <Compile Include="GeneralSpecializationsDAL.cs" />
+    <Compile Include="JobsCategoriesQualificationsDAL.cs" />
+    <Compile Include="PromotionsCandidatesAddedWaysDAL.cs" />
+    <Compile Include="PromotionsRecordsQualificationsKindsDAL.cs" />
+    <Compile Include="SenioritysPointsDeclarationsDAL.cs" />
+    <Compile Include="PromotionsRecordsStatusDAL.cs" />
+    <Compile Include="PromotionsRecordsDAL.cs" />
+    <Compile Include="JobsGeneralGroupsDAL.cs" />
+    <Compile Include="JobsGroupsDAL.cs" />
+    <Compile Include="PromotionsJobsCategoriesDAL.cs" />
+    <Compile Include="PromotionsPeriodsDAL.cs" />
+    <Compile Include="EndOfServicesCasesDAL.cs" />
+    <Compile Include="EndOfServicesReasonsDAL.cs" />
+    <Compile Include="SportsSeasonsDAL.cs" />
+    <Compile Include="HolidaysSettingsDAL.cs" />
+    <Compile Include="HolidaysTypesDAL.cs" />
+    <Compile Include="AssigningsTypesDAL.cs" />
+    <Compile Include="BasicSalariesDAL.cs" />
+    <Compile Include="BranchesDAL.cs" />
+    <Compile Include="CareersDegreesDAL.cs" />
+    <Compile Include="CareersHistoryTypesDAL.cs" />
+    <Compile Include="HolidaysAttendanceDetailsDAL.cs" />
+    <Compile Include="HolidaysAttendanceDAL.cs" />
+    <Compile Include="ScholarshipsActionsDAL.cs" />
+    <Compile Include="CommonEntityDAL.cs" />
+    <Compile Include="EmployeesTypesDAL.cs" />
+    <Compile Include="AssigningsReasonsDAL.cs" />
+    <Compile Include="EmployeesVacationsOpeningBalancesDAL.cs" />
+    <Compile Include="GendersDAL.cs" />
+    <Compile Include="OverTimesDaysDAL.cs" />
+    <Compile Include="StopWorksCategoriesDAL.cs" />
+    <Compile Include="StopWorksTypesDAL.cs" />
+    <Compile Include="MaritalStatusDAL.cs" />
+    <Compile Include="MaturityYearsBalancesDAL.cs" />
+    <Compile Include="SMSLogsDAL.cs" />
+    <Compile Include="InternshipScholarshipsDAL.cs" />
+    <Compile Include="InternshipScholarshipsDetailsDAL.cs" />
+    <Compile Include="InternshipScholarshipsTypesDAL.cs" />
+    <Compile Include="EmployeesAllowancesDAL.cs" />
+    <Compile Include="EventTypesEnum.cs" />
+    <Compile Include="FinancialYearsDAL.cs" />
+    <Compile Include="JobsCategoriesDAL.cs" />
+    <Compile Include="JobsAllowancesDAL.cs" />
+    <Compile Include="BusinessRulesDAL.cs" />
+    <Compile Include="EmployeesCareersHistoryDAL.cs" />
+    <Compile Include="AllowancesAmountTypesDAL.cs" />
+    <Compile Include="AllowancesDAL.cs" />
+    <Compile Include="PassengerOrdersTypesDAL.cs" />
+    <Compile Include="ScholarshipsDAL.cs" />
+    <Compile Include="EmployeesTransfersDAL.cs" />
+    <Compile Include="GovernmentDeductionsTypesDAL.cs" />
+    <Compile Include="GovernmentFundsDAL.cs" />
+    <Compile Include="GovernmentFundsTypesDAL.cs" />
+    <Compile Include="LendersDAL.cs" />
+    <Compile Include="OrganizationsJobsDAL.cs" />
+    <Compile Include="PassengerOrdersItinerariesDAL.cs" />
+    <Compile Include="PassengerOrdersDAL.cs" />
+    <Compile Include="QualificationsDegreesDAL.cs" />
+    <Compile Include="QualificationsDAL.cs" />
+    <Compile Include="EmployeesQualificationsDAL.cs" />
+    <Compile Include="QualificationsTypesDAL.cs" />
+    <Compile Include="TicketsClasses.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Transfers.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TransfersTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TransfersTypesDAL.cs" />
+    <Compile Include="ScholarshipsTypesDAL.cs" />
+    <Compile Include="RanksTicketsClassesDAL.cs" />
+    <Compile Include="TicketsClassesDAL.cs" />
+    <Compile Include="RanksDAL.cs" />
+    <Compile Include="RanksCategoriesDAL.cs" />
+    <Compile Include="OverTimesDetailsDAL.cs" />
+    <Compile Include="OverTimesDAL.cs" />
+    <Compile Include="PartialClasses.cs" />
+    <Compile Include="DelegationsKindsDAL.cs" />
+    <Compile Include="DelegationsDetailsDAL.cs" />
+    <Compile Include="DelegationsTypesDAL.cs" />
+    <Compile Include="KSACitiesDAL.cs" />
+    <Compile Include="KSARegionsDAL.cs" />
+    <Compile Include="DelegationsDAL.cs" />
+    <Compile Include="AssigningsDAL.cs" />
+    <Compile Include="EmployeesCodesDAL.cs" />
+    <Compile Include="EmployeesDAL.cs" />
+    <Compile Include="HCMEntities.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HCMEntities.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="HCMEntities.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="HCMEntities.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HCMEntities.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="CountriesDAL.cs" />
+    <Compile Include="JobsDAL.cs" />
+    <Compile Include="OrganizationsStructuresDAL.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Vacations.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="VacationsActions.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="VacationsActionsDAL.cs" />
+    <Compile Include="StopWorksDAL.cs" />
+    <Compile Include="VacationsDAL.cs" />
+    <Compile Include="VacationsDetails.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="VacationsDetailsDAL.cs" />
+    <Compile Include="ScholarshipsDetailsDAL.cs" />
+    <Compile Include="NormalVacationsTypesDAL.cs" />
+    <Compile Include="VacationsTypes.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="VacationsTypesDAL.cs" />
+    <Compile Include="SickVacationsTypesDAL.cs" />
+    <Compile Include="vwActualEmployeesBasedOnAssignings.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vwPassengerOrdersDetails.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vwQualificationsBasedOnAssignings.cs">
+      <DependentUpon>HCMEntities.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EntityDeploy Include="HCMEntities.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>HCMEntities.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config" />
+    <None Include="HCMEntities.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>HCMEntities.edmx</DependentUpon>
+      <LastGenOutput>HCMEntities.Context.cs</LastGenOutput>
+    </None>
+    <None Include="HCMEntities.edmx.diagram">
+      <DependentUpon>HCMEntities.edmx</DependentUpon>
+    </None>
+    <None Include="HCMEntities.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>HCMEntities.edmx</DependentUpon>
+      <LastGenOutput>HCMEntities.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

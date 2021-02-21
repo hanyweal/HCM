@@ -1,0 +1,239 @@
+﻿@model HCM.Models.JobsCategoriesViewModel
+@using HCM.Classes.Enums
+@using HCM.Models
+@using HCMBLL
+
+@{
+    ViewBag.Title = Resources.Globalization.EditJobCategoryText;
+}
+
+<script type="text/javascript">
+
+    function OkFunction() {
+        @*var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/KSACities/PrintDelegation")');
+        ShowModal("#divReportModal");*@
+    }
+
+    $(document).ready(function () {
+        BindPromotionsJobsCategories();
+        $("#btnAdd").click(function () {
+            var ObjToPassForAdd = {
+
+                PromotionJobCategory: {
+                    JobCategory: {
+                        JobCategoryID: $('#JobCategoryID').val()
+                    },
+
+
+                },
+                PromotionPeriodID: $("#ddlPromotionPeriod").val() == '' ? null : $("#ddlPromotionPeriod").val(),
+                AssignedJobCategoryJobCategoryID: $("#hdnFldJobCategoryID").val() == '' ? null : $("#hdnFldJobCategoryID").val()
+            };
+            $.ajax({
+                type: "POST"
+                //, dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                , contentType: "application/json; charset=utf-8"
+                , url: "@Url.Content("~/Jobs/AddPromotionJobCategory")"
+                , data: JSON.stringify(ObjToPassForAdd)
+                , success: function () {
+                    AddingSuccess();
+                    BindPromotionsJobsCategories();
+                }
+            , error: function (xhr, status, error) {
+                AddingFailure();
+            }
+            });
+        });
+
+    });
+
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function ResetPromotionPeriods() {
+        $("#ddlPromotionPeriod").html("");
+        $("#ddlPromotionPeriod").val("");
+        $("#txtPromotionPeriodStartDate").val("");
+        $("#txtPromotionPeriodEndDate").val("");
+        $("#txtPromotionPeriodNo").val("");
+    }
+
+    function AddingSuccess() {
+        ResetJobCategory();
+    }
+
+    function AddingFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function BindPromotionsJobsCategories() {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "/Jobs/GetPromotionsJobsCategoriesByJobCategoryID/" + '@Model.JobCategoryID',
+            success: function (result) {
+                $("#tblPromotionsJobsCategories").DataTable({
+                    destroy: true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "PromotionPeriod.Year.MaturityYear",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "PromotionPeriod.Period.PeriodName",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "AssignedJobCategory.JobCategoryName",
+                            "autowidth": true
+                        },
+                        {
+                            "data": "JPromotionJobCategoryID",
+                            "width": "5%",
+                            "sorting": false,
+                            "render": function (data, type, row) {
+                                Url = 'RemovePromotionJobCategory(' + '\'' + row.PromotionJobCategoryID + '\'' + ');';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                            }
+                        }
+                    ]
+                });
+            }
+        });
+
+    }
+
+    function RemovePromotionJobCategory(PromotionJobCategoryID) {
+        $.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $.ajax({
+                            type: "POST"
+                            , contentType: "application/json; charset=utf-8"
+                            , url: "/Jobs/RemovePromotionJobCategory/" + PromotionJobCategoryID
+                            , success: function () {
+                                @*$("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');*@
+                                BindPromotionsJobsCategories();
+                            }
+                        , error: function (xhr, status, error) {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                        }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    }
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.AddPromotionJobCategoryText</p>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddDeletePromotionJobCategoryDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("EditJobCategory", "Jobs", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST"
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.JobCategoryBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobGeneralGroup, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobGroupID, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobCategoryName, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.DisplayFor(model => model.JobGeneralGroup.JobGeneralGroupName)
+                        </td>
+                        <td class="col-md-4">
+                            @Html.DisplayFor(model => model.JobGroupName)
+                        </td>
+                        <td class="col-md-4">
+                            @Html.DisplayFor(model => model.JobCategoryName, new { @class = "form-control", @id = "txtJobCategoryName" })
+                            @Html.HiddenFor(model => model.JobCategoryID, new { @id = "JobCategoryID" })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="col-md-9">
+                @Resources.Globalization.PromotionsJobsCategoriesText
+            </div>
+            @Html.Partial("~/Views/Shared/_PromotionsPeriods.cshtml", new HCM.Models.PromotionsPeriodsViewModel() { })
+            @Html.Partial("~/Views/Shared/_JobsCategoriesPopup.cshtml", new HCM.Models.JobsCategoriesViewModel() { })
+
+            <div class="form-group">
+                <center>
+                    <input id="btnAdd" type="button" class="btn btn-default" value="@Resources.Globalization.AddText" />
+                    @*<input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />*@
+                </center>
+            </div>
+
+            <table id="tblPromotionsJobsCategories" class="table table-responsive table-condensed table-striped dataTable">
+                <thead>
+                    <tr>
+                        <td>@Resources.Globalization.YearText</td>
+                        <td>@Resources.Globalization.PromotionRecordPeriodNameText</td>
+                        <td>@Resources.Globalization.JobCategoryNameText</td>
+                        <td></td>
+                    </tr>
+                </thead>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Jobs"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+
+
+
+

@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="file:///C:/PROGRAM FILES (X86)/MICROSOFT VISUAL STUDIO 12.0/COMMON7/IDE/EXTENSIONS/MICROSOFT/ARCHITECTURE TOOLS/EXTENSIBILITY/Logging/CodeGenLog.xslt"?>
+<Log xmlns="http://schemas.microsoft.com/VisualStudio/2010/CodeGen.RE.Log" Label="Code Generation/Text Transformation Log">
+  <MessageClass Name="Message" Label="Message" Option="Show informational messages" />
+  <MessageClass Name="Warning" Label="Warning" Option="Show warnings" />
+  <MessageClass Name="Error" Label="Error" Option="Show errors" />
+  <MessageClass Name="Property" Label="Property" Option="Show metadata" />
+  <MessageClass Name="Diagnostic" Label="Message" Option="Show diagnostic messages" />
+  <Message Timestamp="2018-06-25T10:58:27" Importance="High" Text="Code generation or text transformation started." />
+  <Message Timestamp="2018-06-25T10:58:28" Importance="Diagnostic" Text="Name = ClassTemplate" />
+  <Message Timestamp="2018-06-25T10:58:28" Importance="Diagnostic" Text="Overwrite = True" />
+  <Message Timestamp="2018-06-25T10:58:28" Importance="Diagnostic" Text="ProjectPath = ..\HCMUMLLib\HCMUMLLib.csproj" />
+  <Message Timestamp="2018-06-25T10:58:28" Importance="Diagnostic" Text="TargetDirectory = GeneratedCode\{PackageStructure}" />
+  <Message Timestamp="2018-06-25T10:58:28" Importance="Diagnostic" Text="TargetName = {Name}" />
+  <Message Timestamp="2018-06-25T10:58:28" Importance="Diagnostic" Text="TemplateFilePath = C:\PROGRAM FILES (X86)\MICROSOFT VISUAL STUDIO 12.0\COMMON7\IDE\EXTENSIONS\MICROSOFT\ARCHITECTURE TOOLS\EXTENSIBILITY\Templates\Text\ClassTemplate.t4" />
+  <Message Timestamp="2018-06-25T10:58:28" Importance="Diagnostic" Text="ResolvedTemplateFilePath = C:\PROGRAM FILES (X86)\MICROSOFT VISUAL STUDIO 12.0\COMMON7\IDE\EXTENSIONS\MICROSOFT\ARCHITECTURE TOOLS\EXTENSIBILITY\Templates\Text\ClassTemplate.t4" />
+  <Message Timestamp="2018-06-25T10:58:28" Importance="Medium" Text="HCMUML's Text Template Binding: 'ClassTemplate' will apply ClassTemplate.t4 to: 'HCMUML::Result' -  (Class), 'HCMUML::CommonEntity' -  (Class), 'HCMUML::NormalVacationBLL' -  (Class), 'HCMUML::SickVacationBLL' -  (Class), 'HCMUML::EmployeesCodesBLL' -  (Class), 'HCMUML::EmployeesCareersHistoryBLL' -  (Class), 'HCMUML::ExceptionalVacationBLL' -  (Class), 'HCMUML::CompulsoryVacationBLL' -  (Class), 'HCMUML::BaseVacation' -  (Class), 'HCMUML::VacationFactory' -  (Class) " />
+  <Message Timestamp="2018-06-25T10:58:28" Importance="Medium" Text="'HCMUML::Result' -  (Class) : success (file replaced) - D:\Programming Drive\Visual Studio\Asp.Net\ASP.NET 2010\Projects\HCM\HCMUMLLib\GeneratedCode\Result.cs" />
+  <Message Timestamp="2018-06-25T10:58:28" Importance="Medium" Text="'HCMUML::CommonEntity' -  (Class) : success (file replaced) - D:\Programming Drive\Visual Studio\Asp.Net\ASP.NET 2010\Projects\HCM\HCMUMLLib\GeneratedCode\CommonEntity.cs" />
+  <Message Timestamp="2018-06-25T10:58:28" Importance="Medium" Text="'HCMUML::NormalVacationBLL' -  (Class) : success (file replaced) - D:\Programming Drive\Visual Studio\Asp.Net\ASP.NET 2010\Projects\HCM\HCMUMLLib\GeneratedCode\NormalVacationBLL.cs" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Medium" Text="'HCMUML::SickVacationBLL' -  (Class) : success (file replaced) - D:\Programming Drive\Visual Studio\Asp.Net\ASP.NET 2010\Projects\HCM\HCMUMLLib\GeneratedCode\SickVacationBLL.cs" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Medium" Text="'HCMUML::EmployeesCodesBLL' -  (Class) : success (file replaced) - D:\Programming Drive\Visual Studio\Asp.Net\ASP.NET 2010\Projects\HCM\HCMUMLLib\GeneratedCode\EmployeesCodesBLL.cs" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Medium" Text="'HCMUML::EmployeesCareersHistoryBLL' -  (Class) : success (file replaced) - D:\Programming Drive\Visual Studio\Asp.Net\ASP.NET 2010\Projects\HCM\HCMUMLLib\GeneratedCode\EmployeesCareersHistoryBLL.cs" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Medium" Text="'HCMUML::ExceptionalVacationBLL' -  (Class) : success (file replaced) - D:\Programming Drive\Visual Studio\Asp.Net\ASP.NET 2010\Projects\HCM\HCMUMLLib\GeneratedCode\ExceptionalVacationBLL.cs" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Medium" Text="'HCMUML::CompulsoryVacationBLL' -  (Class) : success (file replaced) - D:\Programming Drive\Visual Studio\Asp.Net\ASP.NET 2010\Projects\HCM\HCMUMLLib\GeneratedCode\CompulsoryVacationBLL.cs" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Medium" Text="'HCMUML::BaseVacation' -  (Class) : success (file replaced) - D:\Programming Drive\Visual Studio\Asp.Net\ASP.NET 2010\Projects\HCM\HCMUMLLib\GeneratedCode\BaseVacation.cs" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Medium" Text="'HCMUML::VacationFactory' -  (Class) : success (file replaced) - D:\Programming Drive\Visual Studio\Asp.Net\ASP.NET 2010\Projects\HCM\HCMUMLLib\GeneratedCode\VacationFactory.cs" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="Name = EnumTemplate" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="Overwrite = True" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="ProjectPath = ..\HCMUMLLib\HCMUMLLib.csproj" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="TargetDirectory = GeneratedCode\{PackageStructure}" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="TargetName = {Name}" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="TemplateFilePath = C:\PROGRAM FILES (X86)\MICROSOFT VISUAL STUDIO 12.0\COMMON7\IDE\EXTENSIONS\MICROSOFT\ARCHITECTURE TOOLS\EXTENSIBILITY\Templates\Text\EnumTemplate.t4" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="ResolvedTemplateFilePath = C:\PROGRAM FILES (X86)\MICROSOFT VISUAL STUDIO 12.0\COMMON7\IDE\EXTENSIONS\MICROSOFT\ARCHITECTURE TOOLS\EXTENSIBILITY\Templates\Text\EnumTemplate.t4" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Medium" Text="HCMUML's Text Template Binding: 'EnumTemplate' will apply EnumTemplate.t4 to: 'HCMUML::VacationsTypeEnum' -  (Enumeration) " />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Medium" Text="'HCMUML::VacationsTypeEnum' -  (Enumeration) : success (file replaced) - D:\Programming Drive\Visual Studio\Asp.Net\ASP.NET 2010\Projects\HCM\HCMUMLLib\GeneratedCode\VacationsTypeEnum.cs" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="Name = InterfaceTemplate" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="Overwrite = True" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="ProjectPath = ..\HCMUMLLib\HCMUMLLib.csproj" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="TargetDirectory = GeneratedCode\{PackageStructure}" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="TargetName = {Name}" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="TemplateFilePath = C:\PROGRAM FILES (X86)\MICROSOFT VISUAL STUDIO 12.0\COMMON7\IDE\EXTENSIONS\MICROSOFT\ARCHITECTURE TOOLS\EXTENSIBILITY\Templates\Text\InterfaceTemplate.t4" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="ResolvedTemplateFilePath = C:\PROGRAM FILES (X86)\MICROSOFT VISUAL STUDIO 12.0\COMMON7\IDE\EXTENSIONS\MICROSOFT\ARCHITECTURE TOOLS\EXTENSIBILITY\Templates\Text\InterfaceTemplate.t4" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Medium" Text="HCMUML's Text Template Binding: 'InterfaceTemplate' will apply InterfaceTemplate.t4 to: 'HCMUML::IEntity' -  (Interface), 'HCMUML::IVacations' -  (Interface) " />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Medium" Text="'HCMUML::IEntity' -  (Interface) : success (file replaced) - D:\Programming Drive\Visual Studio\Asp.Net\ASP.NET 2010\Projects\HCM\HCMUMLLib\GeneratedCode\IEntity.cs" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Medium" Text="'HCMUML::IVacations' -  (Interface) : success (file replaced) - D:\Programming Drive\Visual Studio\Asp.Net\ASP.NET 2010\Projects\HCM\HCMUMLLib\GeneratedCode\IVacations.cs" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="Name = StructTemplate" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="Overwrite = True" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="ProjectPath = ..\HCMUMLLib\HCMUMLLib.csproj" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="TargetDirectory = GeneratedCode\{PackageStructure}" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="TargetName = {Name}" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="TemplateFilePath = C:\PROGRAM FILES (X86)\MICROSOFT VISUAL STUDIO 12.0\COMMON7\IDE\EXTENSIONS\MICROSOFT\ARCHITECTURE TOOLS\EXTENSIBILITY\Templates\Text\StructTemplate.t4" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="ResolvedTemplateFilePath = C:\PROGRAM FILES (X86)\MICROSOFT VISUAL STUDIO 12.0\COMMON7\IDE\EXTENSIONS\MICROSOFT\ARCHITECTURE TOOLS\EXTENSIBILITY\Templates\Text\StructTemplate.t4" />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Medium" Text="HCMUML's Text Template Binding: 'StructTemplate' will apply StructTemplate.t4 to: 'HCMUML::Result' -  (Class), 'HCMUML::CommonEntity' -  (Class), 'HCMUML::NormalVacationBLL' -  (Class), 'HCMUML::SickVacationBLL' -  (Class), 'HCMUML::EmployeesCodesBLL' -  (Class), 'HCMUML::EmployeesCareersHistoryBLL' -  (Class), 'HCMUML::ExceptionalVacationBLL' -  (Class), 'HCMUML::CompulsoryVacationBLL' -  (Class), 'HCMUML::BaseVacation' -  (Class), 'HCMUML::VacationFactory' -  (Class) " />
+  <Message Timestamp="2018-06-25T10:58:29" Importance="Diagnostic" Text="'HCMUML::Result' -  (Class): no file generated because the 'AppliesToElement' method of the template 'StructTemplate.t4' evaluated to false." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::CommonEntity' -  (Class): no file generated because the 'AppliesToElement' method of the template 'StructTemplate.t4' evaluated to false." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::NormalVacationBLL' -  (Class): no file generated because the 'AppliesToElement' method of the template 'StructTemplate.t4' evaluated to false." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::SickVacationBLL' -  (Class): no file generated because the 'AppliesToElement' method of the template 'StructTemplate.t4' evaluated to false." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::EmployeesCodesBLL' -  (Class): no file generated because the 'AppliesToElement' method of the template 'StructTemplate.t4' evaluated to false." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::EmployeesCareersHistoryBLL' -  (Class): no file generated because the 'AppliesToElement' method of the template 'StructTemplate.t4' evaluated to false." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::ExceptionalVacationBLL' -  (Class): no file generated because the 'AppliesToElement' method of the template 'StructTemplate.t4' evaluated to false." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::CompulsoryVacationBLL' -  (Class): no file generated because the 'AppliesToElement' method of the template 'StructTemplate.t4' evaluated to false." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::BaseVacation' -  (Class): no file generated because the 'AppliesToElement' method of the template 'StructTemplate.t4' evaluated to false." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::VacationFactory' -  (Class): no file generated because the 'AppliesToElement' method of the template 'StructTemplate.t4' evaluated to false." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="The selection included 16 elements which were not bound to a template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::' -  (Association): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'3916e640-e44c-4574-a838-b79a8a38d990' -  (Generalization): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::' -  (InterfaceRealization): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::' -  (InterfaceRealization): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'15fe0ac4-ea0f-4924-84f7-d3b5035fb8db' -  (Generalization): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::' -  (InterfaceRealization): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::' -  (InterfaceRealization): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::' -  (InterfaceRealization): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::' -  (Association): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'6ecc7f65-41a3-42db-ac13-bf64901e2927' -  (Generalization): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::' -  (Dependency): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'04184171-c6f2-499d-9b8c-9630400d0b4a' -  (Generalization): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'4905c9e0-00c4-4f55-b0d7-534988110f92' -  (Generalization): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'3ffbe3be-beaf-41bf-89b0-081f987098da' -  (Generalization): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'24717e09-8e47-47fb-872e-42189066ff42' -  (Generalization): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="Diagnostic" Text="'HCMUML::' -  (Dependency): no bound template." />
+  <Message Timestamp="2018-06-25T10:58:30" Importance="High" Text="Code generation complete. Errors: 0. Warnings: 0." />
+</Log>

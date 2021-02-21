@@ -1,0 +1,173 @@
+﻿@model HCM.Models.EmployeesViewModel
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        BindEmployees();
+
+        $("#OpenEmployeesPopup").click(function () {
+            ShowModal("#divEmployeesModal");
+        });
+    });
+
+    function BindEmployees() {
+        var tblEmployees = $("#tblEmployees").DataTable({
+            "ajax": {
+                "url": "/Employees/GetEmployeesCodes",
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeIDNo",
+                    "autowidth": true
+                },
+                //{
+                //    "data": "Employee.JobName",
+                //    "autowidth": true
+                //},
+                {
+                    "data": "EmployeeCodeID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        return '<a onClick="closeEmployeesPopup(' + data + ')"><span class="glyphicon glyphicon-thumbs-up" /></a>'
+                    }
+                },
+            ]
+        });
+    }
+
+    function ResetEmployee() {
+        $("#txtEmployeeCodeNo").val('');
+        $("#hdnFldEmployeeCodeID").val('');
+        $("#txtEmployeeNameAr").val('');
+        $("#txtEmployeeIDNo").val('');
+        $("#txtEmployeeJobName").val('');
+        $("#txtEmployeeRankName").val('');
+        $("#txtEmployeeJobNo").val('');
+        $("#txtEmployeeOrganizationName").val('');
+        $("#txtEmployeeCurrentQualification").val('');
+        $("#hdnFldEmployeeCareerHistoryID").val('');
+    }
+
+
+</script>
+
+
+<table class="table table-responsive table-condensed table-striped" style="text-align:right">
+    <tr>
+        <td>
+            @Html.LabelFor(model => model.EmployeeCodeNo, new { @class = "control-label" })
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="col-md-4">
+            <div class="input-group">
+                @Html.TextBoxFor(model => model.EmployeeCodeNo, new { @class = "form-control", @id = "txtEmployeeCodeNo", @readonly = "readonly" })
+                <span id="OpenEmployeesPopup" class="input-group-addon clickable" title="@Resources.Globalization.SearchAboutEmployeeTooltip">
+                    <i class="glyphicon glyphicon-search"></i>
+                </span>
+                @Html.HiddenFor(model => model.EmployeeCodeID, new { @id = "hdnFldEmployeeCodeID" })
+                @Html.HiddenFor(model => model.EmployeeCareerHistoryID, new { @id = "hdnFldEmployeeCareerHistoryID" })
+                @Html.ValidationMessageFor(model => model.EmployeeCodeNo, "", new { @class = "text-danger" })
+            </div>
+        </td>
+        <td class="col-md-4"></td>
+        <td class="col-md-4"></td>
+    </tr>
+    <tr>
+        <td class="col-md-4">
+            @Html.LabelFor(model => model.EmployeeNameAr, new { @class = "control-label" })
+        </td>
+        <td class="col-md-4">
+            @Html.LabelFor(model => model.EmployeeIDNo, new { @class = "control-label" })
+        </td>
+        <td class="col-md-4">
+            @Html.LabelFor(model => model.EmployeeJobName, new { @class = "control-label" })
+        </td>
+    </tr>
+    <tr>
+        <td class="col-md-4">
+            @Html.TextBoxFor(model => model.EmployeeNameAr, new { @class = "form-control", @id = "txtEmployeeNameAr", @readonly = "readonly" })
+        </td>
+        <td class="col-md-4">
+            @Html.TextBoxFor(model => model.EmployeeIDNo, new { @class = "form-control", @id = "txtEmployeeIDNo", @readonly = "readonly" })
+        </td>
+        <td class="col-md-4">
+            @Html.TextBoxFor(model => model.EmployeeJobName, new { @class = "form-control", @id = "txtEmployeeJobName", @readonly = "readonly" })
+        </td>
+    </tr>
+    <tr>
+        <td class="col-md-4">
+            @Html.LabelFor(model => model.EmployeeRankName, new { @class = "control-label" })
+        </td>
+        <td class="col-md-4">
+            @Html.LabelFor(model => model.EmployeeJobNo, new { @class = "control-label" })
+        </td>
+        <td class="col-md-4">
+            @Html.LabelFor(model => model.EmployeeOrganizationName, new { @class = "control-label" })
+        </td>
+    </tr>
+    <tr>
+        <td class="col-md-4">
+            @Html.TextBoxFor(model => model.EmployeeRankName, new { @class = "form-control", @id = "txtEmployeeRankName", @readonly = "readonly" })
+        </td>
+        <td class="col-md-4">
+            @Html.TextBoxFor(model => model.EmployeeJobNo, new { @class = "form-control", @id = "txtEmployeeJobNo", @readonly = "readonly" })
+        </td>
+        <td class="col-md-4">
+            @Html.TextBoxFor(model => model.EmployeeOrganizationName, new { @class = "form-control", @id = "txtEmployeeOrganizationName", @readonly = "readonly" })
+        </td>
+    </tr>
+</table>
+
+
+<div class="modal fade" id="divEmployeesModal">
+    <div class="modal-dialog" style="width:800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.EmployeesListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        @*<div class="alert alert-danger" style="padding:6px">
+                                <p>@Resources.Globalization.EmployeeMustBeCreatedFirstText</p>
+                            </div>*@
+                    </div>
+                </div>
+                <table id="tblEmployees" class="table table-responsive table-hover dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                            <td>@Resources.Globalization.EmployeeNameArText</td>
+                            <td>@Resources.Globalization.EmployeeIDNoText</td>
+                            @*<td>@Resources.Globalization.EmployeeJobNameText</td>*@
+                            <td>@Resources.Globalization.SelectText</td>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

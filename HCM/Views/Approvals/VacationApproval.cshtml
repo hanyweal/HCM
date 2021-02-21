@@ -1,0 +1,284 @@
+﻿@using HCM.Classes.Enums
+@using HCMBLL.Enums
+
+@{
+    ViewBag.Title = @Resources.Globalization.VacationsApprovalText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            //console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+            //alert(message);
+        }
+
+        $("#btnApprove").on('click', function () {
+            alert('');
+        });
+
+        $("#txtVacationID").on('change', function () {
+            if ($("#txtVacationID").val() != '') {
+                $.ajax({
+                    type: "POST"
+                        , dataType: "json"
+                        , contentType: "application/json; charset=utf-8"
+                        , url: "@Url.Content("~/Vacations/GetVacationByVacationID/")" + $("#txtVacationID").val()
+                        , success: function (result) {
+                            if (result.data != null) {
+                                var data = result.data;
+                                $("#hdnFldVacationID").val(data.VacationID);
+                                $("#lblEmployeeCodeNo").text(data.EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo);
+                                $("#lblEmployeeNameAr").text(data.EmployeeCareerHistory.EmployeeCode.Employee.EmployeeNameAr);
+                                $("#lblVacationTypeName").text(data.VacationTypeName);
+                                $("#lblVacationStartDate").text(RenderDate(data.VacationStartDate));
+                                $("#lblVacationEndDate").text(RenderDate(data.VacationEndDate));
+                                $("#lblVacationPeriod").text(data.VacationPeriod);
+                                $("#lblWorkDate").text(RenderDate(data.WorkDate));
+
+                                BindVacationDetails(data.VacationID);
+                            }
+                            else {
+                                Reset();
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Notice, Globals.Utilities.RemoveSpace(@Resources.Globalization.NoVacationFoundText))');
+                            }
+                        }
+                        , error: function (jqXHR, exception) {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                        }
+                });
+            }
+        });
+    });
+
+    function BindVacationDetails(VacationID) {
+        $("#tblVacationDetails").DataTable({
+            "destroy": true,
+            "searching": false,
+            "ordering": false,
+            "paging": false,
+            "drawCallback": function (row) {
+
+                $('#tblVacationDetails tbody tr').each(function () {
+                    var btnApprove = $("#btnApprove", this);
+                    var ConfirmationMessage = null;
+                    var table = $("#tblVacationDetails").DataTable()
+                    if (table.row(this).index() != table.rows().count() - 1) {
+                        btnApprove.addClass('hide');
+                    }
+
+                    var ApprovalType = btnApprove.attr('name');
+                    if (ApprovalType == 'Approve') {
+                        ConfirmationMessage = '@Resources.Globalization.ApproveConfirmationMessageText';
+                    }
+                    else {
+                        ConfirmationMessage = '@Resources.Globalization.ApproveCancelConfirmationMessageText';
+                    }
+
+                    btnApprove.confirm({
+                        confirmButton: '@Resources.Globalization.ConfirmButtonText',
+                        cancelButton: '@Resources.Globalization.CancelButtonText',
+                        animation: 'zoom',
+                        content: ConfirmationMessage,
+                        title: '@Resources.Globalization.CofirmationMessageTitle',
+                        buttons: {
+                            confirm: {
+                                action: function () {
+                                    $.ajax({
+                                        type: "POST"
+                                       , contentType: "application/json; charset=utf-8"
+                                       , url: "@Url.Content("~/Approvals/VacationApproval/")" + $("#hdnFldVacationID").val() + "/" + ApprovalType
+                                       , success: function () {
+                                           BindVacationDetails($("#hdnFldVacationID").val());
+                                           if (ApprovalType == 'Approve') {
+                                               $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.ApproveDoneAlertText))');
+                                           }
+                                           else {
+                                               $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.ApproveCancelDoneAlertText))');
+                                           }
+                                       }
+                                       , error: function (xhr, status, error) {
+                                           $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure,"Error")');
+                                       }
+                                    });
+                                },
+                                btnClass: 'btn-blue',
+                                text: '@Resources.Globalization.ConfirmButtonText',
+                            },
+                            cancel: {
+                                action: function () { },
+                                text: '@Resources.Globalization.CancelButtonText',
+                            },
+                        },
+                    });
+                });
+
+            },
+            "ajax": {
+                "url": "@Url.Content("~/Vacations/GetEmployeeVacationsDetailsByVacationID/")" + VacationID,
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                 {
+                     "data": "VacationActionName",
+                     "autowidth": false,
+                 },
+                 {
+                     "data": "FromDate",
+                     "autowidth": false,
+                     "render": RenderDate
+                 },
+                 {
+                     "data": "VacationPeriod",
+                     "autowidth": false,
+                 },
+                 {
+                     "data": "ToDate",
+                     "autowidth": false,
+                     "render": RenderDate
+                 },
+                 {
+                     "data": "IsApproved",
+                     "autowidth": false,
+                     "render": RenderCheckBox
+                 },
+                 {
+                     "data": "ApprovedBy",
+                     "autowidth": false,
+                 },
+                 {
+                     "data": "ApprovedDate",
+                     "autowidth": false,
+                     "render": RenderDateTime
+                 },
+                 {
+                     "data": "VacationDetailID",
+                     "autowidth": false,
+                     "render": function (data, type, row) {
+                         if (!row.IsApproved) {
+                             return '<input type="submit" name="Approve" id="btnApprove" Class="btn btn-default" value="' + '@Resources.Globalization.ApproveText' + '" title="' + '@Resources.Globalization.ApproveTooltip' + '"/>'
+                         }
+                         else {
+                             return '<input type="submit" name="ApproveCancel" id="btnApprove" Class="btn btn-default" value="' + '@Resources.Globalization.ApproveCancelText' + '" title="' + '@Resources.Globalization.ApproveCancelTooltip' + '"/>'
+                         }
+                     }
+                 },
+            ]
+        });
+    }
+
+    function Reset() {
+        $("#hdnFldVacationID").val('');
+        $("#lblEmployeeCodeNo").text('');
+        $("#lblEmployeeNameAr").text('');
+        $("#lblVacationTypeName").text('');
+        $("#lblVacationStartDate").text('');
+        $("#lblVacationEndDate").text('');
+        $("#lblVacationPeriod").text('');
+        $("#lblWorkDate").text('');
+        BindVacationDetails(0);
+    }
+
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.ApproveText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.ApproveVacationDescText
+    </div>
+    <div class="panel-body">
+        <span class="control-label">@Resources.Globalization.VacationBasicInfoText</span>
+
+        <table class="table table-responsive table-condensed">
+            <tbody>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.SequenceNoText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <input type="number" id="txtVacationID" class="form-control" maxlength="9" width="30" />
+                        <input type="hidden" id="hdnFldVacationID" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.EmployeeCodeNoText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblEmployeeCodeNo"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.EmployeeNameArText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblEmployeeNameAr"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.VacationTypeText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblVacationTypeName"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.VacationStartDateText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblVacationStartDate"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.VacationEndDateText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblVacationEndDate"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.VacationPeriodText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblVacationPeriod"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.WorkDateText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblWorkDate"></label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br />
+        <span class="control-label">@Resources.Globalization.VacationDetailsInfoText</span>
+        <table id="tblVacationDetails" class="table table-responsive table-hover" style="width:100%">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.VacationActionText</td>
+                    <td>@Resources.Globalization.FromDateText</td>
+                    <td>@Resources.Globalization.VacationPeriodText</td>
+                    <td>@Resources.Globalization.ToDateText</td>
+                    <td>@Resources.Globalization.ApproveText</td>
+                    <td>@Resources.Globalization.ApprovedByText</td>
+                    <td>@Resources.Globalization.ApprovedDateText</td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+
+
+    </div>
+</div>
+

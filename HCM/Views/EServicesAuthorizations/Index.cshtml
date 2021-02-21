@@ -1,0 +1,318 @@
+﻿@model HCM.Models.EServicesAuthorizationsViewModel
+@using HCMBLL;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums;
+@using HCM.Models;
+
+@{
+    Layout = "~/Views/Shared/_EServiecsLayout.cshtml";
+    ViewBag.Title = Resources.Globalization.EServicesAuthorizationsText;
+}
+
+<script type="text/javascript">
+
+    var chart = null;
+    var EServiceTypeID;
+    var totalNodes = 0;
+    var IsCallbackRegister = false;
+    extentedFuncOnClickService = "BindOrgChart";        // defined in _EServicesTypes.cshtml
+
+    $(document).ready(function () {
+        $('#divValidation').hide();
+        //ScrollToDiv('divTop');
+    });
+
+    function BindOrgChart(eServiceTypeID) {
+        $("#divLoaderOrg").show();
+        EServiceTypeID = eServiceTypeID;
+        chart = null;
+        
+        //$('.service').removeClass('shadow_green');
+        //$('.' + eServiceTypeID).addClass('shadow_green');
+
+        $.ajax({
+            type: "GET",
+            url: "@Url.Content("/EServicesAuthorizations/GetFirstLevel/")" + EServiceTypeID,
+            success: function (d) {
+                totalNodes = d.total;
+                LoadOrgChart(d.data);
+            },
+            error: OnFailure
+        });
+    }
+
+    function SetAuth(OrgID) {
+
+        // No action needed for Top Manager of his organization
+        if ('@Model.Organization.OrganizationID' == OrgID) {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationEServicesAuthorizedLoginOrganizationIsSameAsAuthorizationText), "")');
+            return;
+        }
+
+        var nodeDetail = chart.get(OrgID);
+        var confirmationText;
+        var EmployeeCodeID;
+
+        @*console.log('nodeDetail', nodeDetail);
+        console.log('WindowsEmployeeCode', '@Model.WindowsEmployeeCode.EmployeeCodeID')
+        console.log('nodeDetail.IsYourAuth', nodeDetail.IsYourAuth);*@
+
+        if (nodeDetail.IsYourAuth) {
+            confirmationText = '@Resources.Globalization.EServiceAuthConfirmText';
+            EmployeeCodeID = nodeDetail.ManagerCodeID;
+        }
+        else {
+            confirmationText = '@Resources.Globalization.EServiceRevokeAuthConfirmText';
+            EmployeeCodeID = '@Model.WindowsEmployeeCode.EmployeeCodeID';
+        }
+
+        //console.log('EmployeeCodeID', EmployeeCodeID);
+
+        $.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: confirmationText,
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+
+                        $.ajax({
+                            type: "POST",
+                            contentType: "application/json; charset=utf-8",
+                            url: "@Url.Content("~/EServicesAuthorizations/SetAuthorizations/")" + EServiceTypeID + "/" + OrgID + "/" + EmployeeCodeID + "/" + totalNodes,
+                            //data: null,
+                            success: OnSuccess,
+                            error: OnFailure
+                        });
+
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { console.log('cancel'); },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    }
+
+    function OnSuccess(data) {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "CallbackAfterSuccess")');
+
+        //console.log('success data', data);
+        if (chart) {
+            chart.updateNode(data.node);
+        }
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function CallbackAfterSuccess() {
+    }
+
+    function LoadOrgChart(data) {
+        $('#divValidation').hide();
+
+        OrgChart.SEARCH_PLACEHOLDER = '@Resources.Globalization.SearchText';
+        OrgChart.RES.IT_IS_LONELY_HERE_LINK = "";
+
+        //OrgChart.templates.diva.node='<rect x="0" y="80" height="100" width="200" fill="#039BE5"></rect><circle cx="100" cy="50" fill="#ffffff" r="50" stroke="#039BE5" stroke-width="2"></circle>'
+        //OrgChart.templates.diva.field_0 = '<text width="185" style="font-size: 14px;" fill="#ffffff" x="100" y="120" text-anchor="middle">{val}</text>';
+        //OrgChart.templates.diva.field_1 = '<text width="185" style="font-size: 13px;" fill="#ffd800" x="100" y="145" text-anchor="middle">{val}</text>';
+        //OrgChart.templates.diva.field_2 = '<text width="185" style="font-size: 12px;" fill="#b6ff00" x="100" y="165" text-anchor="middle">{val}</text>';
+
+        OrgChart.templates.cool = Object.assign({}, OrgChart.templates.ana);
+        OrgChart.templates.cool.defs = '<filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="cool-shadow"><feOffset dx="0" dy="4" in="SourceAlpha" result="shadowOffsetOuter1" /><feGaussianBlur stdDeviation="10" in="shadowOffsetOuter1" result="shadowBlurOuter1" /><feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.1 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1" /><feMerge><feMergeNode in="shadowMatrixOuter1" /><feMergeNode in="SourceGraphic" /></feMerge></filter>';
+
+        OrgChart.templates.cool.size = [310, 190];
+        OrgChart.templates.cool.node = '<rect filter="url(#cool-shadow)" x="0" y="0" height="190" width="310" fill="#ffffff" stroke-width="1" stroke="#eeeeee" rx="10" ry="10"></rect>' // main rectangle
+            + '<rect fill="#ffffff" x="10" y="10" width="200" height="100" rx="10" ry="10" filter="url(#cool-shadow)"></rect>' // name rectangle
+            + '<rect stroke="#eeeeee" stroke-width="1" x="10" y="120" width="220" fill="#ffffff" rx="10" ry="10" height="60"></rect>'   // auth rectangle
+            + '<rect stroke="#eeeeee" stroke-width="1" x="240" y="120" width="60" fill="#ffffff" rx="10" ry="10" height="60"></rect>'   // button rect
+            + '<text style="font-size: 11px;" fill="#afafaf" x="170" y="145">@Resources.Globalization.AuthorizedPersonText</text > ';
+        //+ '<image xlink:href="http://mic-app-test:8034/content/images/done.jpg" x="20" y="65" width="32" height="32"></image>';
+
+        OrgChart.templates.cool.img = '<clipPath id="{randId}">'
+            + '<rect fill="#ffffff" stroke="#039BE5" stroke-width="5" x="220" y="10" rx="10" ry="10" width="80" height="100"></rect>'
+            + '</clipPath>'
+            + '<image preserveAspectRatio="xMidYMid slice" clip-path="url(#{randId})" xlink:href="{val}" x="220" y="10" width="80" height="100"></image>'
+            + '<rect fill="none" stroke="#F57C00" stroke-width="2" x="220" y="10" rx="10" ry="10" width="80" height="100"></rect>';
+
+        OrgChart.templates.cool.orgname = '<text style="font-size: 12px;" text-overflow="ellipsis" fill="#afafaf" x="205" y="30" width="190">{val}</text>';
+        OrgChart.templates.cool.name = '<text style="font-size: 11px;" fill="#000" x="205" y="50">{val}</text>';
+        OrgChart.templates.cool.authperson = '<text style="font-size: 12px;" fill="#F57C00" x="170" y="165">{val}</text>';
+        OrgChart.templates.cool.authpersonimg = '<image xlink:href="{val}" x="180" y="130" width="40" height="40"></image>';
+        OrgChart.templates.cool.IsYourAuthImg = '<image xlink:href="{val}" x="20" y="65" width="32" height="32"></image>';//'<rect x="180" y="130" width="40" height="40" fill="#ffffff" stroke="#F57C00" rx="10" ry="10"></rect>'
+
+        //+ '<rect fill="none" stroke="#F57C00" stroke-width="2" x="180" y="130" rx="10" ry="10" width="40" height="40"></rect>';
+        //OrgChart.templates.cool.title2 = '<text style="font-size: 10px;" fill="#afafaf" x="220" y="165">{val}</text>';
+        //OrgChart.templates.cool.points = '<text style="font-size: 24px;" fill="#F57C00" x="270" y="165" text-anchor="middle">{val}</text>';
+        OrgChart.templates.cool.btnImg = '<g class="svg-btn" style="cursor:pointer;"><rect x="250" y="130" width="40" height="40" fill="#F57C00" rx="10" ry="10"></rect>'
+            + '<image xlink:href="{val}" x="262" y="142" width="16" height="16"></image></g>'
+        OrgChart.templates.cool.IsYourAuthText = '<text style="font-size: 14px;" fill="#F57C00" x="200" y="85" >{val}</text>';
+        OrgChart.templates.cool.svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="background-color:#F2F2F2;display:block;" width="{w}" height="{h}" viewBox="{viewBox}">{content}</svg>';
+
+        OrgChart.MIZED_LAYOUT_ALL_NODES = false;
+
+        //var chart = null;
+        chart = new OrgChart(document.getElementById("divOrgChart"), {
+            lazyLoading: true,
+            scaleInitial: 0.65,//OrgChart.match.height, 1.4, //
+            showXScroll: OrgChart.scroll.visible,
+            showYScroll: OrgChart.scroll.visible,
+            mouseScrool: OrgChart.action.zoom,
+            nodeMouseClick: OrgChart.action.none,
+            //layout: OrgChart.mixed,
+            enableSearch: true,
+            sticky: false,
+            orientation: OrgChart.orientation.top,
+            toolbar: {
+                fullScreen: true,
+                zoom: true,
+                fit: true,
+                expandAll: true,
+                layout: true
+            },
+            tags: {
+                "subLevels0": {
+                    subLevels: 0
+                },
+                "subLevels1": {
+                    subLevels: 1
+                },
+                "subLevels2": {
+                    subLevels: 2
+                },
+                "subLevels3": {
+                    subLevels: 3
+                },
+                "subLevels4": {
+                    subLevels: 4
+                }
+            },
+            collapse: {
+                level: 2,
+                allChildren: true
+            },
+            template: 'cool',
+            nodeBinding: {
+                orgname: 'OrganizationName',
+                name: 'ManagerName',
+                authperson: 'AuthorizedPersonName',
+                authpersonimg: 'AuthPicture',
+                btnImg: 'btnImg',
+                //IsYourAuthText: 'IsYourAuthText',
+                //IsYourAuthImg : 'IsYourAuthImg',
+                img: 'Picture'
+            }
+        });
+
+        chart.on('init', function (sender) {
+            $("#divLoaderOrg").hide();
+        });
+
+        //console.log('data', data, data.length);
+        chart.load(data);
+        chart.fit();
+
+        if (data.length <= 0) {
+            $('#divValidation').show();
+            $("#divLoaderOrg").hide();
+            //IsCallbackRegister = false;
+            ScrollToDiv('divTop');
+        }
+        else {
+            ScrollToDiv('divOrgChart');
+        }
+
+        chart.on('redraw', function () {
+
+            $('.svg-btn').unbind('click').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                SetAuth(this.parentNode.getAttribute('node-id'));
+            });
+
+        });
+    }
+</script>
+
+<div id="divTop" class="alert alert-success">
+    <p style="font-size:larger">@Resources.Globalization.EServicesAuthorizationsText</p>
+</div>
+
+<div id="divMain" class="panel panel-info" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EServicesAuthorizationsDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @*@Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.EServicesAuthorizations })*@
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Authorize", "EServicesAuthorizations", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }, new { id = "frmEServicesAuthorization" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <div class="row">
+                <div class="col-md-2">
+                    <b>@Resources.Globalization.OrganizationNameText</b>
+                </div>
+                <div class="col-md-5">
+                    @Html.Action("GetWindowsUserOrganizationStructures", "BaseEServices")
+                </div>
+                <div class="col-md-5"></div>
+            </div>
+
+            <hr />
+
+            <span class="control-label"><b>@Resources.Globalization.ServiceTypeText</b></span>
+            <div class="row">
+                <div class="col-md-8">
+                    @Html.Partial("~/Views/Shared/_EServicesTypes.cshtml", Model.EServiceTypes)                   
+                </div>
+                <div class="col-md-4">
+                    <table class="table table-striped">
+                        <tr>
+                            <th colspan="2">@Resources.Globalization.LegendText</th>
+                        </tr>
+                        <tr>
+                            <td><img src="~/Content/Images/done.jpg" width="16" height="16" /></td>
+                            <td>@Resources.Globalization.EServicesYouRAuthorizedText</td>
+                        </tr>
+                        <tr>
+                            <td><img src="~/Content/Images/error2.png" width="16" height="16" /></td>
+                            <td>@Resources.Globalization.EServicesYouGiveAuthorityText</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <hr />
+
+            <div id="divValidation" class="alert alert-info">
+                @Resources.Globalization.NoOrganizationFoundInAuthorizationText
+            </div>
+
+            <div id="divOrgChart" style="width:100%; height:700px" />
+
+        }
+    </div>
+</div>
+
+<div id="divLoaderOrg" class="overlay">
+    <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+</div>

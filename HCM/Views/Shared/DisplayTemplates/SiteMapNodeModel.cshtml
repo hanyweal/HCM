@@ -1,0 +1,30 @@
+﻿@model MvcSiteMapProvider.Web.Html.Models.MenuHelperModel
+@using System.Web.Mvc.Html
+@using MvcSiteMapProvider.Web.Html.Models
+
+@foreach (SiteMapNodeModel node in Model.Nodes)
+{
+    //string url = node.IsClickable ? node.Url : "#";
+    <div class="divMenuItems">
+        <a href='@Url.Action(node.Action, node.Controller)'>
+            <img src='@Url.Content("~/Content/images/" + node.Controller + ".jpg")' class="img-circle">
+        </a>
+        <br />
+        <label>@node.Title</label>
+    </div>
+}
+
+@*@if (Model.IsCurrentNode && Model.SourceMetadata["HtmlHelper"].ToString() != "MvcSiteMapProvider.Web.Html.MenuHelper")  { 
+    <text>@Model.Title</text>
+} else if (Model.IsClickable) { 
+    if (string.IsNullOrEmpty(Model.Description))
+    {
+        <a href="@Model.Url">@Model.Title</a>
+    }
+    else
+    {
+        <a href="@Model.Url" title="@Model.Description">@Model.Title</a>
+    }
+} else { 
+    <text>@Model.Title</text>
+}*@

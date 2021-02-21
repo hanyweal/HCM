@@ -1,0 +1,145 @@
+﻿
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#btnOpenJobsVacanciesPopup").click(function () {
+
+            var PromotionRecordID = $('#hdnFldPromotionRecordID').val();
+            var JobCategoryID = $('#hdnFldJobCategoryID').val();
+            var RankID = $('#hdnFldRankID').val();
+
+            if (PromotionRecordID == "") PromotionRecordID = 0;
+            if (JobCategoryID == "") JobCategoryID = 0;
+            if (RankID == "") RankID = 0;
+
+            BindJobsVacancies(PromotionRecordID, JobCategoryID, RankID);
+            ShowModal("#divJobsVacanciesModal");
+
+        });
+    });
+
+    function BindJobsVacancies(PromotionRecordID, JobCategoryID, RankID) {
+
+        var url;
+
+        if (PromotionRecordID > 0)
+            url = "/PromotionsRecords/GetJobsVacanciesByPromotionRecordID/" + PromotionRecordID;
+        else
+            url = "/OrganizationJob/GetJobsVacancies/" + JobCategoryID + "/" + RankID;
+
+        //console.log('url', url);
+
+        var tblJobsVacancies = $("#tblJobsVacancies").DataTable({
+            "ajax": {
+                "url": url,
+                "type": "get",
+                "datatype": "json"
+            },
+            "destroy": true,
+            "drawCallback": function (settings) {
+                var rowsCount = GetRowsCount("#tblJobsVacancies");
+                if (rowsCount == 0) {
+                    $("#divJobsVacanciesAlert").removeClass("alert alert-info");
+                    $("#divJobsVacanciesAlert").addClass("alert alert-warning");
+                    $("#lblJobsVacancies").html('@Resources.Globalization.NoJobsVacanciesUnderRankAndJobCategoryText');
+                }
+                else {
+                    $("#divJobsVacanciesAlert").removeClass("alert alert-warning");
+                    $("#divJobsVacanciesAlert").addClass("alert alert-info");
+                    $("#lblJobsVacancies").html('@Resources.Globalization.CountJobsVacanciesUnderRankAndJobCategoryText' + " : " + tblJobsVacancies.rows().data().length);
+                }
+            },
+            "columns": [
+                {
+                    "data": "JobGeneralGroupName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobGroupName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobCategoryName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobCode",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true
+                },
+                {
+                    "data": "OrganizationName",
+                    "autowidth": true
+                },
+                {
+                    "data": "IsReserved",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        var checked = data ? "checked" : "";
+                        return '<input type="checkbox" disabled ' + checked + ' />';
+                    }
+                },
+            ]
+        });
+    }
+
+</script>
+
+<button id="btnOpenJobsVacanciesPopup" class="btn btn-default" title="@Resources.Globalization.SearchAboutJobsVacanciesTooltip"type="button">
+    <span class="glyphicon glyphicon-modal-window"></span> @Resources.Globalization.ShowJobsVacanciesText
+</button>
+
+<div class="modal fade" id="divJobsVacanciesModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.JobsVacanciesListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="divJobsVacanciesAlert" class="alert alert-info">
+                            <label id="lblJobsVacancies" class="control-label"></label>
+                        </div>
+                    </div>
+                </div>
+                <table id="tblJobsVacancies" class="table table-responsive table-hover dataTable font-12" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.JobGeneralGroupNameText</td>
+                            <td>@Resources.Globalization.JobGroupNameText</td>
+                            <td>@Resources.Globalization.JobCategoryNameText</td>
+                            <td>@Resources.Globalization.JobCodeText</td>
+                            <td>@Resources.Globalization.JobNameText</td>
+                            <td>@Resources.Globalization.JobNoText</td>
+                            <td>@Resources.Globalization.RankNameText</td>
+                            <td>@Resources.Globalization.OrganizationNameText</td>
+                            <td>@Resources.Globalization.IsJobReservedText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

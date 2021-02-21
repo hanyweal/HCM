@@ -1,0 +1,56 @@
+﻿@using HCM.Classes.Enums
+<script type="text/javascript">
+
+    function AppendToolbar() {
+         
+        var btnPrint = ' <button id="btnPrintPromotionRecord" type="button" class="btn btn-default" onclick="PrintPromotionRecord()" title=@Resources.Globalization.PromotionRecordPrintingText ><span class="glyphicon glyphicon-print"></span> @Resources.Globalization.PromotionRecordPrintingText</button>';
+        var btnNewPromotionRecord = ' <button id="btnNewPromotionRecord" class="btn btn-default" onclick="NewPromotionRecord()" type="button" title=@Resources.Globalization.NewPromotionRecordText><span class="glyphicon glyphicon-record"></span> @Resources.Globalization.NewPromotionRecordText</button>';
+
+        var PromotionRecordToolbarID = $('#hdnFldPromotionRecordToolbarID').val();
+         
+        //setTimeout(function () {
+
+            @*if (PromotionRecordToolbarID == '@Convert.ToInt32(PromotionsRecordsToolbarEnum.Open)') {
+                //$('.btn-group').append(btnPrint);
+            }*@
+            if (PromotionRecordToolbarID == '@Convert.ToInt32(PromotionsRecordsToolbarEnum.Opened)')
+            {
+                $('.btn-group').append(btnNewPromotionRecord);
+                $('.btn-group').append(btnPrint);
+                extentedFuncForOpenedToolbar = "ResetPromotionRecord";
+            }
+            else if (PromotionRecordToolbarID == '@Convert.ToInt32(PromotionsRecordsToolbarEnum.Preference)')
+            {
+                $('#divPreference').append(btnPrint);
+                extentedFuncForOpenedToolbar = "RedirectToList";
+            }
+            else if (PromotionRecordToolbarID == '@Convert.ToInt32(PromotionsRecordsToolbarEnum.Install)')
+            {
+                $('.btn-group').append(btnPrint);
+            }
+            else if (PromotionRecordToolbarID == '@Convert.ToInt32(PromotionsRecordsToolbarEnum.Close)')
+            {
+                $('.btn-group').append(btnPrint);
+            }
+            else if (PromotionRecordToolbarID == '@Convert.ToInt32(PromotionsRecordsToolbarEnum.Closed)')
+            {
+                console.log('closed');
+                $('.btn-group').append(btnPrint);
+            }
+
+        //},400);
+    }
+
+    function PrintPromotionRecord() {
+        var PromotionRecordID = $("#hdnFldPromotionRecordID").val() != '' ? $("#hdnFldPromotionRecordID").val() : 0;
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/PromotionsRecords/PrintPromotionRecord/")' + PromotionRecordID);
+        ShowModal("#divReportModal");
+    }
+
+    function NewPromotionRecord() {
+        ResetPromotionRecord(); // declared in create view
+        $("#divToolbar").load('@RazorHelper.ShowPormotionToolbar(this, HCM.Classes.Enums.PromotionsRecordsToolbarEnum.Open)');
+    }
+
+</script>

@@ -1,0 +1,297 @@
+﻿@model HCM.Models.EVacationsRequestsViewModel
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums;
+@{
+    ViewBag.Title = Resources.Globalization.EVacationRequestsDetailsText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#btnCancel").confirm({
+            animation: 'zoom',
+            content: '@Resources.Globalization.EVacationRequestCancellationCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () { $("#btnCancel").submit(); },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+        bindEVacationRequestStatusTrackBar('@Model.EVacationRequestStatusEnum'); // defined in _EVacationRequestStatus.chtml partial view
+    });
+
+    function OkFunction() {
+        window.location.href = "/EVacationsRequests/Index";
+    }
+
+    function OnSuccess() {
+        $("#BtnDelete").attr("disabled", "disabled");
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.EVacationRequestCancelledDoneText),"OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    @*<div class="panel-heading">
+            <div class="row">
+                <div class="col-md-12">
+                    @Resources.Globalization.EVacationRequestsDetailsText
+                </div>
+            </div>
+        </div>*@
+    <div class="panel-body">
+
+        <div class="alert alert-warning">
+            <span class="glyphicon glyphicon-warning-sign"></span>
+            @Resources.Globalization.ValidationEVacationRequestStatusNotPendingText
+        </div>
+
+        @Html.Partial("~/Views/EVacationsRequests/_EVacationRequestStatus.cshtml")
+
+        <table class="table table-responsive table-condensed table-striped" style="text-align:right">
+            <tr>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.EmployeeCodeNo, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.EmployeeNameAr, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.OrganizationName, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.EmployeeCodeNo)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.EmployeeNameAr)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.OrganizationName)
+                </td>
+                <td class="col-md-3">
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.EVacationRequestNo, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.VacationType, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.EVacationRequestStatusName, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.CreatedDate, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.EVacationRequestNo)
+                    @Html.HiddenFor(x => x.EVacationRequestID)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.VacationType)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.EVacationRequestStatusName)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.CreatedDate)
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.VacationStartDate, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.VacationPeriod, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.VacationEndDate, new { @class = "control-label" })
+                </td>
+                <td class="col-md-3">
+                    @Html.LabelFor(model => model.WorkDate, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.VacationStartDate)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.VacationPeriod)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.VacationEndDate)
+                </td>
+                <td class="col-md-3">
+                    @Html.DisplayFor(model => model.WorkDate)
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-12" colspan="4">
+                    @Html.LabelFor(model => model.CreatorNotes, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-12" colspan="4">
+                    @Html.DisplayFor(model => model.CreatorNotes)
+                </td>
+            </tr>
+            @if (Model.LastUpdatedDate.HasValue)
+            {
+                <tr>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.LastUpdatedBy, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.LastUpdatedDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(model => model.LastUpdatedBy)
+                    </td>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(model => model.LastUpdatedDate)
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                </tr>
+            }
+        </table>
+
+        <br />
+
+        @if (Model.EVacationRequestStatusEnum != EVacationRequestStatusEnum.CancelledByCreator && 
+             Model.EVacationRequestStatusEnum != EVacationRequestStatusEnum.CancelledByHR && 
+             Model.EVacationRequestStatusEnum != EVacationRequestStatusEnum.CancelledBySystem)
+        {
+            <table class="table table-responsive table-condensed table-striped" style="text-align:right">
+                <tr>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.AuthorizedPersonCodeNo, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.AuthorizedPersonNameAr, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.AuthorizedPersonDecision, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-3">
+                        @Html.LabelFor(model => model.AuthorizedPersonDecisionDateTime, new { @class = "control-label" })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(model => model.AuthorizedPersonCodeNo)
+                    </td>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(model => model.AuthorizedPersonNameAr)
+                    </td>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(model => model.AuthorizedPersonDecision)
+                    </td>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(model => model.AuthorizedPersonDecisionDateTime)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12" colspan="4">
+                        @Html.LabelFor(model => model.AuthorizedPersonNotes, new { @class = "control-label" })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-12" colspan="4">
+                        @Html.DisplayFor(model => model.AuthorizedPersonNotes)
+                    </td>
+                </tr>
+            </table>
+        }
+
+        @if (Model.EVacationRequestStatusEnum == EVacationRequestStatusEnum.CancelledByHR || 
+             Model.EVacationRequestStatusEnum == EVacationRequestStatusEnum.CancelledBySystem)
+        {
+            <table class="table table-responsive table-condensed table-striped" style="text-align:right">
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.CancellationReasonByHR)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="alert alert-danger bold">
+                            <span class="glyphicon glyphicon-remove-sign"></span>
+                            @Html.DisplayFor(model => model.CancellationReasonByHR)
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+
+        @if (Model.EVacationRequestStatusEnum == EVacationRequestStatusEnum.Pending)
+        {
+            using (Ajax.BeginForm("Cancel", "EVacationsRequests", new AjaxOptions()
+            {
+                OnSuccess = "OnSuccess",
+                OnFailure = "OnFailure",
+                InsertionMode = InsertionMode.Replace,
+                HttpMethod = "POST",
+            }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(x => x.EVacationRequestID)
+
+                <table class="table table-responsive table-condensed table-striped">
+                    <tr>
+                        <td class="col-md-12">
+                            @Html.LabelFor(model => model.CancellationReasonByHR)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-12">
+                            @Html.TextAreaFor(model => model.CancellationReasonByHR, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-12" style="text-align:center">
+                            <input type="submit" class="btn btn-danger" id="btnCancel" name="btnCancel" value="@Resources.Globalization.CancelEVacationRequestText" />
+                        </td>
+                    </tr>
+                </table>
+            }
+        }
+
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "EVacationsRequests"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+

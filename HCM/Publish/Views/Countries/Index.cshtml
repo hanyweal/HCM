@@ -1,0 +1,69 @@
+﻿
+@{
+    ViewBag.Title = @Resources.Globalization.CountryText;
+}
+
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+
+<script>
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+
+        $("#tblCountries").DataTable({
+            //"destroy":true,
+            "ajax": {
+                "url": "/Countries/GetCountries",
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": ".CountryName",
+                    "autowidth": true
+                },
+                {
+                    "data": "CountryID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "Countries")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" /></a>'
+                    }
+                },
+                {
+                    "data": "CountryID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "Countries")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                    }
+                }, 
+            ]
+        });
+    });
+     
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchCountryDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblCountries" class="table table-responsive table-hover">
+            <thead>
+                <tr> 
+                    <td>@Resources.Globalization.CountryNameText</td>
+                    <td></td>
+                    <td></td> 
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

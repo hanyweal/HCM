@@ -1,0 +1,17 @@
+﻿{
+  "sSearch": " بحث سريع ",
+  "sProcessing": "جاري عرض البيانات...",
+  "sZeroRecords": "لا يوجد سجلات للعرض",
+  "sInfoPostFix": "",
+  "sUrl": "",
+  "sLengthMenu": "أظهر _MENU_ مدخلات",
+  "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 ",
+  "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+  "sInfoFiltered": "(منتقاه من مجموع _MAX_ مدخل)",
+  "oPaginate": {
+    "sFirst": "الصفحة الأولى",
+    "sLast": "الصفحة الأخيرة",
+    "sNext": "الصفحة التالية",
+    "sPrevious": "الصفحة السابقة"
+  }
+}

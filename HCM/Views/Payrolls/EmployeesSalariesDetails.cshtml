@@ -1,0 +1,119 @@
+﻿@using HCM.Classes.Enums
+@{
+    ViewBag.Title = @Resources.Globalization.EmployeesSalariesDetailsText;
+}
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            //console.log(message);
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+        }
+
+        $("#btnSearch").click(function () {
+
+             $("#tblEmployeesSalariesDetails").DataTable({
+             "destroy": true,
+                "ajax": {
+                    "url": "@Url.Content("/Payrolls/GetEmployeesSalaryDetails/")" + ($("#txtEmployeeCodeNo").val() != '' ? $("#txtEmployeeCodeNo").val() : '0'),
+                    "type": "get",
+                    "datatype": "json"
+                },
+                 dom: 'Bfrtip',
+                "initComplete": function (settings, json) {
+                    $(".dt-buttons").addClass("text text-left");
+                    $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+                },
+                "buttons": ['excel'],
+                "columns": [
+                    {
+                        "data": "EmployeeCodeNo",
+                        "autowidth": true
+                    },
+                    {
+                        "data": "EmployeeNameAr",
+                        "autowidth": true
+                    },
+                    {
+                        "data": "RankCategoryName",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "RankName",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "CareerDegreeName",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "BasicSalary",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "TransfareAllowance",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "TotalAllowances",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "TotalDeductions",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "NetSalary",
+                        "autowidth": true,
+                    }
+                ]
+              });
+        });
+    });
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.EmployeesSalariesDetailsDescText
+    </div>
+    <div class="panel-body">
+        <table class="table table-responsive table-hover">
+            <tr>
+                <td style="width:10%" >
+                    <label class="control-label">@Resources.Globalization.EmployeeCodeNoText</label>
+                </td>
+                <td style="width:20%">
+                    <input id="txtEmployeeCodeNo" type="text" class="form-control" />
+                </td>
+                <td style="width:70%">
+                    <button id="btnSearch" type="button" class="btn btn-default">@Resources.Globalization.SearchText</button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <table id="tblEmployeesSalariesDetails" class="table table-responsive table-hover">
+                        <thead>
+                            <tr>
+                                <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                                <td>@Resources.Globalization.EmployeeNameArText</td>
+                                <td>@Resources.Globalization.RankCategoryNameText</td>
+                                <td>@Resources.Globalization.RankNameText</td>
+                                <td>@Resources.Globalization.CareerDegreeNameText</td>
+                                <td>@Resources.Globalization.BasicSalaryText</td>
+                                <td>@Resources.Globalization.TransfareAllowanceText</td>
+                                <td>@Resources.Globalization.TotalAllowancesText</td>
+                                <td>@Resources.Globalization.TotalDeductionsText</td>
+                                <td>@Resources.Globalization.NetSalaryText</td>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+</div>
+

@@ -1,0 +1,130 @@
+﻿@model HCM.Models.JobsViewModel
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        BindJobs@(Model.PartialName)();
+
+        $("#OpenJobsPopup@(Model.PartialName)").click(function () {
+
+            ShowModal("#divJobsModal@(Model.PartialName)");
+        });
+    });
+
+    function BindJobs@(Model.PartialName)() {
+
+        var tblJobs@(Model.PartialName) = $("#tblJobs@(Model.PartialName)").DataTable({
+            "ajax": {
+                "url": "/Jobs/GetJobs",
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                 {
+                     "data": "JobCategory.JobGroup.JobGeneralGroup.JobGeneralGroupName",
+                     "autowidth": true
+                 },
+                 {
+                     "data": "JobCategory.JobGroup.JobGroupName",
+                     "autowidth": true
+                 },
+                {
+                    "data": "JobCategory.JobCategoryName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        return '<a onClick="closeJobsPopup@(Model.PartialName)(' + data + ')"><span class="glyphicon glyphicon-thumbs-up" /></a>'
+                    }
+                },
+            ]
+        });
+    }
+
+    function GetJobData@(Model.PartialName)(JobID) {
+        $.ajax({
+            type: "POST"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/Jobs/GetJobsByJobID"
+            , data: "{ 'id' : '" + JobID + "'}"
+            , success: function (d) {
+
+                $("#hdnFldJobID@(Model.PartialName)").val(d.data.JobID);
+                $("#txtJobName@(Model.PartialName)").val(d.data.JobName);
+            }
+                , error: function (xhr, status, error) {
+                    alert(error.message);
+                }
+        });
+    }
+
+    function ResetJob() {
+        $("#txtJobName@(Model.PartialName)" ).val('');
+        $("#hdnFldJobID@(Model.PartialName)").val('');
+    }
+
+    function closeJobsPopup@(Model.PartialName)(JobID) {
+        GetJobData@(Model.PartialName)(JobID);
+        DestroyModal("#divJobsModal@(Model.PartialName)");
+    }
+
+</script>
+
+<table class="table table-responsive table-condensed" style="text-align:right">
+    <tr>
+        <td>
+            <div class="input-group">
+               @Html.TextBoxFor(model => model.JobName, new { @class = "form-control", @id = "txtJobName"+@Model.PartialName , @readonly = "readonly" })
+                @*<a id="OpenJobsPopup">
+                        <span class="glyphicon glyphicon-search" style="font-size:large" title="@Resources.Globalization.JobsListTooltip"></span>
+                    </a>*@
+                <span id="OpenJobsPopup@(Model.PartialName)" class="input-group-addon clickable" title="@Resources.Globalization.JobsListTooltip">
+                    <i class="glyphicon glyphicon-search"></i>
+                </span>
+            </div>
+            @Html.HiddenFor(model => model.JobID, new { @id = "hdnFldJobID" + @Model.PartialName })
+            @Html.ValidationMessageFor(model => model.JobName, "", new { @class = "text-danger" })
+        </td>
+    </tr>
+</table>
+
+
+<div class="modal fade" id="divJobsModal@(Model.PartialName)">
+    <div class="modal-dialog" style="width:1000px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.JobsListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <table id="tblJobs@(Model.PartialName)" class="table table-responsive table-condensed table-striped dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.JobGeneralGroupNameText</td>
+                            <td>@Resources.Globalization.JobGroupNameText</td>
+                            <td>@Resources.Globalization.JobCategoryNameText</td>
+                            <td>@Resources.Globalization.JobNameText</td>
+                            <td>@Resources.Globalization.SelectText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,238 @@
+﻿@model HCM.Models.OverTimesViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.ApproveText;
+}
+<script type="text/javascript">
+    var IsNotExistConfirm = false;
+    function OkFunction() {
+        window.location.href = "/Approvals/OverTimeApproval";
+    }
+
+    $(document).ready(function () {
+        ButtonEnable(false);
+        $("#txtOverTimeID").on('change', function () {
+            if ($("#txtOverTimeID").val() != '') {
+                $.ajax({
+                    type: "POST"
+                        , dataType: "json"
+                        , contentType: "application/json; charset=utf-8"
+                        , url: "/OverTimes/GetOverTimeByOverTimeID"
+                        , data: "{ 'OverTimeID' : '" + $("#txtOverTimeID").val() +
+                                "'}"
+                        , success: function (data) {
+                            if (data.OverTimeID != 0) {
+                                $("#hdnFldOverTimeID").val(data.OverTimeID);
+                                $("#txtRequester").text(data.Requester);
+                                $("#txtSaturdayHoursAvg").text(data.SaturdayHoursAvg);
+                                $("#txtOverTimeStartDate").text(RenderDate(data.OverTimeStartDate));
+                                $("#txtOverTimeEndDate").text(RenderDate(data.OverTimeEndDate));
+                                $("#txtOverTimePeriod").text(data.OverTimePeriod);
+                                $("#txtWeekWorkHoursAvg").text(data.WeekWorkHoursAvg);
+                                $("#txtFridayHoursAvg").text(data.FridayHoursAvg);
+                                $("#txtRequester").text(data.Requester);
+                                $("#chkIsApprove").prop('checked', data.IsApprove);
+                                BindOverTimeEmployees(data.OverTimeID);
+                                ButtonEnable(true);
+                            }
+                            else {
+                                Reset();
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Notice, Globals.Utilities.RemoveSpace(@Resources.Globalization.NoOverTimeFoundText))');
+                            }
+                        }
+                        , error: function (jqXHR, exception) {
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                        }
+                });
+            }
+        });
+    });
+
+    function OnSuccess() {
+        $("#BtnApprove").attr("disabled", "disabled");
+
+        if ($('#chkIsApprove').is(':checked')) {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.ApproveCancelDoneAlertText),"OkFunction")');
+        }
+        else {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.ApproveDoneAlertText), "OkFunction")');
+        }
+
+    }
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+    function BindOverTimeEmployees(OverTimeID) {
+        if (OverTimeID != 0) {
+            $("#tblOverTimeEmployees").DataTable({
+                destroy: true,
+                "searching": false,
+                "ordering": false,
+                "paging": false,
+                "ajax": {
+                    "url": "/OverTimes/GetOverTimeEmployeesByOverTimeID/" + OverTimeID,
+                    "type": "get",
+                    "datatype": "json"
+                },
+                "columns": [
+                    {
+                        "data": "EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo",
+                        "autowidth": true
+                    },
+                    {
+                        "data": "EmployeeCareerHistory.EmployeeCode.Employee.EmployeeNameAr",
+                        "autowidth": true
+                    }
+                ]
+            });
+        }
+        else {
+            $("#tblOverTimeEmployees").DataTable().clear().draw();
+        }
+    }
+    function Reset()
+    {
+        $("#hdnFldOverTimeID").val('');
+        $("#txtRequester").text('');
+        $("#txtSaturdayHoursAvg").text('');
+        $("#txtOverTimeStartDate").text('');
+        $("#txtOverTimeEndDate").text('');
+        $("#txtOverTimePeriod").text('');
+        $("#txtWeekWorkHoursAvg").text('');
+        $("#txtFridayHoursAvg").text('');
+        $("#txtRequester").text('');
+        ButtonEnable(false);
+        BindOverTimeEmployees(0);
+    }
+    function ButtonEnable(enable)
+    {
+        $(':input[type="submit"]').prop('disabled', !enable);
+    }
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.ApproveText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.ApproveOverTimeDescText
+    </div>
+    <div class="panel-body">
+        <span class="control-label">@Resources.Globalization.OverTimeBasicInfoText</span>
+        <form id="OverTimeDetailsForm">
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-2">
+                            <label class="control-label">@Resources.Globalization.SequenceNoText</label>
+                        </td>
+                        <td class="col-md-10">
+                            <input type="number" id="txtOverTimeID" class="form-control" maxlength="9" width="30" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            <label class="control-label">@Resources.Globalization.OverTimeStartDateText</label>
+                        </td>
+                        <td class="col-md-10">
+                            <label id="txtOverTimeStartDate"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            <label class="control-label">@Resources.Globalization.OverTimeEndDateText</label>
+                        </td>
+                        <td class="col-md-10">
+                            <label id="txtOverTimeEndDate"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            <label class="control-label">@Resources.Globalization.OverTimePeriodText</label>
+                        </td>
+                        <td class="col-md-10">
+                            <label id="txtOverTimePeriod"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            <label class="control-label">@Resources.Globalization.OverTimeWeekWorkHoursAvgText</label>
+                        </td>
+                        <td class="col-md-10">
+                            <label id="txtWeekWorkHoursAvg"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            <label class="control-label">@Resources.Globalization.FridayHoursAvgText</label>
+                        </td>
+                        <td class="col-md-10">
+                            <label id="txtFridayHoursAvg"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            <label class="control-label">@Resources.Globalization.SaturdayHoursAvgText</label>
+                        </td>
+                        <td class="col-md-10">
+                            <label id="txtSaturdayHoursAvg"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            <label class="control-label">@Resources.Globalization.RequesterText</label>
+                        </td>
+                        <td class="col-md-10">
+                            <label id="txtRequester"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="control-label">@Resources.Globalization.ApproveText</label>
+                        </td>
+                        <td>
+                            <input type="checkbox" id="chkIsApprove" disabled="disabled" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <span class="control-label">@Resources.Globalization.EmployeesText</span>
+        <table id="tblOverTimeEmployees" class="table table-responsive table-hover" style="width:100%">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                </tr>
+            </thead>
+        </table>
+        <table class="table table-responsive table-condensed">
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <center>
+                            @using (Ajax.BeginForm("OverTimeApproval", "Approvals", new AjaxOptions()
+                            {
+                                OnSuccess = "OnSuccess",
+                                OnFailure = "OnFailure",
+                                InsertionMode = InsertionMode.Replace,
+                                HttpMethod = "Post",
+                            }, new { @id = "OverTimeApprovalForm" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-default" id="BtnApprove" name="BtnType" value="Approve">@Resources.Globalization.ApproveText</button>
+                                @Html.HiddenFor(model => model.OverTimeID, new { @id = "hdnFldOverTimeID" })
+                                <button type="submit" class="btn btn-default" id="BtnApproveCancel" name="BtnType" value="ApproveCancel">@Resources.Globalization.ApproveCancelText</button>
+                            }
+                        </center>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+@*@section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }*@

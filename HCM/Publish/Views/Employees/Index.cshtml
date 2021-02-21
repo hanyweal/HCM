@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewBag.Title = @Resources.Globalization.EmployeesText;
+}
+
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+<script>
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            //console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblEmployees").DataTable({
+            //"destroy":true,
+            "ajax": {
+                "url": "/Employees/GetEmployees",
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "EmployeeIDNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeMobileNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeBirthPlace",
+                    "autowidth": true
+                },
+                //{
+                //    "data": "EmployeeBirthDate",
+                //    "autowidth": true,
+                //    "render": RenderDate
+                //},
+                {
+                    "data": "EmployeeID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit","Employees")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" /></a>'
+                    }
+                },
+                @*{
+                    "data": "EmployeeID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "Employees")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                    }
+                },*@
+            ]
+        });
+    });
+</script>
+ 
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.SearchEmployeeDescText
+    </div>
+    <div class="panel-body">
+        <table class="table table-condensed">
+            <tr>
+                <td>
+                    <table id="tblEmployees" class="table table-responsive" style="width:100%">
+                        <thead>
+                            <tr>
+                                <td>@Resources.Globalization.EmployeeIDNoText</td>
+                                <td>@Resources.Globalization.EmployeeNameArText</td>
+                                <td>@Resources.Globalization.EmployeeMobileNoText</td>
+                                <td>@Resources.Globalization.EmployeeBirthPlaceText</td>
+                                @*<td>@Resources.Globalization.EmployeeBirthDateText</td>*@
+                                <td></td>
+                                <td></td>
+                                @*<td></td>*@
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

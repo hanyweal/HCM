@@ -1,0 +1,175 @@
+﻿@model HCM.Models.ParentOrganizationManagerViewModel
+@using HCM.Classes.Enums;
+
+<script type="text/javascript">
+
+    var OrganizationID = 0;
+    extentedFuncForOrganizationStructurePopup = "BindManagers";
+    extentedFuncForOrganizationStructurePopupReset = "ResetCareerHistory";
+
+    $(document).ready(function () {
+        OpenManagersPopup();
+    });
+
+    function OpenManagersPopup() {
+        $("#SpanManagersPopup").click(function () {
+            ShowModal("#divManagersModal");
+        });
+    }
+
+    function BindManagers() {
+        //ResetManager();
+        @*$.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }*@
+
+        OrganizationID = $('#hdnFldOrganizationID').val();
+        $("#tblManagers").DataTable({
+            "ajax": {
+                "url": "/OrganizationStructure/GetParentOrganizationsManagers/" + OrganizationID,
+                "type": "get",
+                "datatype": "json"
+            },
+            "destroy": "true",
+            "columns": [
+                {
+                    "data": "FullOrganizationName",
+                    "autowidth": true
+                },
+                {
+                    "data": "ManagerCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "ManagerNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "ManagerCodeID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        if (data != '0')
+                            return '<a onClick="closeManagersPopup(' + data + ')"><span class="glyphicon glyphicon-thumbs-up" /></a>'
+                        else
+                            return "";
+                    }
+                },
+            ]
+        });
+    }
+
+
+    function ResetManager() {
+        $("#txtManagerCodeNo").val('');
+        $("#hdnFldManagerCodeID").val('');
+        $("#txtManagerNameAr").val('');
+        //$("#tblManagers").DataTable().destroy();
+    }
+
+    function GetManagerData(ManagerCodeID) {
+
+        $.ajax({
+            type: "POST"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/Employees/GetByEmployeeCodeID"
+            , data: "{ 'id' : '" + ManagerCodeID + "'}"
+            , success: function (d) {
+                DestroyModal("#divManagersModal");
+                $("#hdnFldManagerCodeID").val(d.data.EmployeeCodeID);
+                $("#txtManagerCodeNo").val(d.data.EmployeeCodeNo);
+                $("#txtManagerNameAr").val(d.data.Employee.EmployeeNameAr);
+                //$("#txtOrganizationName").val(d.data.Manager.ManagerIDNo);
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function closeManagersPopup(ManagerCodeID) {
+        GetManagerData(ManagerCodeID);
+
+        @*if (ManagerCodeID != '0')
+            GetManagerData(ManagerCodeID);
+        else
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationNoManagerDefinedToOrganizationText))');*@
+    }
+
+</script>
+
+
+<table class="table table-responsive table-condensed table-striped" style="text-align:right">
+    <tr>
+        <td>
+            @Html.LabelFor(model => model.ManagerCodeNo, new { @class = "control-label" })
+        </td>
+        <td>
+            @Html.LabelFor(model => model.ManagerNameAr, new { @class = "control-label" })
+        </td>
+        <td>
+            @*@Html.LabelFor(model => model.OrganizationManager.EmployeeOrganizationName, new { @class = "control-label" })*@
+        </td>
+    </tr>
+    <tr>
+        <td class="col-md-4">
+            <div class="input-group" style="width:100%">
+                @Html.TextBoxFor(model => model.ManagerCodeNo, new { @class = "form-control", @id = "txtManagerCodeNo", @readonly = "readonly" })
+                <span id="SpanManagersPopup" class="input-group-addon clickable" title="@Resources.Globalization.SearchAboutManagerTooltip">
+                    <i class="glyphicon glyphicon-search"></i>
+                </span>
+                @Html.HiddenFor(model => model.ManagerCodeID, new { @id = "hdnFldManagerCodeID" })
+                @Html.ValidationMessageFor(model => model.ManagerNameAr, "", new { @class = "text-danger" })
+            </div>
+        </td>
+        <td class="col-md-4">
+            @Html.TextBoxFor(model => model.ManagerNameAr, new { @class = "form-control", @id = "txtManagerNameAr", @readonly = "readonly" })
+        </td>
+        <td class="col-md-4">
+            @*@Html.TextBoxFor(model => model.OrganizationManager.EmployeeOrganizationName, new { @class = "form-control", @id = "txtManagerOrganizationName" , @readonly = "readonly" })*@
+        </td>
+    </tr>
+</table>
+
+
+<div class="modal fade" id="divManagersModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.ManagersListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        @*<div class="alert alert-danger" style="padding:6px">
+                                <p>@Resources.Globalization.ManagerMustBeCreatedFirstText</p>
+                            </div>*@
+                    </div>
+                </div>
+                <table id="tblManagers" class="table table-responsive table-hover dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.OrganizationNameText</td>
+                            <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                            <td>@Resources.Globalization.EmployeeNameArText</td>
+
+                            <td>@Resources.Globalization.SelectText</td>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,246 @@
+﻿@using HCM.Classes.Enums
+@using HCMBLL.Enums
+
+@{
+    ViewBag.Title = ""; //@Resources.Globalization.VacationsApprovalText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    var IsApproved;
+    var ApprovalType;
+    var ContentMessage;
+
+    $(document).ready(function () {
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#btnApprove").prop("disabled", true);
+
+        $("#txtPromotionRecordEmployeeID").on('change', function () {
+            if ($("#txtPromotionRecordEmployeeID").val() != '') {
+                $.ajax({
+                    type: "POST"
+                        , dataType: "json"
+                        , contentType: "application/json; charset=utf-8"
+                        , url: "@Url.Content("~/PromotionsRecords/GetPromotionRecordEmployeeByPromotionRecordEmployeeID/")" + $("#txtPromotionRecordEmployeeID").val()
+                        , success: function (result) {
+                            if (result.data != null) {
+                                var data = result.data;
+                                if (data.NewEmployeeCareer != null) {
+                                    $("#hdnFldPromotionRecordEmployeeID").val(data.PromotionRecordEmployeeID);
+                                    $("#lblPromotionRecordNo").text(data.PromotionRecord != null ? data.PromotionRecord.PromotionRecordNo : null);
+                                    $("#lblPromotionRecordDate").text(data.PromotionRecord != null ? RenderDate(data.PromotionRecord.PromotionRecordDate) : null);
+                                    $("#lblEmployeeCodeNo").text(data.NewEmployeeCareer != null ? data.NewEmployeeCareer.EmployeeCode.EmployeeCodeNo : null);
+                                    $("#lblEmployeeNameAr").text(data.NewEmployeeCareer != null ? data.NewEmployeeCareer.EmployeeCode.Employee.EmployeeNameAr : null);
+                                    $("#lblCareerDegreeName").text(data.NewEmployeeCareer != null ? data.NewEmployeeCareer.CareerDegree.CareerDegreeName : null);
+                                    $("#lblCareerHistoryTypeName").text(data.NewEmployeeCareer != null ? data.NewEmployeeCareer.CareerHistoryType.CareerHistoryTypeName : null);
+                                    $("#lblEmployeeJobNo").text(data.NewEmployeeCareer != null ? data.NewEmployeeCareer.OrganizationJob.JobNo : null);
+                                    $("#lblEmployeeJobName").text(data.NewEmployeeCareer != null ? data.NewEmployeeCareer.OrganizationJob.Job.JobName : null);
+                                    $("#lblEmployeeOrganizationName").text(data.NewEmployeeCareer != null ? data.NewEmployeeCareer.OrganizationJob.OrganizationStructure.OrganizationName : null);
+                                    $("#lblEmployeeRankName").text(data.NewEmployeeCareer != null ? data.NewEmployeeCareer.OrganizationJob.Rank.RankName : null);
+                                    IsApproved = data.IsApproved ? data.IsApproved : null;
+                                    $("#btnApprove").prop('value', '@Resources.Globalization.ApproveText');
+                                    if (data.NewEmployeeCareer != null) {
+                                        $("#btnApprove").prop("disabled", false);
+                                        if (IsApproved == true) {
+                                            ContentMessage = '@Resources.Globalization.ApproveCancelConfirmationMessageText';
+                                            ApprovalType = "CancelApproval";
+                                            $("#btnApprove").prop('value', '@Resources.Globalization.ApproveCancelText');
+                                        }
+                                        else {
+                                            ContentMessage = '@Resources.Globalization.ApproveConfirmationMessageText';
+                                            ApprovalType = "Approve";
+                                            $("#btnApprove").prop('value', '@Resources.Globalization.ApproveText');
+                                        }
+                                    }
+                                }
+                                else {
+                                    Reset();
+                                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Notice, Globals.Utilities.RemoveSpace(@Resources.Globalization.NoPromotionRecordEmployeeFoundText))');
+                                }
+                            }
+                            else {
+                                Reset();
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Notice, Globals.Utilities.RemoveSpace(@Resources.Globalization.NoPromotionRecordEmployeeFoundText))');
+                            }
+                        }
+                , error: function (jqXHR, exception) {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                }
+                });
+            }
+        });
+        $("#btnApprove").click(function () {
+            var ConfirmationMessage = ContentMessage;
+            $.confirm({
+                confirmButton: '@Resources.Globalization.ConfirmButtonText',
+                cancelButton: '@Resources.Globalization.CancelButtonText',
+                animation: 'zoom',
+                content: ConfirmationMessage,
+                title: '@Resources.Globalization.CofirmationMessageTitle',
+                buttons: {
+                    confirm: {
+                        action: function () {
+                            $.ajax({
+                                type: "POST"
+                               , contentType: "application/json; charset=utf-8"
+                               , url: "@Url.Content("~/Approvals/PromotionRecordEmployeeApproval/")" + $("#hdnFldPromotionRecordEmployeeID").val() + "/" + ApprovalType
+                               , success: function () {
+                                   if (ApprovalType == 'Approve') {
+                                       $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.ApproveDoneAlertText))');
+                                   }
+                                   else {
+                                       $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.ApproveCancelDoneAlertText))');
+                                   }
+                                   $("#btnApprove").attr("disabled", true);
+                               }
+                            , error: function (xhr, status, error) {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure,"Error")');
+                            }
+                            });
+                        },
+                        btnClass: 'btn-blue',
+                        text: '@Resources.Globalization.ConfirmButtonText',
+                    },
+                    cancel: {
+                        action: function () { },
+                        text: '@Resources.Globalization.CancelButtonText',
+                    },
+                },
+            });
+        });
+    });
+
+    function Reset() {
+        $("#hdnFldPromotionRecordEmployeeID").val('');
+        $("#txtPromotionRecordEmployeeID").val('');
+        $("#lblPromotionRecordNo").text('');
+        $("#lblPromotionRecordDate").text('');
+        $("#lblEmployeeCodeNo").text('');
+        $("#lblEmployeeNameAr").text('');
+        $("#lblCareerDegreeName").text('');
+        $("#lblCareerHistoryTypeName").text('');
+        $("#lblEmployeeJobNo").text('');
+        $("#lblEmployeeJobName").text('');
+        $("#lblEmployeeOrganizationName").text('');
+        $("#lblEmployeeRankName").text('');
+        $("#btnApprove").attr("disabled", true);
+        $("#btnApprove").prop('value', '@Resources.Globalization.ApproveText');
+    }
+
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.ApproveText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.ApprovePromotionRecordEmployeeDescText
+    </div>
+    <div class="panel-body">
+        <span class="control-label">@Resources.Globalization.PromotionRecordEmployeeBasicInfoText</span>
+
+        <table class="table table-responsive table-condensed">
+            <tbody>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.SequenceNoText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <input type="number" id="txtPromotionRecordEmployeeID" class="form-control" maxlength="9" width="30" />
+                        <input type="hidden" id="hdnFldPromotionRecordEmployeeID" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.PromotionRecordNoText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblPromotionRecordNo"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.PromotionRecordDateText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblPromotionRecordDate"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.EmployeeCodeNoText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblEmployeeCodeNo"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.EmployeeNameArText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblEmployeeNameAr"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.CareerDegreeNameText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblCareerDegreeName"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.CareerHistoryTypeNameText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblCareerHistoryTypeName"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.JobNoText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblEmployeeJobNo"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.JobNameText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblEmployeeJobName"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.OrganizationNameText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblEmployeeOrganizationName"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.RankNameText</label>
+                    </td>
+                    <td class="col-md-10">
+                        <label id="lblEmployeeRankName"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-10" colspan="2">
+                        <center>
+                            <input type="button" class="btn btn-default" id="btnApprove" name="btnApprove" value="@Resources.Globalization.ApproveText" />
+                            <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset()" />
+                        </center>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+

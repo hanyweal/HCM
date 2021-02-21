@@ -1,0 +1,57 @@
+﻿@model HCM.Models.OrganizationStructureViewModel
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#OpenOrganizationPopup").click(function () {
+            ShowModal("#divOrganizationStructureModal");
+        });
+    });
+
+    function OnOrganizationStructureNodeSelected(data) {
+        $('#txtOrganizationName').val($('#hdnFldOrganizationName').val());
+        DestroyModal('#divOrganizationStructureModal');
+    }
+</script>
+
+<table class="table table-responsive table-condensed" style="text-align:right">
+    <tr>
+        <td>
+            <div class="input-group">
+                @Html.TextBoxFor(model => model.OrganizationName, new { @class = "form-control", @id = "txtOrganizationName", @readonly = "readonly" })
+                <span id="OpenOrganizationPopup" class="input-group-addon clickable" title="@Resources.Globalization.OrganizationStructureTooltip">
+                    <i class="glyphicon glyphicon-search"></i>
+                </span>
+            </div>
+            @Html.HiddenFor(model => model.OrganizationID, new { @id = "hdnFldOrganizationID" })
+            @Html.ValidationMessageFor(model => model.OrganizationName, "", new { @class = "text-danger" })
+        </td>
+    </tr>
+</table>
+
+<div class="modal fade" id="divOrganizationStructureModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.MICOrganizationStructureText
+                </div>
+            </div>
+            <div class="modal-body" style="overflow-y: auto;max-height:500px">
+                <div class="row">
+                    <div class="col-md-12">
+                        @Html.Partial("~/Views/Shared/_OrganizationStructure.cshtml")
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+

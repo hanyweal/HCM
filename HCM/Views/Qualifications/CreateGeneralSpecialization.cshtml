@@ -1,0 +1,141 @@
+﻿@model HCM.Models.GeneralSpecializationsViewModel
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+
+@{
+    ViewBag.Title = @Resources.Globalization.AddNewGeneralSpecializationText;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        GetQualifications();
+    });
+
+    function OnSuccess() {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+   
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+    function AddingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText))');
+    }
+    function AddingFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        $("#ddlQualification").html("");
+        insertSelectionOptionToDDL('ddlQualification');
+        $("#txtGeneralSpecializationName").val("");
+        $("#txtDirectPoints").val("");
+        $("#txtIndirectPoints").val("");
+    }
+
+    function GetQualifications() {
+        var QualificationDegreeID = $("#ddlQualificationDegree").val();
+        $.ajax({
+            type: "get"
+            , dataType: "json"
+            , url: "/Qualifications/GetQualifications/" + QualificationDegreeID
+            , success: function (d) {
+                $("#ddlQualification").html("");
+                var Qualifications = d.data;
+                $.each(Qualifications, function (i, Qualification) {
+                    $("#ddlQualification").append($('<option></option>').val(Qualification.QualificationID).html(Qualification.QualificationName));
+                });
+                insertSelectionOptionToDDL('ddlQualification');
+
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.AddNewGeneralSpecializationText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewGeneralSpecializationDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.GeneralSpecializations })
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("CreateGeneralSpecialization", "Qualifications", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.GeneralSpecializationBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+
+                        <td class="col-md-4">@Html.LabelFor(model => model.QualificationDegreeID, new { @class = "control-label" })</td>
+                        <td class="col-md-4">@Html.LabelFor(model => model.QualificationID, new { @class = "control-label" })</td>
+                        <td class="col-md-4">@Html.LabelFor(model => model.GeneralSpecializationName, new { @class = "control-label" })</td>
+
+                    </tr>
+                    <tr>
+
+                        <td class="col-md-4">@Html.DropDownListFor(model => model.QualificationDegreeID, new SelectList(new HCMBLL.QualificationsDegreesBLL().GetQualificationsDegrees(), "QualificationDegreeID", "QualificationDegreeName"), new { @id = "ddlQualificationDegree", @style = "width:100%", @onchange = "GetQualifications()" })</td>
+                        <td class="col-md-4">@Html.DropDownListFor(model => model.QualificationID, new SelectList(new HCMBLL.QualificationsBLL().GetQualifications(), "QualificationID", "QualificationName"), new { @id = "ddlQualification", @style = "width:100%" })</td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.GeneralSpecializationName, new { @class = "form-control", @id = "txtGeneralSpecializationName" })
+                            @Html.ValidationMessageFor(model => model.GeneralSpecializationName, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">@Html.LabelFor(model => model.DirectPoints, new { @class = "control-label" })</td>
+                        <td class="col-md-4">@Html.LabelFor(model => model.IndirectPoints, new { @class = "control-label" })</td>
+
+                        <td class="col-md-4"> </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.DirectPoints, new { @class = "form-control allownumericwithdecimal", @id = "txtDirectPoints" })
+                            @Html.ValidationMessageFor(model => model.DirectPoints, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.IndirectPoints, new { @class = "form-control allownumericwithdecimal", @id = "txtIndirectPoints" })
+                            @Html.ValidationMessageFor(model => model.IndirectPoints, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="col-md-4"></td>
+
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Qualifications"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>

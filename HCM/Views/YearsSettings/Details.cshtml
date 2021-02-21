@@ -1,0 +1,295 @@
+﻿@model HCM.Models.YearsSettingsViewModel
+@using HCMBLL.Enums;
+@using HCM.Models;
+
+@{
+    ViewBag.Title = @Resources.Globalization.ScholarshipsText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        BindYearsDetails('@Model.MaturityYearBalance.MaturityYearID');
+    });
+
+    function OnSuccess(data) {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+        BindYearsDetails('@Model.MaturityYearBalance.MaturityYearID');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+    }
+
+    function BindYearsDetails(MaturityYearID) {
+        GetSportsSeasonDetails(MaturityYearID);
+        GetHolidaysSettingsDetails(MaturityYearID);
+    }
+
+    function GetSportsSeasonDetails(MaturityYearID) {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/SportsSeasons/GetByMaturityYearID/")" + MaturityYearID,
+            success: function (result) {
+
+                $("#tblSportsSeasons").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    //"ordering": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "SportsSeasonID",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "SportsSeasonDescription",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "SportsSeasonStartDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "SportsSeasonPeriod",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "SportsSeasonEndDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        {
+                            "data": "SportsSeasonID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = '@Url.Action("Edit", "SportsSeasons")' + "/" + data;
+                                return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                            }
+                        },
+                        {
+                            "data": "SportsSeasonID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = '@Url.Action("Delete", "SportsSeasons")' + "/" + data;
+                                return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                            }
+                        },
+                    ]
+                });
+            }
+        });
+    }
+    function GetHolidaysSettingsDetails(MaturityYearID) {
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/HolidaysSettings/GetByMaturityYearID/")" + MaturityYearID,
+            success: function (result) {
+                $("#tblHolidaysSettings").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    //"ordering": false,
+                    "data": result.data,
+                    "columns": [
+                           {
+                               "data": "MaturityYear.MaturityYear",
+                               "autowidth": true,
+                           },
+                            {
+                                "data": "HolidayType.HolidayTypeName",
+                                "autowidth": true,
+                            },
+                        {
+                            "data": "HolidaySettingStartDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "HolidaySettingPeriod",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "HolidaySettingEndDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+
+                {
+                    "data": "HolidaySettingID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Details", "HolidaysSettings")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "HolidaySettingID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "HolidaysSettings")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "HolidaySettingID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "HolidaysSettings")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    }
+                },
+
+                    ]
+                });
+            }
+        });
+
+    }
+
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.YearsSettingsText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.YearsSettingsDescText
+    </div>
+    <div class="panel-body">
+        @Html.AntiForgeryToken()
+        <table class="table table-responsive table-condensed">
+            <tbody>
+                <tr>
+                    <td class="col-md-1">
+                        @Html.LabelFor(model => model.MaturityYearBalance, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-11">
+                        @Html.DisplayFor(model => model.MaturityYearBalance.MaturityYear, new { @class = "control-label" })
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-responsive table-striped" style="width:100%">
+            <tbody>
+                <tr>
+                    <td>
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#TabSportsSeasons" data-toggle="tab">@Resources.Globalization.SportsSeasonsText</a>
+                            </li>
+                            <li>
+                                <a href="#TabHolidaysSettings" data-toggle="tab">@Resources.Globalization.HolidaysSettingsText</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content clearfix">
+                            <div id="TabSportsSeasons" class="tab-pane active padding-5">
+                                <div id="divSportsSeasons">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <a href="~/SportsSeasons/Create/@Model.MaturityYearBalance.MaturityYearID">@Resources.Globalization.CreateNewText</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <table id="tblSportsSeasons" class="table table-responsive table-hover" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <td>
+                                                        @Resources.Globalization.SequenceNoText
+                                                    </td>
+                                                    <td>
+                                                        @Resources.Globalization.SportsSeasonDescriptionText
+                                                    </td>
+                                                    <td>
+                                                        @Resources.Globalization.SportsSeasonStartDateText
+                                                    </td>
+                                                    <td>
+                                                        @Resources.Globalization.SportsSeasonPeriodText
+                                                    </td>
+                                                    <td>
+                                                        @Resources.Globalization.SportsSeasonEndDateText
+                                                    </td>
+                                                    <td>
+                                                        @Resources.Globalization.CreatedByText
+                                                    </td>
+                                                    <td>
+                                                        @Resources.Globalization.CreatedDateText
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="TabHolidaysSettings" class="tab-pane padding-5">
+                                <div id="divHolidaySettings">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <a href="~/HolidaysSettings/Create/@Model.MaturityYearBalance.MaturityYearID">@Resources.Globalization.CreateNewText</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <table id="tblHolidaysSettings" class="table table-responsive table-hover" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <td>@Resources.Globalization.MaturityYearBalanceText</td>
+                                                    <td>@Resources.Globalization.HolidayTypeText</td>
+                                                    <td>@Resources.Globalization.HolidaySettingStartDateText</td>
+                                                    <td>@Resources.Globalization.HolidaySettingPeriodText</td>
+                                                    <td>@Resources.Globalization.HolidaySettingEndDateText</td>
+                                                    <td>
+                                                        @Resources.Globalization.CreatedByText
+                                                    </td>
+                                                    <td>
+                                                        @Resources.Globalization.CreatedDateText
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "YearsSettings"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>

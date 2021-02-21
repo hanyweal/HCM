@@ -1,0 +1,1752 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CloseText" xml:space="preserve">
+    <value>إغــلاق</value>
+  </data>
+  <data name="ConfirmPasswordText" xml:space="preserve">
+    <value>تأكيد كلمة المرور</value>
+  </data>
+  <data name="CreateNewText" xml:space="preserve">
+    <value>انشاء جديد</value>
+  </data>
+  <data name="DepartmentNameText" xml:space="preserve">
+    <value>اسم الإدارة</value>
+  </data>
+  <data name="EMailText" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+  <data name="EmployeeCodeNoText" xml:space="preserve">
+    <value>رقم الكمبيوتر</value>
+  </data>
+  <data name="LastLoginTimeText" xml:space="preserve">
+    <value>تاريخ آخر دخول</value>
+  </data>
+  <data name="MessageFromSystemText" xml:space="preserve">
+    <value>رسالة من النظام</value>
+  </data>
+  <data name="OwnerNameText" xml:space="preserve">
+    <value>الإدارة العامة للحاسب الآلي وتقنية المعلومات</value>
+  </data>
+  <data name="PasswordText" xml:space="preserve">
+    <value>كلمة المرور</value>
+  </data>
+  <data name="SavedDoneAlertText" xml:space="preserve">
+    <value>تم الحفـــظ بنجـاح</value>
+  </data>
+  <data name="SaveText" xml:space="preserve">
+    <value>حفــظ</value>
+  </data>
+  <data name="UserNameText" xml:space="preserve">
+    <value>اســم المستخدم</value>
+  </data>
+  <data name="ApplicationNameText" xml:space="preserve">
+    <value>نظـام تكامـل</value>
+  </data>
+  <data name="ResetText" xml:space="preserve">
+    <value>مسـح</value>
+  </data>
+  <data name="BacktoListText" xml:space="preserve">
+    <value>عودة الى القائمة</value>
+  </data>
+  <data name="NoEmployeeFoundText" xml:space="preserve">
+    <value>لا يوجد موظف بهذا الرقم او الإسم</value>
+  </data>
+  <data name="GeneralErrorMessageText" xml:space="preserve">
+    <value>حدث خطأ غير مقصود ، يرجى الرجوع الى مدير النظام</value>
+  </data>
+  <data name="ErrorMessageText" xml:space="preserve">
+    <value>رسالة خطأ</value>
+  </data>
+  <data name="NoticeMessageText" xml:space="preserve">
+    <value>رسالة اشعار</value>
+  </data>
+  <data name="WarningMessageText" xml:space="preserve">
+    <value>رسالة تنبيه</value>
+  </data>
+  <data name="CancelButtonText" xml:space="preserve">
+    <value>لا</value>
+  </data>
+  <data name="CofirmationMessageTitle" xml:space="preserve">
+    <value>رسالة تأكيد</value>
+  </data>
+  <data name="ConfirmButtonText" xml:space="preserve">
+    <value>تأكيد</value>
+  </data>
+  <data name="DeleteCofirmationMessageText" xml:space="preserve">
+    <value>هل انت متأكد من عملية الحذف ؟</value>
+  </data>
+  <data name="DeletedDoneAlertText" xml:space="preserve">
+    <value>تم الحذف بنجـاح</value>
+  </data>
+  <data name="DeleteText" xml:space="preserve">
+    <value>حـذف</value>
+  </data>
+  <data name="SelectText" xml:space="preserve">
+    <value>اختيار</value>
+  </data>
+  <data name="SignOutCofirmationMessageText" xml:space="preserve">
+    <value>هل انت متأكد من عملية تسجيل الخروج ؟</value>
+  </data>
+  <data name="ChangePasswordText" xml:space="preserve">
+    <value>تغيير كلمة المرور</value>
+  </data>
+  <data name="OldPasswordText" xml:space="preserve">
+    <value>كلمة المرور القديمة</value>
+  </data>
+  <data name="ChangedPasswordDoneAlertText" xml:space="preserve">
+    <value>تم تغيير كلمة المرور بنجاح</value>
+  </data>
+  <data name="UserProfileText" xml:space="preserve">
+    <value>الملف الشخصي</value>
+  </data>
+  <data name="MissingRequiredFieldsText" xml:space="preserve">
+    <value>عفوا ، يوجد حقول اجبارية لابد من ادخالها</value>
+  </data>
+  <data name="UserBasicInfoText" xml:space="preserve">
+    <value>بيانات المستخدم الرئيسية</value>
+  </data>
+  <data name="SearchAboutEmployeeTooltip" xml:space="preserve">
+    <value>إضغط للبحث عن موظف</value>
+  </data>
+  <data name="SearchText" xml:space="preserve">
+    <value>بحــث </value>
+  </data>
+  <data name="WrongOldPasswordText" xml:space="preserve">
+    <value>لا يمكن تغيير كلمة المرور ، كلمة المرور القديمة غير صحيحة</value>
+  </data>
+  <data name="ContactWithAdminText" xml:space="preserve">
+    <value>عفوا ، حدث خطأ غير مقصود ، يرجى الاتصال بمدير النظام</value>
+  </data>
+  <data name="DataIsNotRightText" xml:space="preserve">
+    <value>عفوا ، البيانات المدخلة غير صحيحة</value>
+  </data>
+  <data name="ErrorInStoredProcedureText" xml:space="preserve">
+    <value>عفوا ، حدث خطأ غير مقصود في الاجراء المخزن ، يرجى الاتصال بمدير النظام</value>
+  </data>
+  <data name="NoConnectionWithDBServerText" xml:space="preserve">
+    <value>عفوا ، لا يمكن الاتصال بخادم قاعدة البيانات ، يرجى الاتصال بمدير النظام</value>
+  </data>
+  <data name="RecordAlreadyExistText" xml:space="preserve">
+    <value>عفوا ، هذا السجل موجود مسبقا ولا يمكن تكراره</value>
+  </data>
+  <data name="RecordRalatedWithOtherDataText" xml:space="preserve">
+    <value>عفوا ، هذا السجل مرتبط ببيانات اخرى ولا يمكن حذفه</value>
+  </data>
+  <data name="ITDepartmentNameText" xml:space="preserve">
+    <value>الإدارة العامة للحاسب الآلي وتقنية المعلومات</value>
+  </data>
+  <data name="LoginText" xml:space="preserve">
+    <value>تسجيل الدخول</value>
+  </data>
+  <data name="WelcomeMessageText" xml:space="preserve">
+    <value>مرحبا بك في نظام تكامـل! من فضلك ادخل اسم المستخدم وكلمة المرور لإتمام عملية الدخول على النظام</value>
+  </data>
+  <data name="ConfirmNotMatchedText" xml:space="preserve">
+    <value>{0} و {1} غير متطابقتين</value>
+  </data>
+  <data name="EmployeeBirthDateText" xml:space="preserve">
+    <value>تاريخ الميلاد</value>
+  </data>
+  <data name="EmployeeBirthPlaceText" xml:space="preserve">
+    <value>مكان الميلاد</value>
+  </data>
+  <data name="EmployeeIDNoText" xml:space="preserve">
+    <value>رقم الهوية الوطنية</value>
+  </data>
+  <data name="EmployeeMobileNoText" xml:space="preserve">
+    <value>رقم المحمول</value>
+  </data>
+  <data name="EmployeeNameArText" xml:space="preserve">
+    <value>اسـم الموظف - عربي</value>
+  </data>
+  <data name="SearchEmployeeDescText" xml:space="preserve">
+    <value> من هنا يمكنك البحث والتعديل على بيانات الموظف الرئيسية</value>
+  </data>
+  <data name="EmployeeProfileText" xml:space="preserve">
+    <value>ملف الموظف</value>
+  </data>
+  <data name="EmployeeDelegationText" xml:space="preserve">
+    <value>الإنتدابات</value>
+  </data>
+  <data name="EmployeeEMailText" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+  <data name="EmployeeHistoryText" xml:space="preserve">
+    <value>السجل الوظيفي</value>
+  </data>
+  <data name="EmployeeIDIssueDateText" xml:space="preserve">
+    <value>تاريخ اصدار الهوية</value>
+  </data>
+  <data name="EmployeeNameEnText" xml:space="preserve">
+    <value>اسـم الموظف - إنجليزي</value>
+  </data>
+  <data name="EmployeePassportEndDateText" xml:space="preserve">
+    <value>تاريخ انتهاء الجواز</value>
+  </data>
+  <data name="EmployeePassportIssueDateText" xml:space="preserve">
+    <value>تاريخ اصدار الجواز</value>
+  </data>
+  <data name="EmployeePassportNoText" xml:space="preserve">
+    <value>رقم الجواز</value>
+  </data>
+  <data name="EmployeePassportSourceText" xml:space="preserve">
+    <value>مكان اصدار الجواز</value>
+  </data>
+  <data name="CareerHistoryText" xml:space="preserve">
+    <value>السجل الوظيفي</value>
+  </data>
+  <data name="EmployeeAssigningText" xml:space="preserve">
+    <value>التكاليف</value>
+  </data>
+  <data name="AddNewEmployeeDescText" xml:space="preserve">
+    <value>يمكنك انشاء وتعريف البيانات الشخصية لموظف جديد من هذه الشاشة</value>
+  </data>
+  <data name="AddNewEmployeeText" xml:space="preserve">
+    <value>إنشاء موظف جديد</value>
+  </data>
+  <data name="DelegationConsumedBalanceText" xml:space="preserve">
+    <value>رصيد الإنتداب المستهلك</value>
+  </data>
+  <data name="DelegationEndDateText" xml:space="preserve">
+    <value>تاريخ نهاية الإنتداب</value>
+  </data>
+  <data name="DelegationPeriodText" xml:space="preserve">
+    <value>عدد ايام الإنتداب</value>
+  </data>
+  <data name="DelegationReasonText" xml:space="preserve">
+    <value>الغرض من الإنتداب</value>
+  </data>
+  <data name="DelegationRemainingBalanceText" xml:space="preserve">
+    <value>رصيد الإنتداب المتبقي</value>
+  </data>
+  <data name="DelegationStartDateText" xml:space="preserve">
+    <value>تاريخ بداية الإنتداب</value>
+  </data>
+  <data name="AddNewDelegationDescText" xml:space="preserve">
+    <value>من هنا يمكنك انشاء انتداب جديد (جماعي - فردي)</value>
+  </data>
+  <data name="AddNewDelegationText" xml:space="preserve">
+    <value>انشاء انتداب جديد</value>
+  </data>
+  <data name="DelegationBasicInfoText" xml:space="preserve">
+    <value>بيانات الإنتداب الرئيسية</value>
+  </data>
+  <data name="EmployeeJobNameText" xml:space="preserve">
+    <value>مسمى الوظيفة</value>
+  </data>
+  <data name="EmployeesText" xml:space="preserve">
+    <value>بيانات الموظفين</value>
+  </data>
+  <data name="JobNoText" xml:space="preserve">
+    <value>رقم الوظيفــة</value>
+  </data>
+  <data name="OrganizationNameText" xml:space="preserve">
+    <value>مسمى الجهة</value>
+  </data>
+  <data name="RankNameText" xml:space="preserve">
+    <value>المرتبة - الرتبة</value>
+  </data>
+  <data name="DelegationBalanceText" xml:space="preserve">
+    <value>رصيد الإنتداب السنوي</value>
+  </data>
+  <data name="DelegationDestinationText" xml:space="preserve">
+    <value>الدولة / المدينة</value>
+  </data>
+  <data name="AddingDoneText" xml:space="preserve">
+    <value>تمت الإضافة بنجاح</value>
+  </data>
+  <data name="AddText" xml:space="preserve">
+    <value>إضافة</value>
+  </data>
+  <data name="AssigningEndDateText" xml:space="preserve">
+    <value>تاريخ نهاية التكليف</value>
+  </data>
+  <data name="AssigningStartDateText" xml:space="preserve">
+    <value>تاريخ بداية التكليف</value>
+  </data>
+  <data name="AssigningTypeText" xml:space="preserve">
+    <value>نوع التكليف</value>
+  </data>
+  <data name="SearchAssigningDescText" xml:space="preserve">
+    <value>من هنا يمكنك البحث والتعديل على تكاليف الموظفين او اسناد تكليف جديد لموظف</value>
+  </data>
+  <data name="AddNewAssigningDescText" xml:space="preserve">
+    <value>يمكنك انشاء وتعريف تكليف جديد للموظف ، برجاء ادخال بيانات التكاليف كاملة ثم اختر الموظف من القائمة</value>
+  </data>
+  <data name="AddNewAssigningText" xml:space="preserve">
+    <value>إنشاء تكليف جديد</value>
+  </data>
+  <data name="AssigningBasicInfoText" xml:space="preserve">
+    <value>بيانات التكليف الرئيسية</value>
+  </data>
+  <data name="JobNameText" xml:space="preserve">
+    <value>المسمى الوظيفي</value>
+  </data>
+  <data name="ExternalCityText" xml:space="preserve">
+    <value>مدينة التكليف</value>
+  </data>
+  <data name="CompareBetweenDatesText" xml:space="preserve">
+    <value>لا يمكن ان يكون {0} أقل من {1}</value>
+  </data>
+  <data name="OrganizationStructureTooltip" xml:space="preserve">
+    <value>إضغط لعرض الهيكل التنظيمي</value>
+  </data>
+  <data name="MICOrganizationStructureText" xml:space="preserve">
+    <value>الهيكل التنظيمي للمؤسسة العامة للصناعات العسكرية</value>
+  </data>
+  <data name="ExternalOrganizationText" xml:space="preserve">
+    <value>اسم الجهة الخارجية</value>
+  </data>
+  <data name="JobsListText" xml:space="preserve">
+    <value>قائمة الوظائف</value>
+  </data>
+  <data name="JobsListTooltip" xml:space="preserve">
+    <value>إضغط لعرض قائمة الوظائف</value>
+  </data>
+  <data name="MustEndPreviousAssigningText" xml:space="preserve">
+    <value>عفوا ، لابد من انهاء اخر تكليف للموظف اولا</value>
+  </data>
+  <data name="DeleteAssigningDescText" xml:space="preserve">
+    <value>من هنا يمكنك الغاء او حذف التكليف تماما سواء كان داخليا او خارجيا</value>
+  </data>
+  <data name="DeleteAssigningText" xml:space="preserve">
+    <value>إلغاء التكليف</value>
+  </data>
+  <data name="EditAssigningDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على بيانات تكليف الموظف او انهاء تكليفه</value>
+  </data>
+  <data name="EditAssigningText" xml:space="preserve">
+    <value>التعديل على تكليف</value>
+  </data>
+  <data name="AssigningIsFinishedText" xml:space="preserve">
+    <value>تم إنهاء التكليف؟</value>
+  </data>
+  <data name="CountryText" xml:space="preserve">
+    <value>الدولة</value>
+  </data>
+  <data name="DelegationTypeText" xml:space="preserve">
+    <value>نوع الإنتداب</value>
+  </data>
+  <data name="KSACityText" xml:space="preserve">
+    <value>المدينة</value>
+  </data>
+  <data name="EmployeesListText" xml:space="preserve">
+    <value>قائمة الموظفين</value>
+  </data>
+  <data name="KSARegionText" xml:space="preserve">
+    <value>المنطقة</value>
+  </data>
+  <data name="ValidationAlreadyReachTheDelegationLimitText" xml:space="preserve">
+    <value>عفوا ، مدة الإنتداب المطلوبة أكبر من مدة الإنتداب المتبقية للموظف</value>
+  </data>
+  <data name="LastNameArText" xml:space="preserve">
+    <value>اسم العائلة - عربي</value>
+  </data>
+  <data name="LastNameEnText" xml:space="preserve">
+    <value>اسم العائلة - إنجليزي</value>
+  </data>
+  <data name="DelegationKindText" xml:space="preserve">
+    <value>فئة الإنتداب</value>
+  </data>
+  <data name="DeleteEmployeeDescText" xml:space="preserve">
+    <value>من هنا يمكنك حذف موظف</value>
+  </data>
+  <data name="DeleteEmployeeText" xml:space="preserve">
+    <value>حذف موظف</value>
+  </data>
+  <data name="EditEmployeeDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على بيانات موظف</value>
+  </data>
+  <data name="EditEmployeeText" xml:space="preserve">
+    <value>تعديل موظف</value>
+  </data>
+  <data name="DeleteDelegationDescText" xml:space="preserve">
+    <value>من هنا يمكنك حذف إنتداب</value>
+  </data>
+  <data name="DeleteDelegationText" xml:space="preserve">
+    <value>حذف إنتداب</value>
+  </data>
+  <data name="GrandFatherNameArText" xml:space="preserve">
+    <value>اسم الجد - عربي</value>
+  </data>
+  <data name="MiddleNameArText" xml:space="preserve">
+    <value>اسم الأب - عربي</value>
+  </data>
+  <data name="ValidationEmployeeAlreadyExist" xml:space="preserve">
+    <value>الموظف موجود بالفعل</value>
+  </data>
+  <data name="AddNewOverTimeDescText" xml:space="preserve">
+    <value>من هنا يمكنك انشاء عمل إضافي جديد (جماعي - فردي)</value>
+  </data>
+  <data name="AddNewOverTimeText" xml:space="preserve">
+    <value>انشاء عمل إضافي جديد</value>
+  </data>
+  <data name="OverTimeBasicInfoText" xml:space="preserve">
+    <value>بيانات العمل الإضافي الرئيسية</value>
+  </data>
+  <data name="OverTimeEndDateText" xml:space="preserve">
+    <value>تاريخ نهاية العمل الإضافي</value>
+  </data>
+  <data name="OverTimePeriodText" xml:space="preserve">
+    <value>عدد ايام العمل الإضافي</value>
+  </data>
+  <data name="OverTimeStartDateText" xml:space="preserve">
+    <value>تاريخ بداية العمل الإضافي</value>
+  </data>
+  <data name="OverTimeTaskText" xml:space="preserve">
+    <value>المهام المطلوب انجازها</value>
+  </data>
+  <data name="OverTimeWeekWorkHoursAvgText" xml:space="preserve">
+    <value>معدل ساعات العمل الإضافي لأيام الأسبوع</value>
+  </data>
+  <data name="AddNewPassengerOrderDescText" xml:space="preserve">
+    <value>يمكنك انشاء وتعريف أمر إركاب جديد  من هنا، برجاء اختيار نوع أمر الإركاب وتفاصيل النوع ، ومن ثم ادخل بيانات أمر الإركاب</value>
+  </data>
+  <data name="AddNewPassengerOrderText" xml:space="preserve">
+    <value>إنشاء أمر إركاب جديد</value>
+  </data>
+  <data name="DelegationDetailsListText" xml:space="preserve">
+    <value>قائمة بتفاصيل الإنتدابات</value>
+  </data>
+  <data name="FromCityText" xml:space="preserve">
+    <value>من مدينة</value>
+  </data>
+  <data name="GoingText" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="RankText" xml:space="preserve">
+    <value>المرتبة - الرتبة</value>
+  </data>
+  <data name="ReturningText" xml:space="preserve">
+    <value>مرجعا</value>
+  </data>
+  <data name="SearchDelegationDescText" xml:space="preserve">
+    <value>البحث عن الإنتدابات</value>
+  </data>
+  <data name="SearchPassengerOrdersDescText" xml:space="preserve">
+    <value>البحث عن أوامر الإركاب</value>
+  </data>
+  <data name="TicketClassText" xml:space="preserve">
+    <value>درجة التذكرة</value>
+  </data>
+  <data name="ToCityText" xml:space="preserve">
+    <value>الى مدينة</value>
+  </data>
+  <data name="TravellingDateText" xml:space="preserve">
+    <value>تاريخ السفر</value>
+  </data>
+  <data name="ValidationPassengerOrderItineraryCityAlreadyExist" xml:space="preserve">
+    <value>خط سير الرحلة مضاف مسبقا ولا يمكن تكراره</value>
+  </data>
+  <data name="AddNewLenderDescText" xml:space="preserve">
+    <value>يمكنك من هنا انشاء إعارة جديدة للموظف ، ادخل بيانات الإعارة اولا ثم اختر الموظف المراد اعارته</value>
+  </data>
+  <data name="AddNewLenderText" xml:space="preserve">
+    <value>إنشاء إعارة جديدة</value>
+  </data>
+  <data name="DeleteLenderDescText" xml:space="preserve">
+    <value>من هنا يمكنك حذف الإعارة للموظف</value>
+  </data>
+  <data name="DeleteLenderText" xml:space="preserve">
+    <value>حذف إعارة</value>
+  </data>
+  <data name="EditLenderDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على بيانات الإعارة المضافة مسبقا</value>
+  </data>
+  <data name="EditLenderText" xml:space="preserve">
+    <value>التعديل على إعارة</value>
+  </data>
+  <data name="LenderBasicInfoText" xml:space="preserve">
+    <value>بيانات الإعارة الرئيسية</value>
+  </data>
+  <data name="LenderEndDateText" xml:space="preserve">
+    <value>تاريخ نهاية الإعارة</value>
+  </data>
+  <data name="LenderIsFinishedText" xml:space="preserve">
+    <value>تم إنتهاء الإعارة ؟</value>
+  </data>
+  <data name="LenderOrganizationText" xml:space="preserve">
+    <value>جهة الإعارة</value>
+  </data>
+  <data name="LenderStartDateText" xml:space="preserve">
+    <value>تاريخ بداية الإعارة</value>
+  </data>
+  <data name="SearchLenderDescText" xml:space="preserve">
+    <value>من هنا يمكنك البحث والتعديل وحذف الإعارة</value>
+  </data>
+  <data name="GrandFatherNameEnText" xml:space="preserve">
+    <value>اسم الجد - انجليزي</value>
+  </data>
+  <data name="MiddleNameEnText" xml:space="preserve">
+    <value>اسم الأب - انجليزي</value>
+  </data>
+  <data name="ValidationEmployeeRequiredText" xml:space="preserve">
+    <value>لابد من إدخال او إختيار الموظف</value>
+  </data>
+  <data name="ValidationItineraryRequiredText" xml:space="preserve">
+    <value>لابد من ادخال خط سير الرحلة</value>
+  </data>
+  <data name="ValidationPassengerOrderAlreadyTookText" xml:space="preserve">
+    <value>عفوا ، تم إصدار أمر إركاب لهذا الموظف مسبقا ولا يمكن تكراره</value>
+  </data>
+  <data name="DeleteOverTimeDescText" xml:space="preserve">
+    <value>من هنا يمكنك حذف عمل إضافي</value>
+  </data>
+  <data name="DeleteOverTimeText" xml:space="preserve">
+    <value>حذف عمل إضافي</value>
+  </data>
+  <data name="EditDelegationDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على بيانات أنتداب الموظف او انهاء أنتدابه</value>
+  </data>
+  <data name="EditDelegationText" xml:space="preserve">
+    <value>التعديل على إنتداب</value>
+  </data>
+  <data name="ValidationInvalidDateText" xml:space="preserve">
+    <value>خطأ في التاريخ</value>
+  </data>
+  <data name="PassengerOrderBasicInfoText" xml:space="preserve">
+    <value>بيانات أمر الإركاب الرئيسية</value>
+  </data>
+  <data name="DeletePassengerOrderDescText" xml:space="preserve">
+    <value>من هنا يمكنك حذف أمر إركاب</value>
+  </data>
+  <data name="DeletePassengerOrderText" xml:space="preserve">
+    <value>حذف أمر إركاب</value>
+  </data>
+  <data name="PassengerOrderItinerariesText" xml:space="preserve">
+    <value>خط سير الرحلة</value>
+  </data>
+  <data name="EditPassengerOrderDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على بيانات أمر إركاب الموظف</value>
+  </data>
+  <data name="EditPassengerOrderText" xml:space="preserve">
+    <value>التعديل على أمر إركاب </value>
+  </data>
+  <data name="EmployeeLenderText" xml:space="preserve">
+    <value>الإعارات</value>
+  </data>
+  <data name="EmployeeOverTimeText" xml:space="preserve">
+    <value>العمل الإضافي</value>
+  </data>
+  <data name="EmployeePassengerOrdersText" xml:space="preserve">
+    <value>أمر إركاب</value>
+  </data>
+  <data name="ScholarshipCountryText" xml:space="preserve">
+    <value>دولة الإبتعاث</value>
+  </data>
+  <data name="ScholarshipEndDateText" xml:space="preserve">
+    <value>تاريخ نهاية الإبتعاث</value>
+  </data>
+  <data name="ScholarshipLocationText" xml:space="preserve">
+    <value>مكان الإبتعاث</value>
+  </data>
+  <data name="ScholarshipQualificationDegreeText" xml:space="preserve">
+    <value>الدرجة العلمية للمؤهل الجديد</value>
+  </data>
+  <data name="ScholarshipQualificationText" xml:space="preserve">
+    <value>المؤهل العلمي الجديد</value>
+  </data>
+  <data name="ScholarshipStartDateText" xml:space="preserve">
+    <value>تاريخ بداية الإبتعاث</value>
+  </data>
+  <data name="ScholarshipTypeText" xml:space="preserve">
+    <value>نوع الإبتعاث</value>
+  </data>
+  <data name="ScholarshipPeriodText" xml:space="preserve">
+    <value>مدة الإبتعاث</value>
+  </data>
+  <data name="SearchEmployeeScholarshipDescText" xml:space="preserve">
+    <value>من هنا يمكنك البحث عن الابتعاثات الخاصة بالموظفين</value>
+  </data>
+  <data name="AddNewEmployeeScholarshipDescText" xml:space="preserve">
+    <value>يمكنك اضافة ابتعاث جديد للموظفين من هنا</value>
+  </data>
+  <data name="AddNewEmployeeScholarshipText" xml:space="preserve">
+    <value>إنشاء إبتعاث جديد</value>
+  </data>
+  <data name="EmployeeCurrentQualificationText" xml:space="preserve">
+    <value>المؤهل الحالي</value>
+  </data>
+  <data name="EmployeeScholarshipBasicInfoText" xml:space="preserve">
+    <value>بيانات الإبتعاث الرئيسية</value>
+  </data>
+  <data name="DeleteEmployeeScholarDescText" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EditEmployeeScholarshipDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل وتغيير البيانات الخاصة بإبتعاث الموظف </value>
+  </data>
+  <data name="EditEmployeeScholarshipText" xml:space="preserve">
+    <value>التعديل على ابتعاث</value>
+  </data>
+  <data name="EditEmployeeMobileNoDescText" xml:space="preserve">
+    <value>من هنا يمكنك تحديث وتعديل رقم المحمول الخاص بالموظفين ، فقط ادخل رقم المحمول الجديد ومن ثم سيتم ارسال رسالة التحقق الى الهاتف ، قم بإدخاله ومن ثم الضغط على زر التأكيد</value>
+  </data>
+  <data name="EditEmployeeMobileNoText" xml:space="preserve">
+    <value>تحديث رقم المحمول</value>
+  </data>
+  <data name="MobileOTPText" xml:space="preserve">
+    <value>رمز التحقق</value>
+  </data>
+  <data name="ValidationErrorWhileSendingSMSText" xml:space="preserve">
+    <value>لم يتم ارسال رسالة التحقق الى رقم المحمول ، قد يكون رقم المحمول غير صحيح او حدثت مشكلة تقنية اثناء الإرسال  ، الرجاء الإتصال بإدارة تقنية المعلومات</value>
+  </data>
+  <data name="UpdateMobileNoMessageFormatText" xml:space="preserve">
+    <value>يرجى استخدام الرمز {0} لتحديث رقم المحمول في نظام تكامل</value>
+  </data>
+  <data name="SearchEmployeeTransferDescText" xml:space="preserve">
+    <value>من هنا يمكنك البحث والتعديل على قرارات نقل الموظفين أو إضافة قرار نقل</value>
+  </data>
+  <data name="TransferDateText" xml:space="preserve">
+    <value>تاريخ النقل</value>
+  </data>
+  <data name="TransferTypeText" xml:space="preserve">
+    <value>نوع النقل</value>
+  </data>
+  <data name="AddNewEmployeeTransferDescText" xml:space="preserve">
+    <value>يمكنك إجراء نقل لموظف من هذه الشاشة</value>
+  </data>
+  <data name="AddNewEmployeeTransferText" xml:space="preserve">
+    <value>إجراء نقل لموظف</value>
+  </data>
+  <data name="CareerDegreeNameText" xml:space="preserve">
+    <value>الدرجة</value>
+  </data>
+  <data name="DeleteEmployeeTransferDescText" xml:space="preserve">
+    <value>من هنا يمكنك إلغاء نقل موظف</value>
+  </data>
+  <data name="DeleteEmployeeTransferText" xml:space="preserve">
+    <value>إلغاء نقل موظف</value>
+  </data>
+  <data name="DestinationText" xml:space="preserve">
+    <value>الإدارة</value>
+  </data>
+  <data name="EditEmployeeTransferDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على نقل موظف</value>
+  </data>
+  <data name="EditEmployeeTransferText" xml:space="preserve">
+    <value>التعديل على نقل موظف</value>
+  </data>
+  <data name="EmployeeTransferBasicInfoText" xml:space="preserve">
+    <value>بيانات النقل الرئيسية</value>
+  </data>
+  <data name="NewFirstNameArText" xml:space="preserve">
+    <value>الاسم الأول الجديد - عربي</value>
+  </data>
+  <data name="NewGrandFatherNameArText" xml:space="preserve">
+    <value>اسم الجد الجديد - عربي</value>
+  </data>
+  <data name="NewLastNameArText" xml:space="preserve">
+    <value>اسم العائلة الجديد - عربي</value>
+  </data>
+  <data name="NewMiddleNameArText" xml:space="preserve">
+    <value>اسم الأب الجديد - عربي</value>
+  </data>
+  <data name="RequiredEmployeeCodeNoText" xml:space="preserve">
+    <value>لابد من ادخال رقم الكمبيوتر</value>
+  </data>
+  <data name="RequiredEmployeeText" xml:space="preserve">
+    <value>لابد من إختيار الموظف</value>
+  </data>
+  <data name="RequiredExternalCityText" xml:space="preserve">
+    <value>لابد من ادخال مدينة التكليف الخارجي</value>
+  </data>
+  <data name="RequiredExternalOrganizationText" xml:space="preserve">
+    <value>لابد من ادخال جهة التكليف الخارجي</value>
+  </data>
+  <data name="RequiredFieldText" xml:space="preserve">
+    <value>لابد من إدخال {0}</value>
+  </data>
+  <data name="RequiredJobNameText" xml:space="preserve">
+    <value>لابد من اختيار المسمى الوظيفي</value>
+  </data>
+  <data name="RequiredOrganizationNameText" xml:space="preserve">
+    <value>لابد من اختيار الجهة</value>
+  </data>
+  <data name="RequiredPassengerOrdersItineraryText" xml:space="preserve">
+    <value>لابد من ادخال خط سير الرحلة</value>
+  </data>
+  <data name="RequiredScholarshipCountryText" xml:space="preserve">
+    <value>لابد من ادخال الدولة</value>
+  </data>
+  <data name="RequiredScholarshipLocationText" xml:space="preserve">
+    <value>لابد من إدخال موقع الإبتعاث</value>
+  </data>
+  <data name="RequiredStringLengthText" xml:space="preserve">
+    <value>لابد ان يكون {0} لا يقل عن {2} ارقام ولا يزيد عن {1} ارقام</value>
+  </data>
+  <data name="EmployeeNewMobileNoText" xml:space="preserve">
+    <value>رقم المحمول الجديد</value>
+  </data>
+  <data name="FirstNameArText" xml:space="preserve">
+    <value>الاسم الأول- عربي</value>
+  </data>
+  <data name="FirstNameEnText" xml:space="preserve">
+    <value>الاسم الأول - انجليزي</value>
+  </data>
+  <data name="MobileOTPDescText" xml:space="preserve">
+    <value>من فضلك أدخل رمز التحقق الذي تم ارساله على رقم المحمول الجديد ومن ثم الضغط على زر تأكيد حتى تتم عملية التحديث</value>
+  </data>
+  <data name="MobileOTPNotMatchedText" xml:space="preserve">
+    <value>رمز التحقق الذي تم إدخاله غير متطابق مع الرمز الذي تم ارساله ، الرجاء إعادة المحاولة</value>
+  </data>
+  <data name="CompareNotMatchedText" xml:space="preserve">
+    <value>لا يمكن ان يكون {0} يساوي {1}</value>
+  </data>
+  <data name="MobileNoPatternTooltip" xml:space="preserve">
+    <value>رقم المحمول لابد ان يكون على هيئة : 05xxxxxxxx</value>
+  </data>
+  <data name="DelegationDistancePeriodText" xml:space="preserve">
+    <value>عدد أيام المسافة</value>
+  </data>
+  <data name="EditEmployeeNameDescText" xml:space="preserve">
+    <value>من هنا يمكنك تعديل اسم الموظف ، فقط ادخل اسم الموظف الجديد  ومن ثم الضغط على زر التأكيد</value>
+  </data>
+  <data name="EditEmployeeNameText" xml:space="preserve">
+    <value>تعديل اسم الموظف</value>
+  </data>
+  <data name="EmployeeText" xml:space="preserve">
+    <value>الموظف</value>
+  </data>
+  <data name="BusinessRuleARText" xml:space="preserve">
+    <value>قواعد العمل</value>
+  </data>
+  <data name="NoAnyBusinessRulesText" xml:space="preserve">
+    <value>لا يوجد قواعد وشروط عمل لهذا القرار</value>
+  </data>
+  <data name="EmployeeProfileDescText" xml:space="preserve">
+    <value>يمكنك الإطلاع على جميع بيانات وملف الموظف من هذه الشاشة ، يمكنك الاستعلام عن الموظف عن طريف رقم الكمبيوتر او رقم الهوية الوطنية او الإسم، ويمكنك طباعة هذا الملف ايضا</value>
+  </data>
+  <data name="ClickToViewBusinessRulesText" xml:space="preserve">
+    <value>اضغط هنا لمعرفة قواعد وشروط العمل لهذا القرار</value>
+  </data>
+  <data name="EditOverTimeDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على بيانات عمل إضافي للموظف او انهائه</value>
+  </data>
+  <data name="EditOverTimeText" xml:space="preserve">
+    <value>التعديل على عمل إضافي</value>
+  </data>
+  <data name="EditTransferEmployeeDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على بيانات نقل موظف</value>
+  </data>
+  <data name="EditTransferEmployeeText" xml:space="preserve">
+    <value>التعديل على نقل موظف</value>
+  </data>
+  <data name="SearchOverTimeDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل والحذف والبحث عن الأعمال الإضافية المضافة مسبقا</value>
+  </data>
+  <data name="AssigningsLendersText" xml:space="preserve">
+    <value>إدارة التكاليف والإعارات</value>
+  </data>
+  <data name="AssigningsText" xml:space="preserve">
+    <value>إدارة التكاليف</value>
+  </data>
+  <data name="DelegationsText" xml:space="preserve">
+    <value>الإنتدابات</value>
+  </data>
+  <data name="ExpensesText" xml:space="preserve">
+    <value>إدارة النفقات</value>
+  </data>
+  <data name="LendersText" xml:space="preserve">
+    <value>إدارة الإعارات</value>
+  </data>
+  <data name="OverTimesText" xml:space="preserve">
+    <value>العمل الإضافي</value>
+  </data>
+  <data name="PassengerOrdersText" xml:space="preserve">
+    <value>أوامر الإركاب</value>
+  </data>
+  <data name="ScholarshipsText" xml:space="preserve">
+    <value>إدارة الإبتعاث</value>
+  </data>
+  <data name="TransfersText" xml:space="preserve">
+    <value>إدارة النقل</value>
+  </data>
+  <data name="EmployeeCodeIDText" xml:space="preserve">
+    <value>الموظف</value>
+  </data>
+  <data name="AddNewGovernmentFundsDescText" xml:space="preserve">
+    <value>من هنا يمكنك انشاء قرار حسم الصناديق الحكومية</value>
+  </data>
+  <data name="AddNewGovernmentFundsText" xml:space="preserve">
+    <value>اضافة حسم على موظف او كفيل</value>
+  </data>
+  <data name="DeductionStartDateText" xml:space="preserve">
+    <value>تاريخ بداية الحسم</value>
+  </data>
+  <data name="GovernmentDeductionsTypesText" xml:space="preserve">
+    <value>سبب الحسم</value>
+  </data>
+  <data name="GovernmentFundsInfoText" xml:space="preserve">
+    <value>بيانات قرار الحسم</value>
+  </data>
+  <data name="GovernmentFundsTypesText" xml:space="preserve">
+    <value>جهة الحسم</value>
+  </data>
+  <data name="LoanDateText" xml:space="preserve">
+    <value>تاريخ قرار الجهة</value>
+  </data>
+  <data name="LoanNoText" xml:space="preserve">
+    <value>رقم قرار الجهة</value>
+  </data>
+  <data name="MonthlyDeductionAmountText" xml:space="preserve">
+    <value>مبلغ الحسم الشهري</value>
+  </data>
+  <data name="TotalDeductionAmountText" xml:space="preserve">
+    <value>قيمة القرض</value>
+  </data>
+  <data name="NewFirstNameEnText" xml:space="preserve">
+    <value>الاسم الأول الجديد - إنجليزي</value>
+  </data>
+  <data name="NewGrandFatherNameEnText" xml:space="preserve">
+    <value>اسم الجد الجديد - إنجليزي</value>
+  </data>
+  <data name="NewLastNameEnText" xml:space="preserve">
+    <value>اسم العائلة الجديد - إنجليزي</value>
+  </data>
+  <data name="NewMiddleNameEnText" xml:space="preserve">
+    <value>اسم الأب الجديد - إنجليزي</value>
+  </data>
+  <data name="ValidationEmailText" xml:space="preserve">
+    <value>البريد الإلكتروني غير صحيح</value>
+  </data>
+  <data name="DeleteGovernmentFundsDescText" xml:space="preserve">
+    <value>من هنا يمكنك الغاء او حذف قرار الحسم تماما</value>
+  </data>
+  <data name="DeleteGovernmentFundsText" xml:space="preserve">
+    <value>حذف قرار الحسم</value>
+  </data>
+  <data name="GovernmentFundsText" xml:space="preserve">
+    <value>حسم الصناديق الحكومية</value>
+  </data>
+  <data name="EditGovernmentFundsDescText" xml:space="preserve">
+    <value>من هنا يمكنك تعديل قرار حسم الصناديق الحكومية</value>
+  </data>
+  <data name="EditGovernmentFundsText" xml:space="preserve">
+    <value>تعديل قرار حسم الصناديق الحكومية على موظف او كفيل</value>
+  </data>
+  <data name="SearchGovernmentFundsDescText" xml:space="preserve">
+    <value>من هنا يمكنك البحث والتعديل على قرارات حسم الصناديق الحكومية </value>
+  </data>
+  <data name="AddNewCountryDescText" xml:space="preserve">
+    <value>من هنا يمكنك تعريف دولة جديدة</value>
+  </data>
+  <data name="AddNewCountryText" xml:space="preserve">
+    <value>تعريف دولة جديدة</value>
+  </data>
+  <data name="AddNewKSACityDescText" xml:space="preserve">
+    <value>من هنا يمكنك تعريف وإنشاء مدينة سعودية جديدة ،فقط اختر المنطقة الخاصة بهذه المدينة ثم ادخل مسمى المدينة</value>
+  </data>
+  <data name="AddNewKSACityText" xml:space="preserve">
+    <value>تعريف مدينة سعودية جديدة</value>
+  </data>
+  <data name="CountryBasicInfoText" xml:space="preserve">
+    <value>بيانات الدولة</value>
+  </data>
+  <data name="CountryNameText" xml:space="preserve">
+    <value>اسم الدولة</value>
+  </data>
+  <data name="DeleteCountryDescText" xml:space="preserve">
+    <value>من هنا يمكنك حذف الدولة وببياناتها من النظام</value>
+  </data>
+  <data name="DeleteCountryText" xml:space="preserve">
+    <value>حذف دولة</value>
+  </data>
+  <data name="DeleteKSACityDescText" xml:space="preserve">
+    <value>يمكنك حذف المدينة العودية من هنا</value>
+  </data>
+  <data name="DeleteKSACityText" xml:space="preserve">
+    <value>حذف مدينة سعودية</value>
+  </data>
+  <data name="EditCountryDescText" xml:space="preserve">
+    <value>بإمكانك التعديل على بيانات الدولة ثم الضغط على زر الحفظ</value>
+  </data>
+  <data name="EditCountryText" xml:space="preserve">
+    <value>التعديل على الدولة</value>
+  </data>
+  <data name="EditKSACityDescText" xml:space="preserve">
+    <value>هنا يمكنك التعديل على بيانات المدينة السعودية</value>
+  </data>
+  <data name="EditKSACityText" xml:space="preserve">
+    <value>التعديل على المدينة السعودية</value>
+  </data>
+  <data name="KSACitiesText" xml:space="preserve">
+    <value>المدن السعودية</value>
+  </data>
+  <data name="KSACityBasicInfoText" xml:space="preserve">
+    <value>بيانات المدينة السعودية</value>
+  </data>
+  <data name="KSACityNameText" xml:space="preserve">
+    <value>اسم المدينة</value>
+  </data>
+  <data name="SearchCountryDescText" xml:space="preserve">
+    <value>شاشة البحث عن الدول</value>
+  </data>
+  <data name="SearchKSACityDescText" xml:space="preserve">
+    <value>من هنا يمكنك إجراء البحث والحذف والتعديل على المدينة السعودية</value>
+  </data>
+  <data name="AddNewRankTicketClassDescText" xml:space="preserve">
+    <value>من هنا يمكنك تعريف نوع التذكرة لمرتبة (درجة اولى-درجة اعمال-درجة اقتصادية)</value>
+  </data>
+  <data name="AddNewRankTicketClassText" xml:space="preserve">
+    <value>تعريف نوع التذكرة للمراتب</value>
+  </data>
+  <data name="DeleteRankTicketClassDescText" xml:space="preserve">
+    <value>يمكنك حذف درجة التذكرة من هنا</value>
+  </data>
+  <data name="DeleteRankTicketClassText" xml:space="preserve">
+    <value>حذف درجة تذكرة </value>
+  </data>
+  <data name="EditRankTicketClassDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على الرتب المسندة لدرجة التذكرة</value>
+  </data>
+  <data name="EditRankTicketClassText" xml:space="preserve">
+    <value>التعديل على درجة التذكرة</value>
+  </data>
+  <data name="RanksTicketsClassesText" xml:space="preserve">
+    <value>درجة التذكرة</value>
+  </data>
+  <data name="RankTicketClassBasicInfoText" xml:space="preserve">
+    <value>بيانات الرتبة ودرجة التذكرة</value>
+  </data>
+  <data name="SearchRankTicketClassesDescText" xml:space="preserve">
+    <value>بالإمكان البحث عن درجات التذاكر وتعديل درجة التذكرة للمراتب</value>
+  </data>
+  <data name="WarningCannotChangeBecauseEmployeeAdded" xml:space="preserve">
+    <value>لايمكن التعديل على هذا الحقل</value>
+  </data>
+  <data name="AllowanceAmountText" xml:space="preserve">
+    <value>مبلغ البدل</value>
+  </data>
+  <data name="AllowanceAmountTypeText" xml:space="preserve">
+    <value>نوع البدل</value>
+  </data>
+  <data name="AllowanceNameText" xml:space="preserve">
+    <value>مسمى البدل</value>
+  </data>
+  <data name="AllowanceStartDateText" xml:space="preserve">
+    <value>تاريخ بداية البدل</value>
+  </data>
+  <data name="AllowanceText" xml:space="preserve">
+    <value>البدل</value>
+  </data>
+  <data name="IsActiveText" xml:space="preserve">
+    <value>فعال؟</value>
+  </data>
+  <data name="JobText" xml:space="preserve">
+    <value>الوظيفة</value>
+  </data>
+  <data name="NotAuthenticatedText" xml:space="preserve">
+    <value> عفوا ، لم يتم السماح لك بالدخول لاحد الاسباب التالية : NewLine  - اسم المستخدم او كلمة المرور غير صحيحة  NewLine  - تم إغلاق الحساب الخاص بك</value>
+  </data>
+  <data name="AddNewGovernmentFundsTypsDescText" xml:space="preserve">
+    <value>من هنا يمكنك انشاء جهة حسم </value>
+  </data>
+  <data name="AddNewGovernmentFundsTypsText" xml:space="preserve">
+    <value>اضافة جهة حسم</value>
+  </data>
+  <data name="DeleteGovernmentFundsDescTypsText" xml:space="preserve">
+    <value>من هنا يمكنك الغاء او حذف جهة الحسم</value>
+  </data>
+  <data name="DeleteGovernmentFundsTypsText" xml:space="preserve">
+    <value>حذف جهة الحسم</value>
+  </data>
+  <data name="EditGovernmentFundsDescTypsText" xml:space="preserve">
+    <value>من هنا يمكنك تعديل جهة الحسم</value>
+  </data>
+  <data name="EditGovernmentFundsTypsText" xml:space="preserve">
+    <value>تعديل جهة الحسم</value>
+  </data>
+  <data name="SearchGovernmentFundsTypsDescText" xml:space="preserve">
+    <value>من هنا يمكنك إجراء البحث والحذف والتعديل على جهة الحسم</value>
+  </data>
+  <data name="AddNewAllowanceDescText" xml:space="preserve">
+    <value>من هنا يمكنك إضافة بدل جديد</value>
+  </data>
+  <data name="AddNewAllowanceText" xml:space="preserve">
+    <value>إضافة بدل جديد</value>
+  </data>
+  <data name="AllowanceBasicInfoText" xml:space="preserve">
+    <value>بيانات البدل الرئيسية</value>
+  </data>
+  <data name="DeleteAllowanceDescText" xml:space="preserve">
+    <value>من هنا يمكنك حذف بدل</value>
+  </data>
+  <data name="DeleteAllowanceText" xml:space="preserve">
+    <value>حذف بدل</value>
+  </data>
+  <data name="EditAllowanceDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على البدل</value>
+  </data>
+  <data name="EditAllowanceText" xml:space="preserve">
+    <value>التعديل على البدل</value>
+  </data>
+  <data name="SearchAllowancesDescText" xml:space="preserve">
+    <value>من هنا يمكنك البحث عن البدلات</value>
+  </data>
+  <data name="GovernmentFundsInfoTypsText" xml:space="preserve">
+    <value>بيانات جهة الحسم</value>
+  </data>
+  <data name="AddNewJobAllowanceDescText" xml:space="preserve">
+    <value>من هنا يمكنك إضافة بدل لوظيفة</value>
+  </data>
+  <data name="AddNewJobAllowanceText" xml:space="preserve">
+    <value>إضافة بدل لوظيفة</value>
+  </data>
+  <data name="AllowanceSettingsText" xml:space="preserve">
+    <value>إعدادات البدلات</value>
+  </data>
+  <data name="DeleteJobAllowanceDescText" xml:space="preserve">
+    <value>من هنا يمكنك حذف بدل لوظيفة</value>
+  </data>
+  <data name="DeleteJobAllowanceText" xml:space="preserve">
+    <value>حذف بدل لوظيفة</value>
+  </data>
+  <data name="EditJobAllowanceDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على بدل الوظيفة</value>
+  </data>
+  <data name="EditJobAllowanceText" xml:space="preserve">
+    <value>التعديل على بدل الوظيفة</value>
+  </data>
+  <data name="EmployeeAllowanceText" xml:space="preserve">
+    <value>صرف بدل</value>
+  </data>
+  <data name="JobAllowanceBasicInfoText" xml:space="preserve">
+    <value>البيانات الرئيسية لبدل الوظيفة</value>
+  </data>
+  <data name="JobAllowanceText" xml:space="preserve">
+    <value>بدل الوظيفة</value>
+  </data>
+  <data name="SearchJobAllowanceDescText" xml:space="preserve">
+    <value>من هنا يمكنك البحث عن البدلات المعرفة مسبقا للوظائف</value>
+  </data>
+  <data name="AddNewEmployeeAllowanceDescText" xml:space="preserve">
+    <value>من هنا يمكنك إضافة بدل لموظف</value>
+  </data>
+  <data name="AddNewEmployeeAllowanceText" xml:space="preserve">
+    <value>إضافة بدل لموظف</value>
+  </data>
+  <data name="AllowancesListText" xml:space="preserve">
+    <value>قائمة البدلات</value>
+  </data>
+  <data name="EmployeeAllowanceBasicInfoText" xml:space="preserve">
+    <value>البيانات الرئيسية لبدل الموظف</value>
+  </data>
+  <data name="EmployeesAllowancesText" xml:space="preserve">
+    <value>بدلات الموظفين</value>
+  </data>
+  <data name="SearchAboutAllowanceTooltip" xml:space="preserve">
+    <value>إضغط للبحث عن بدل</value>
+  </data>
+  <data name="ValidationAllowanceNotAllowedForJobText" xml:space="preserve">
+    <value>عفوا ، البدل غير متاح لهذه الوظيفة</value>
+  </data>
+  <data name="ValidationAllowanceStopedForJobText" xml:space="preserve">
+    <value>عفوا ، تم ايقاف هذا البدل لوظيفة الموظف</value>
+  </data>
+  <data name="ValidationAllowanceStopedText" xml:space="preserve">
+    <value>عفوا ، هذا البدل تم إيقاف التعامل معه</value>
+  </data>
+  <data name="IsAdminText" xml:space="preserve">
+    <value>مدير نظام؟</value>
+  </data>
+  <data name="DeleteEmployeeAllowanceDescText" xml:space="preserve">
+    <value>من هنا يمكنك حذف بدل لموظف</value>
+  </data>
+  <data name="DeleteEmployeeAllowanceText" xml:space="preserve">
+    <value>حذف بدل موظف</value>
+  </data>
+  <data name="EditEmployeeAllowanceDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على بدل المسند لموظف</value>
+  </data>
+  <data name="EditEmployeeAllowanceText" xml:space="preserve">
+    <value>تعديل بدل موظف</value>
+  </data>
+  <data name="GroupNameText" xml:space="preserve">
+    <value>اسـم المجموعة</value>
+  </data>
+  <data name="GroupsText" xml:space="preserve">
+    <value>المجموعات</value>
+  </data>
+  <data name="PrivilagesText" xml:space="preserve">
+    <value>الصلاحيات</value>
+  </data>
+  <data name="JobCategoryNameText" xml:space="preserve">
+    <value>اسم التصنيف</value>
+  </data>
+  <data name="HomePageText" xml:space="preserve">
+    <value>الرئيسية</value>
+  </data>
+  <data name="CreatingText" xml:space="preserve">
+    <value>إضافة</value>
+  </data>
+  <data name="DeletingText" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="ObjectNameText" xml:space="preserve">
+    <value>الشاشة</value>
+  </data>
+  <data name="ReadingText" xml:space="preserve">
+    <value>بحث واستعلام</value>
+  </data>
+  <data name="UpdatingText" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="SearchEmployeeAllownacesDescText" xml:space="preserve">
+    <value>من هنا يمكنك البحث والتعديل على بدلات جميع الموظفين المسندة لهم مسبقا ، كذلك يمكن انشاء بدل جديد  لموظف من خلال الضغط على إنشاء جديد</value>
+  </data>
+  <data name="NoRecordFoundText" xml:space="preserve">
+    <value>لا يوجد سجلات للعرض</value>
+  </data>
+  <data name="ValidationDelegationDatesMustBeInSameFinancialYearText" xml:space="preserve">
+    <value>عفوا ، لابد ان يكون فترة الإنتداب خلال نفس السنة المالية</value>
+  </data>
+  <data name="ValidationRangeText" xml:space="preserve">
+    <value>يجب ان يكون {0} بين {1} - {2}</value>
+  </data>
+  <data name="InvalidHoursText" xml:space="preserve">
+    <value>invalid hours</value>
+  </data>
+  <data name="ValidationPassengerOrderItineraryCityRequired" xml:space="preserve">
+    <value>لابد من ادخال مدن خط سير الرحلة</value>
+  </data>
+  <data name="FinancialYearEndDateText" xml:space="preserve">
+    <value>تاريخ نهاية السنة المالية :</value>
+  </data>
+  <data name="FinancialYearInfoText" xml:space="preserve">
+    <value>بيانات السنة المالية لعام</value>
+  </data>
+  <data name="FinancialYearStartDateText" xml:space="preserve">
+    <value>تاريخ بداية السنة المالية :</value>
+  </data>
+  <data name="ValidationOverTimeDatesMustBeInSameFinancialYearText" xml:space="preserve">
+    <value>لابد ان تكون فترة العمل الإضافي خلال نفس السنة المالية</value>
+  </data>
+  <data name="ValidationStringLengthText" xml:space="preserve">
+    <value>لا يمكن ان يقل {0} عن {1} ولا يزيد عن {2}</value>
+  </data>
+  <data name="ScholarshipReasonText" xml:space="preserve">
+    <value>الغرض من الإبتعاث</value>
+  </data>
+  <data name="RememberMeText" xml:space="preserve">
+    <value>تذكرني؟</value>
+  </data>
+  <data name="SequenceNoText" xml:space="preserve">
+    <value>الرقم التسلسلي</value>
+  </data>
+  <data name="TestTrialText" xml:space="preserve">
+    <value>النسخة التجريبية</value>
+  </data>
+  <data name="CreatedByText" xml:space="preserve">
+    <value>أنشئ بواسطة</value>
+  </data>
+  <data name="CreatedDateText" xml:space="preserve">
+    <value>وقت وتاريخ الإنشاء</value>
+  </data>
+  <data name="DetailsDelegationText" xml:space="preserve">
+    <value>تفاصيل الإنتداب</value>
+  </data>
+  <data name="DetailsText" xml:space="preserve">
+    <value>تفاصيل</value>
+  </data>
+  <data name="PrintText" xml:space="preserve">
+    <value>طباعة</value>
+  </data>
+  <data name="DetailsDelegationDescText" xml:space="preserve">
+    <value>من هنا يمكنك معرفة تفاصيل وجميع بيانات الإنتداب</value>
+  </data>
+  <data name="DetailsPassengerOrderDescText" xml:space="preserve">
+    <value>من هنا يمكنك معرفة تفاصيل وجميع بيانات أمر الإركاب</value>
+  </data>
+  <data name="DetailsPassengerOrderText" xml:space="preserve">
+    <value>تفاصيل أمر الإركاب</value>
+  </data>
+  <data name="DetailsGovernmentFundsText" xml:space="preserve">
+    <value>تفاصيل قرار الحسم</value>
+  </data>
+  <data name="DetailsEmployeeAllowanceText" xml:space="preserve">
+    <value>تفاصيل البدل للموظف</value>
+  </data>
+  <data name="DetailsOverTimeText" xml:space="preserve">
+    <value>تفاصيل العمل الإضافي</value>
+  </data>
+  <data name="DetailsEmployeeAllowanceDescText" xml:space="preserve">
+    <value>من هنا يمكنك معرفة تفاصيل وجميع بيانات البدل المسند للموظف</value>
+  </data>
+  <data name="DetailsOverTimeDescText" xml:space="preserve">
+    <value>من هنا يمكنك معرفة تفاصيل وجميع بيانات العمل الإضافي</value>
+  </data>
+  <data name="DetailsAssigningDescText" xml:space="preserve">
+    <value>من هنا يمكنك معرفة جميع بيانات وتفاصيل التكليف للموظف</value>
+  </data>
+  <data name="DetailsAssigningText" xml:space="preserve">
+    <value>تفاصيل التكليف</value>
+  </data>
+  <data name="PrintAllText" xml:space="preserve">
+    <value>طباعة الكل</value>
+  </data>
+  <data name="DetailsLenderDescText" xml:space="preserve">
+    <value>من هنا يمكنك معرفة تفاصيل وجميع بيانات الإعارة</value>
+  </data>
+  <data name="DetailsLenderText" xml:space="preserve">
+    <value>تفاصيل الإعارة</value>
+  </data>
+  <data name="DevTrialText" xml:space="preserve">
+    <value>النسخة التطويرية</value>
+  </data>
+  <data name="FinancialYearText" xml:space="preserve">
+    <value>السنة المالية</value>
+  </data>
+  <data name="DelegationsListText" xml:space="preserve">
+    <value>قائمة بجميع الإنتدابات</value>
+  </data>
+  <data name="DelegationsYearsBalanceText" xml:space="preserve">
+    <value>ارصدة الإنتدابات السنوية</value>
+  </data>
+  <data name="SearchAboutDelegationTooltip" xml:space="preserve">
+    <value>اضغط للبحث عن انتداب موظف</value>
+  </data>
+  <data name="CareerHistoryTypeNameText" xml:space="preserve">
+    <value>نوع الحركة الوظيفية</value>
+  </data>
+  <data name="IsCurrentCareerHistoryText" xml:space="preserve">
+    <value>الوظيفة الحالية؟</value>
+  </data>
+  <data name="JoinDateText" xml:space="preserve">
+    <value>تاريخ المباشرة للوظيفة</value>
+  </data>
+  <data name="TransactionDateText" xml:space="preserve">
+    <value>تاريخ القرار</value>
+  </data>
+  <data name="OrganizationsJobsListText" xml:space="preserve">
+    <value>قائمة بجميع الوظائف المسندة للإدارات والمراتب</value>
+  </data>
+  <data name="SearchAboutOrganizationsJobsToolTip" xml:space="preserve">
+    <value>اضغط للبحث عن وظيفة</value>
+  </data>
+  <data name="InternshipScholarshipEndDateText" xml:space="preserve">
+    <value>تاريخ نهاية الإبتعاث التدريبي</value>
+  </data>
+  <data name="InternshipScholarshipLocationText" xml:space="preserve">
+    <value>موقع / جهة الإبتعاث التدريبي</value>
+  </data>
+  <data name="InternshipScholarshipPeriodText" xml:space="preserve">
+    <value>مدة الإبتعاث التدريبي</value>
+  </data>
+  <data name="InternshipScholarshipReasonText" xml:space="preserve">
+    <value>الغرض من الإبتعاث التدريبي</value>
+  </data>
+  <data name="InternshipScholarshipStartDateText" xml:space="preserve">
+    <value>تاريخ بداية الإبتعاث التدريبي</value>
+  </data>
+  <data name="InternshipScholarshipTypeText" xml:space="preserve">
+    <value>نوع الإبتعاث التدريبي</value>
+  </data>
+  <data name="InternshipScholarshipBasicInfoText" xml:space="preserve">
+    <value>البيانات الأساسية للإبتعاث التدريبي</value>
+  </data>
+  <data name="AddNewInternshipScholarshipDescText" xml:space="preserve">
+    <value>من هنا يمكنك إضافة ابتعاث تدريبي للموظف</value>
+  </data>
+  <data name="AddNewInternshipScholarshipText" xml:space="preserve">
+    <value>إضافة إبتعاث تدريبي جديد</value>
+  </data>
+  <data name="InternshipScholarshipsText" xml:space="preserve">
+    <value>الإبتعاثات التدريبية</value>
+  </data>
+  <data name="SearchInternshipScholarshipDescText" xml:space="preserve">
+    <value>من هنا يمكنك البحث والتعديل على الإبتعاثات التدريبية</value>
+  </data>
+  <data name="DeleteInternshipScholarshipDescText" xml:space="preserve">
+    <value>من هنا يمكنك حذف الإبتعاث التدريبي للموظف</value>
+  </data>
+  <data name="DeleteInternshipScholarshipText" xml:space="preserve">
+    <value>حذف إبتعاث تدريبي </value>
+  </data>
+  <data name="DetailsInternshipScholarshipDescText" xml:space="preserve">
+    <value>هنا يمكنك معرفة جميع بيانات وتفاصيل الإبتعاث التدريبي</value>
+  </data>
+  <data name="DetailsInternshipScholarshipText" xml:space="preserve">
+    <value>تفاصيل الإبتعاث التدريبي</value>
+  </data>
+  <data name="EditInternshipScholarshipDescText" xml:space="preserve">
+    <value>هنا يمكنك التعديل على الإبتعاث التدريبي</value>
+  </data>
+  <data name="EditInternshipScholarshipText" xml:space="preserve">
+    <value>التعديل على الإبتعاث التدريبي</value>
+  </data>
+  <data name="ValidationHiringAlreadyExistText" xml:space="preserve">
+    <value>عفوا ، يوجد تعيين للموظف مدخل مسبقا ولا يمكن تكراره</value>
+  </data>
+  <data name="FridayHoursAvgText" xml:space="preserve">
+    <value>معدل ساعات العمل الإضافي ليوم الجمعة</value>
+  </data>
+  <data name="SaturdayHoursAvgText" xml:space="preserve">
+    <value>معدل ساعات العمل الإضافي ليوم السبت</value>
+  </data>
+  <data name="SearchAboutInternshipScholarshipsTooltip" xml:space="preserve">
+    <value>اضغط للبحث عن الإبتعاثات التدريبية</value>
+  </data>
+  <data name="PassengerOrderTypeText" xml:space="preserve">
+    <value>نوع أمر الإركاب</value>
+  </data>
+  <data name="DelegationsDetailsPopupDescText" xml:space="preserve">
+    <value>هنا يتم عرض جميع الإنتدابات لجميع الموظفين المعرفة مسبقا في النظام ، فقط ابحث عن الإنتداب ثم اضغط على اختيار</value>
+  </data>
+  <data name="InternshipScholarshipsDetailsListText" xml:space="preserve">
+    <value>قائمة بتفاصيل الإبتعاثات التدريبية</value>
+  </data>
+  <data name="InternshipScholarshipsDetailsPopupDescText" xml:space="preserve">
+    <value>هنا يتم عرض جميع الإبتعاثات التدريبية لجميع الموظفين المعرفة مسبقا في النظام ، فقط ابحث عن الإبتعاث التدريبي ثم اضغط على اختيار</value>
+  </data>
+  <data name="RequiredDelegationDetailsText" xml:space="preserve">
+    <value>لابد من إختيار تفاصيل الإنتداب</value>
+  </data>
+  <data name="RequiredInternshipScholarshipDetailsText" xml:space="preserve">
+    <value>لابد من إختيار تفاصيل الإبتعاث التدريبي</value>
+  </data>
+  <data name="RankCategoryNameText" xml:space="preserve">
+    <value>تصنيف الرتبة - المرتبة</value>
+  </data>
+  <data name="RanksDescText" xml:space="preserve">
+    <value>من هنا يمكنك إجراء البحث والحذف والتعديل على المرتبة - الرتبة</value>
+  </data>
+  <data name="EndDateText" xml:space="preserve">
+    <value>تاريخ نهاية</value>
+  </data>
+  <data name="ReasonText" xml:space="preserve">
+    <value>الغرض</value>
+  </data>
+  <data name="StartDateText" xml:space="preserve">
+    <value>تاريخ بداية</value>
+  </data>
+  <data name="IsPassengerOrderCompensation" xml:space="preserve">
+    <value>يتم التعويض عن أمر الإركاب</value>
+  </data>
+  <data name="ValidationPassengerOrderCompensationText" xml:space="preserve">
+    <value>عفوا ، يتم تعويض الموظف عن أمر الإركاب ولايمكن إنشاؤه </value>
+  </data>
+  <data name="DeleteEmployeeScholarText" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OrganizationStructureText" xml:space="preserve">
+    <value>إدارة الهيكل التنظيمي</value>
+  </data>
+  <data name="BranchNameText" xml:space="preserve">
+    <value>الفرع</value>
+  </data>
+  <data name="OrganizationCodeNoText" xml:space="preserve">
+    <value>كود الجهة</value>
+  </data>
+  <data name="OrganizationStructureDescText" xml:space="preserve">
+    <value>من هنا يمكنك ادارة الهيكل التنظيمي</value>
+  </data>
+  <data name="RefreshOrganizationStructureTooltip" xml:space="preserve">
+    <value>أضغط لتحديث الهيكل التنظيمي</value>
+  </data>
+  <data name="OrganizationParentText" xml:space="preserve">
+    <value>الجهة الأم</value>
+  </data>
+  <data name="WantedAddedOrganizationText" xml:space="preserve">
+    <value>الجهة المراد إضافتها</value>
+  </data>
+  <data name="ValidationAlreadyHasChildOrgText" xml:space="preserve">
+    <value>عفوا ، يوجد جهات مرتبطة بهذه الجهة ولا يمكن حذفها</value>
+  </data>
+  <data name="RequesterText" xml:space="preserve">
+    <value>الجهة الطالبة</value>
+  </data>
+  <data name="ApproveText" xml:space="preserve">
+    <value>التعميد</value>
+  </data>
+  <data name="ApproveCofirmationMessageText" xml:space="preserve">
+    <value>هل أنت متأكد من تعميد الإنتداب</value>
+  </data>
+  <data name="ApproveDelegationDescText" xml:space="preserve">
+    <value>من هنا يمكنك تعميدإنتداب</value>
+  </data>
+  <data name="ApproveDelegationDoneAlertText" xml:space="preserve">
+    <value>تم تعميد الأنتداب بنجاح</value>
+  </data>
+  <data name="ValidationDelegationAlreadyApproveText" xml:space="preserve">
+    <value>عفوا ، تم إعتماد الإنتداب ولا يمكن أتخاذ أي إجراء عليه.</value>
+  </data>
+  <data name="ContractDateText" xml:space="preserve">
+    <value>تاريخ العقد</value>
+  </data>
+  <data name="ContractNoText" xml:space="preserve">
+    <value>رقم العقد</value>
+  </data>
+  <data name="SponserToIDNoText" xml:space="preserve">
+    <value>رقم هوية المكفول</value>
+  </data>
+  <data name="SponserToNameText" xml:space="preserve">
+    <value>إسم المكفول</value>
+  </data>
+  <data name="RequiredSponserToIDNoText" xml:space="preserve">
+    <value>لابد من إدخال رقم هوية المكفول</value>
+  </data>
+  <data name="RequiredSponserToNameText" xml:space="preserve">
+    <value>لابد من إدخال اسم المكفول</value>
+  </data>
+  <data name="CreateEmployeeCodeNoText" xml:space="preserve">
+    <value>أستحداث رقم وظيفي</value>
+  </data>
+  <data name="CreateEmployeeCodeNoDescText" xml:space="preserve">
+    <value>يمكنك أستحداث رقم وظيفي للموظف من هذه الشاشة ، يمكنك الاستعلام عن الموظف عن طريق رقم الهوية الوطنية او الإسم.</value>
+  </data>
+  <data name="EmployeeTypeText" xml:space="preserve">
+    <value>نوع الموظف</value>
+  </data>
+  <data name="ConfirmUpdateEmployeeCodeNoText" xml:space="preserve">
+    <value>رقم الكمبيوتر موجود مسبقاً. سيتم تعديل رقم الكمبوتر في حالة الإستمرار.</value>
+  </data>
+  <data name="ApproveMangamentText" xml:space="preserve">
+    <value>إدارة التعاميد</value>
+  </data>
+  <data name="ExpensesApprovalText" xml:space="preserve">
+    <value>تعميد النفقات</value>
+  </data>
+  <data name="ApproveCancelText" xml:space="preserve">
+    <value>إلغاء التعميد</value>
+  </data>
+  <data name="ValidationDelegationAlreadyApproveCancelText" xml:space="preserve">
+    <value>عفوا ، لم يتم إعتماد الإنتداب مسبقا حتى يتم إلغاؤه</value>
+  </data>
+  <data name="ApproveCancelDelegationDoneAlertText" xml:space="preserve">
+    <value>تم إلغاء تعميد الأنتداب بنجاح</value>
+  </data>
+  <data name="JobCreationText" xml:space="preserve">
+    <value>إستحداث وظيفة</value>
+  </data>
+  <data name="JobsManagmentText" xml:space="preserve">
+    <value>إدارة الوظائف</value>
+  </data>
+  <data name="IsVacantText" xml:space="preserve">
+    <value>الوظيفة شاغرة</value>
+  </data>
+  <data name="SearchOrganizationJobDescText" xml:space="preserve">
+    <value>من هنا يمكنك البحث والتعديل على وظائف الإدارات او اسناد وظيفة جديدة لإدارة</value>
+  </data>
+  <data name="AddNewOrganizationJobDescText" xml:space="preserve">
+    <value>يمكنك انشاء وإستحداث وظيفة جديدة للإدارة ، برجاء ادخال بيانات الوظيفة كاملة.</value>
+  </data>
+  <data name="AddNewOrganizationJobText" xml:space="preserve">
+    <value>إستحداث وظيفة جديدة</value>
+  </data>
+  <data name="OrganizationJobBasicInfoText" xml:space="preserve">
+    <value>بيانات الوظيفة الرئيسية</value>
+  </data>
+  <data name="EditOrganizationJobDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على بيانات وظيفة مسندة للإدارة</value>
+  </data>
+  <data name="EditOrganizationJobText" xml:space="preserve">
+    <value>التعديل على وظيفة مسندة لإدارة</value>
+  </data>
+  <data name="OrganizationsJobsText" xml:space="preserve">
+    <value>وظائف الجهات</value>
+  </data>
+  <data name="NoDelegationFoundText" xml:space="preserve">
+    <value>لا يوجد أنتداب بهذا الرقم</value>
+  </data>
+  <data name="ApproveCancelOverTimeDoneAlertText" xml:space="preserve">
+    <value>تم إلغاء تعميد عمل إضافي بنجاح</value>
+  </data>
+  <data name="ApproveOverTimeDescText" xml:space="preserve">
+    <value>من هنا يمكنك تعميد عمل إضافي</value>
+  </data>
+  <data name="ApproveOverTimeDoneAlertText" xml:space="preserve">
+    <value>تم تعميد العمل الإضافي بنجاح</value>
+  </data>
+  <data name="NoOverTimeFoundText" xml:space="preserve">
+    <value>لا يوجد عمل إضافي بهذا الرقم</value>
+  </data>
+  <data name="ValidationOverTimeAlreadyApproveCancelText" xml:space="preserve">
+    <value>عفوا ، لم يتم إعتماد العمل الإضافي مسبقا حتى يتم إلغاؤه</value>
+  </data>
+  <data name="ValidationOverTimeAlreadyApproveText" xml:space="preserve">
+    <value>عفوا ، تم إعتماد العمل الإضافي ولا يمكن أتخاذ أي إجراء عليه</value>
+  </data>
+  <data name="AssigningReasonText" xml:space="preserve">
+    <value>سبب التكليف</value>
+  </data>
+  <data name="DependentCountText" xml:space="preserve">
+    <value>عدد التابعين</value>
+  </data>
+  <data name="EmployeeIDCopyNoText" xml:space="preserve">
+    <value>رقم النسخة للهوية الوطنية</value>
+  </data>
+  <data name="EmployeeIDExpiryDateText" xml:space="preserve">
+    <value>تاريخ انتهاء الهوية الوطنية</value>
+  </data>
+  <data name="EmployeeIDIssuePlaceText" xml:space="preserve">
+    <value>مكان إصدار الهوية الوطنية</value>
+  </data>
+  <data name="MaritalStatusText" xml:space="preserve">
+    <value>الحالة الإجتماعية</value>
+  </data>
+  <data name="JobCodeText" xml:space="preserve">
+    <value>رمز الوظيفة</value>
+  </data>
+  <data name="JobsText" xml:space="preserve">
+    <value>تعريف الوظائف</value>
+  </data>
+  <data name="SearchJobsDescText" xml:space="preserve">
+    <value>من هنا يمكنك إدارة وتعريف مسميات الوظائف</value>
+  </data>
+  <data name="AddNewJobDescText" xml:space="preserve">
+    <value>من هنا يمكنك إضافة وتعريف وظيفة جديدة غير معرفة مسبقا في النظام ، ولا يمكن ان يتكرر مسمى الوظيفة مع نفس فئة الوظيفة</value>
+  </data>
+  <data name="AddNewJobText" xml:space="preserve">
+    <value>إضافة وظيفة جديدة</value>
+  </data>
+  <data name="JobBasicInfoText" xml:space="preserve">
+    <value>بيانات الوظيفة الرئيسية</value>
+  </data>
+  <data name="DeleteJobDescText" xml:space="preserve">
+    <value>يمكنك حذف الوظيفة وإلغائها تماما من هنا وذلك في حالة ان هذه الوظيفة غير مستخدمة نهائيا في النظام</value>
+  </data>
+  <data name="DeleteJobText" xml:space="preserve">
+    <value>حذف الوظيفة</value>
+  </data>
+  <data name="EditJobDescText" xml:space="preserve">
+    <value>من هنا يمكنك التعديل على الوظيفة وبياناتها</value>
+  </data>
+  <data name="EditJobText" xml:space="preserve">
+    <value>التعديل على بيانات الوظيفة</value>
+  </data>
+  <data name="EmployeeCareerHistoryIDText" xml:space="preserve">
+    <value>لابد من إدخال الموظف بشكل كامل</value>
+  </data>
+  <data name="AllAssigningsText" xml:space="preserve">
+    <value>جميع التكاليف</value>
+  </data>
+  <data name="AssigningsAlreadyExpiredText" xml:space="preserve">
+    <value>تكاليف إنتهت بالفعل ولم يتم إنهاؤها</value>
+  </data>
+  <data name="AssigningsWillExpireDuringMonthText" xml:space="preserve">
+    <value>تكاليف تنتهي خلال شهر</value>
+  </data>
+  <data name="ValidationConflictWithAssigningText" xml:space="preserve">
+    <value>عفوا ، تتعارض فترة هذه الإعارة مع فترة تكليف للموظف NewLine فترة التكليف من {0} إلى {1}</value>
+  </data>
+  <data name="ValidationConflictWithLenderText" xml:space="preserve">
+    <value>عفوا ، تتعارض فترة هذا لتكليف مع فترة إعارة للموظف NewLine فترة الإعارة من {0} إلى {1}</value>
+  </data>
+  <data name="VacationsText" xml:space="preserve">
+    <value>إدارة الأجازات</value>
+  </data>
+  <data name="VacationActionText" xml:space="preserve">
+    <value>الإجراء</value>
+  </data>
+  <data name="VacationsDescText" xml:space="preserve">
+    <value>من هنا يمكنك إدارة الأجازات الخاصة بالموظفين</value>
+  </data>
+  <data name="VacationTypeText" xml:space="preserve">
+    <value>نوع الأجازة</value>
+  </data>
+  <data name="VacationEndDateText" xml:space="preserve">
+    <value>تاريخ نهاية الأجازة</value>
+  </data>
+  <data name="VacationPeriodText" xml:space="preserve">
+    <value>مدة الاجازة (بالأيام)</value>
+  </data>
+  <data name="VacationStartDateText" xml:space="preserve">
+    <value>تاريخ بداية الأجازة</value>
+  </data>
+  <data name="WorkDateText" xml:space="preserve">
+    <value>المباشرة بعد الأجازة</value>
+  </data>
+  <data name="FromDateText" xml:space="preserve">
+    <value>من تاريخ</value>
+  </data>
+  <data name="ToDateText" xml:space="preserve">
+    <value>إلى تاريخ</value>
+  </data>
+  <data name="NotesText" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+  <data name="ExtentionPeriodText" xml:space="preserve">
+    <value>مدة التمديد (بالأيام)</value>
+  </data>
+  <data name="VacationExtendDescText" xml:space="preserve">
+    <value>من هنا يمكنك تمديد أجازة موظف ... أدخل مدة تمديد الأجازة بالأيام ثم الضغط على زر الحفظ</value>
+  </data>
+  <data name="VacationExtendText" xml:space="preserve">
+    <value>تمديد أجازة</value>
+  </data>
+  <data name="SavedVacationExtentionAlertText" xml:space="preserve">
+    <value>تم تمديد الأجازة بنجاح</value>
+  </data>
+  <data name="SavedVacationBreakAlertText" xml:space="preserve">
+    <value>تم قطع الأجازة بنجاح</value>
+  </data>
+  <data name="WorkDateAfterBreakText" xml:space="preserve">
+    <value>المباشرة بعد القطع</value>
+  </data>
+  <data name="VacationBreakDescText" xml:space="preserve">
+    <value>من هنا يمكنك قطع أجازة</value>
+  </data>
+  <data name="VacationBreakText" xml:space="preserve">
+    <value>قطع أجازة</value>
+  </data>
+  <data name="VacationCancelCofirmationMessageText" xml:space="preserve">
+    <value>هل أنت متأكد من إلغاء الأجازة ؟</value>
+  </data>
+  <data name="VacationCancelDescText" xml:space="preserve">
+    <value>من هنا يمكنك إلغاء الأجازة</value>
+  </data>
+  <data name="VacationCancelText" xml:space="preserve">
+    <value>إلغاء الأجازة</value>
+  </data>
+  <data name="ValidationPreviousVacationActionNotApprovedText" xml:space="preserve">
+    <value>عفوا ، لايمكن إضافة اي إجراء للأجازة قبل تعميد الإجراءات السابقة</value>
+  </data>
+  <data name="ValidationVacationPeriodText" xml:space="preserve">
+    <value> عفوا ، لايمكن أن تكون مدة الأجازة بعد القطع أكبر من أو تساوي مدة الأجازة الفعلية NewLine مدة الأجازة الفعلية هي  </value>
+  </data>
+  <data name="SavedVacationCancelAlertText" xml:space="preserve">
+    <value>تم إلغاء الأجازة بنجاح</value>
+  </data>
+  <data name="ValidationVacationAlreadyCanceledText" xml:space="preserve">
+    <value>عفوا ، تم إلغاء الأجازة مسبقا ولا يمكن إتخاذ أي إجراء عليها</value>
+  </data>
+  <data name="IsVacationCanceledText" xml:space="preserve">
+    <value>تم إلغاء الأجازة؟</value>
+  </data>
+  <data name="ValidationAlreadyReachTheVacationLimitText" xml:space="preserve">
+    <value>عفوا ، مدة الأجازة المطلوبة أكبر من مدة الأجازة المتبقية للموظف</value>
+  </data>
+  <data name="ValidationConflictWithDelegationText" xml:space="preserve">
+    <value>عفوا ، تتعارض فترة هذا الإجراء مع فترة إنتداب آخر للموظف</value>
+  </data>
+  <data name="ValidationConflictWithInternshipScholarshipText" xml:space="preserve">
+    <value>عفوا ، تتعارض فترة هذا الإجراء مع فترة إبتعاث تدريبي للموظف</value>
+  </data>
+  <data name="ValidationConflictWithOverTimeText" xml:space="preserve">
+    <value>عفوا ، تتعارض فترة هذا الإجراء مع فترة عمل إضافي للموظف</value>
+  </data>
+  <data name="ValidationConflictWithVacationText" xml:space="preserve">
+    <value>عفوا ، تتعارض فترة هذا الإجراء مع فترة أجازة آخرى للموظف</value>
+  </data>
+  <data name="EmployeeVacationText" xml:space="preserve">
+    <value>الأجازات</value>
+  </data>
+</root>

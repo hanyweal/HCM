@@ -1,0 +1,61 @@
+﻿@model HCM.Models.VacationsViewModel
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.divBalance').hide();        //used to hide all Divs for Balances on _vacation partial view
+        $('#divNormalBalance').show();
+        //$('#txtVacationPeriod').prop('readonly', true);
+        GetLastNVacations();
+    });
+
+    function OkFunction() {
+        @*var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Assignings/PrintAssigning")');//ReportViewerASPX
+        //iframe.attr('src', '@Url.Content("~/WebForms/Reports/ReportViewerASPX.aspx?ID=")' + d.data.AssigningID);
+        ShowModal("#divReportModal");*@
+    }
+
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+    }
+
+</script>
+
+
+<p style="font-size:larger">@Resources.Globalization.VacationEditText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.VacationEditDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @*@Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.Delegations })*@
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Edit", "Vacations", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            @Html.Partial("~/Views/Vacations/_Vacation.cshtml", @Model)
+        }
+    </div>
+</div>
+

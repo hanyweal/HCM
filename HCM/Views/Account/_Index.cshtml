@@ -1,0 +1,132 @@
+﻿@model HCM.Models.AccountViewModel
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var iframe = $("#divModalAccount .modal-body #iframeContent");
+        iframe.on('load', function () {
+            ResizeModal();
+        });
+
+        function ResizeModal() {
+            // alert(h);
+            //iframe.css('height', '');
+            //iframe.css('height',iframe[0].contentWindow.document.body.scrollHeight + 'px');
+            ////iframe.height = iframe.contents().find('.panel').scrollHeight + 'px';
+            ////alert(iframe.height);
+            //$('#divModalAccount .modal-body').css('height', '');
+            //$('#divModalAccount .modal-body').css('height', iframe[0].contentWindow.document.body.scrollHeight + 'px');
+            iframe.css('height', '450px');
+        }
+
+        $("#SpanChangePassword").click(function () {
+            iframe.attr('src', '@Url.Content("~/Account/ChangePassword")');
+            ShowModal("#divModalAccount");
+        });
+
+        $("#SpanUserInfo").click(function () {
+            iframe.attr('src', '@Url.Content("~/Account/UserProfile")');
+            ShowModal("#divModalAccount");
+        });
+
+        $("#SpanSignOut").confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            //post: true,
+            animation: 'zoom',
+            content: '@Resources.Globalization.SignOutCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () { window.location.href = '@Url.Action("LogOff", "Account")' },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    });
+
+</script>
+
+<div class="user-info">
+    <div class="user-image">
+        <center>
+            @RazorHelper.DisplayImage(Model.UserPic)
+        </center>
+    </div>
+    <center>
+        <table class="table-bordered">
+            <tr>
+                <td style="padding-left:5px;padding-right:5px">
+                    <a href="@Url.Action("Index","Home")" title="@Resources.Globalization.HomePageText">
+                        <span id="SpanHome" class="glyphicon glyphicon-home UserAccount" style="color: #333;"></span>
+                    </a>
+                </td>
+                <td style="padding-left:5px;padding-right:5px" title="@Resources.Globalization.UserProfileText">
+                    <span id="SpanUserInfo" class="glyphicon glyphicon-user UserAccount"></span>
+                </td>
+                <td style="padding-left:5px;padding-right:5px" title="@Resources.Globalization.ChangePasswordText">
+                    <span id="SpanChangePassword" class="glyphicon glyphicon-pencil UserAccount"></span>
+                </td>
+                <td style="padding-left:5px;padding-right:5px" title="@Resources.Globalization.SignOutText">
+                    <span id="SpanSignOut" class="glyphicon glyphicon-off UserAccount"></span>
+                </td>
+            </tr>
+        </table>
+
+        @*<table class="table table-bordered">
+            <tr>
+                <td>
+                    <span id="SpanUserInfo" class="glyphicon glyphicon-user" style="font-size:large;cursor:pointer"></span>
+                </td>
+                <td>
+                    <span id="SpanSignOut" class="glyphicon glyphicon-off" style="font-size:large;cursor:pointer"></span>
+                </td>
+                <td>
+                    <span id="SpanChangePassword" class="glyphicon glyphicon-pencil" style="font-size:large;cursor:pointer"></span>
+                </td>
+            </tr>
+        </table>*@
+
+
+       @* <div class="row">
+            <div style="width:60%">
+               <div class="col-md-4" style="text-align:left">
+                <span id="SpanUserInfo" class="glyphicon glyphicon-user" style="font-size:large;cursor:pointer"></span>
+            </div>
+            <div class="col-md-4">
+                <span id="SpanSignOut" class="glyphicon glyphicon-off" style="font-size:large;cursor:pointer"></span>
+            </div>
+            <div class="col-md-4" style="text-align:right">
+                <span id="SpanChangePassword" class="glyphicon glyphicon-pencil" style="font-size:large;cursor:pointer"></span>
+            </div>
+
+        </div>
+    </div>*@
+       
+    </center>
+</div>
+ 
+
+@*
+    Conclusion for opening page in modal:
+    there is many ways to open page inside modal :-
+
+    1 - Call the action directly in modal-body :
+            @Html.Action("ChangePassword", "Account")
+        in this way if you registered the javascript libraries in tha page and shared view , some function will be called two times because of the javascript libraries sre rendered two times.
+
+    2 - Loading the Url inside div tag in modal-body :
+            $("#divContent").load('@Url.Content("~/Account/ChangePassword")')
+        in this way if you registered the javascript libraries in tha page and shared view , some function will be called two times because of the javascript libraries sre rendered two times.
+
+    3 - Loading the Url inside iframe tag "src" property in modal-body :
+            <iframe id="iframe1" style="width:100%;height:100%;border:none" src="~/Account/ChangePassword"></iframe> In HTML
+            or
+            $("#divModalAccountChangePassword .modal-body #iframe1").attr('src', '@Url.Content("~/Account/ChangePassword")'); In javascript
+        this way is not like 1 and 2
+*@

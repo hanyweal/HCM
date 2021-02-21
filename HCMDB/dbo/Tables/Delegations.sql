@@ -1,0 +1,28 @@
+﻿CREATE TABLE [dbo].[Delegations] (
+    [DelegationID]             INT            IDENTITY (1, 1) NOT NULL,
+    [DelegationKindID]         INT            NOT NULL,
+    [DelegationTypeID]         INT            NOT NULL,
+    [DelegationStartDate]      DATE           NOT NULL,
+    [DelegationEndDate]        DATE           NOT NULL,
+    [DelegationDistancePeriod] INT            NULL,
+    [DelegationReason]         NVARCHAR (500) NULL,
+    [CountryID]                INT            NULL,
+    [KSACityID]                INT            NULL,
+    [IsActive]                 BIT            NOT NULL,
+    [CreatedDate]              DATETIME       CONSTRAINT [DF_Delegations_CreatedDate] DEFAULT (getdate()) NOT NULL,
+    [LastUpdatedDate]          DATETIME       NULL,
+    [CreatedBy]                INT            NULL,
+    [LastUpdatedBy]            INT            NULL,
+    [IsApproved]               BIT            CONSTRAINT [DF_Delegations_IsApproved] DEFAULT ((0)) NOT NULL,
+    [ApprovedBy]               INT            NULL,
+    [ApprovedDate]             DATETIME       NULL,
+    [Notes]                    NVARCHAR (MAX) NULL,
+    CONSTRAINT [PK_Delegations] PRIMARY KEY CLUSTERED ([DelegationID] ASC),
+    CONSTRAINT [FK_Delegations_Countries] FOREIGN KEY ([CountryID]) REFERENCES [dbo].[Countries] ([CountryID]),
+    CONSTRAINT [FK_Delegations_DelegationsKinds] FOREIGN KEY ([DelegationKindID]) REFERENCES [dbo].[DelegationsKinds] ([DelegationKindID]),
+    CONSTRAINT [FK_Delegations_DelegationsTypes] FOREIGN KEY ([DelegationTypeID]) REFERENCES [dbo].[DelegationsTypes] ([DelegationTypeID]),
+    CONSTRAINT [FK_Delegations_EmployeesCodes] FOREIGN KEY ([CreatedBy]) REFERENCES [dbo].[EmployeesCodes] ([EmployeeCodeID]) ON DELETE CASCADE,
+    CONSTRAINT [FK_Delegations_EmployeesCodes1] FOREIGN KEY ([LastUpdatedBy]) REFERENCES [dbo].[EmployeesCodes] ([EmployeeCodeID]),
+    CONSTRAINT [FK_Delegations_KSACities] FOREIGN KEY ([KSACityID]) REFERENCES [dbo].[KSACities] ([KSACityID])
+);
+

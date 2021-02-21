@@ -1,0 +1,129 @@
+﻿@using HCM.Models;
+@using HCM.Classes.Enums;
+@{
+    ViewBag.Title = @Resources.Globalization.OrganizationsPlacementText;
+}
+
+<script>
+    $(document).ready(function () {
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+           $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+        }
+
+        $("#btnInquery").click(function () {
+            if ($("#hdnFldOrganizationID").val() == '') {
+                //$("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.RequiredOrganizationNameText))');
+                $("#hdnFldOrganizationID").val(1); // first org level (MIC President)
+            }
+                
+            $('#tblOrganizationsPlacement').DataTable().clear().draw();
+
+            $("#tblOrganizationsPlacement").DataTable({
+                    "destroy":true,
+                       dom: 'Bfrtip',
+                    "ajax": {
+                        "url": "/EmployeesPlacement/GetOrganizationsPlacement/" + $("#hdnFldOrganizationID").val(),
+                        "type": "get",
+                        "datatype": "json"
+                    },
+                     "initComplete": function (settings, json) {
+                        $(".dt-buttons").addClass("text text-left");
+                        $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+                    },
+                    "buttons": ['excel'],
+                    "columns": [
+                        {
+                            "data": "OrganizationName",
+                            "width": "55%"
+                        },
+                        {
+                            "data": "ManagerName",
+                            "width": "20%"
+                        },
+                        {
+                            "data": "ManagerMobileNo",
+                            "width": "10%"
+                        },
+                        {
+                            "data": "EmployeesPlacedCount",
+                            "width": "15%"
+                        }
+                    ]
+                 });
+        });
+
+        $("#btnReset").click(function () {
+            $('#tblOrganizationsPlacement').DataTable().clear().draw();
+            ResetOrganization();
+        });
+    });
+</script>
+
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.OrganizationsPlacementDescText
+    </div>
+    <div class="panel-body">
+
+        <table class="table table-responsive table-condensed center">
+            <tbody>
+                <tr>
+                    <td class="col-md-3">
+                        @Resources.Globalization.OrganizationNameText
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-3">
+                        <div class="form-group">
+                            @Html.Partial("~/Views/Shared/_OrganizationStructurePopup.cshtml", new OrganizationStructureViewModel() { })
+                        </div>
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-3">
+                    </td>
+                    <td class="col-md-3" style="text-align:left">
+                        <input type="button" id="btnInquery" class="btn btn-default" value="@Resources.Globalization.InquiryText" />
+                    </td>
+                    <td class="col-md-3" style="text-align:right">
+                        <input type="reset" id="btnReset" class="btn btn-default" value="@Resources.Globalization.ResetText" />
+                    </td>
+                    <td class="col-md-3">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="panel panel-default" style="padding:0px">
+            <div class="panel-heading">
+                @Resources.Globalization.InquiryResultText
+            </div>
+            <div class="panel-body">
+                <table id="tblOrganizationsPlacement" class="table table-responsive table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.OrganizationNameText</td>
+                            <td>@Resources.Globalization.ManagerNameArText</td>
+                            <td>@Resources.Globalization.EmployeeMobileNoText</td>
+                            <td>@Resources.Globalization.EmployeesCountPlacedText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>

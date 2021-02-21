@@ -1,0 +1,349 @@
+﻿@model HCM.Models.ScholarshipsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.AddNewEmployeeScholarshipText;
+}
+
+<script type="text/javascript">
+
+    var ScholarshipID = 0;
+
+    function ResizeModal(h) {
+        iframe.css('height', h);
+        $('#divModal .modal-body').css('height', h);
+    }
+
+    function OkFunction() {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Scholarships/PrintScholarship/")' + ScholarshipID);
+        ShowModal("#divReportModal");
+
+        @*$.ajax({
+            type: "GET"
+         , dataType: "json"
+         , contentType: "application/json; charset=utf-8"
+         , url: "@Url.Content("~/Scholarships/GetScholarshipID")"
+         , success: function (d) {
+             var iframe = $("#divReportModal .modal-body #iframeReportContent");
+             iframe.attr('src', '@Url.Content("~/Scholarships/PrintScholarship/")' + d.data.ScholarshipID);
+             ShowModal("#divReportModal");
+         }
+        , error: function (xhr, status, error) {
+            alert(error.message);
+        },
+        });*@
+    }
+
+    $(document).ready(function () {
+
+        @*$.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            //console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }*@
+
+        $('.internalTraining').hide();
+        $('.externalTraining').hide();
+        $('.individual').show();
+
+        $('#ddlScholarshipTypes').on('change', function (event) {
+
+            var ScholarshipType = $('#ddlScholarshipTypes').val();
+            if (ScholarshipType == '@Convert.ToInt32(ScholarshipsTypesEnum.Individual)') {
+                $('.internalTraining').hide();
+                $('.externalTraining').hide();
+                $('.individual').show();
+            }
+            else if (ScholarshipType == '@Convert.ToInt32(ScholarshipsTypesEnum.Training)') {
+                $('.individual').hide();
+                $('.externalTraining').hide();
+                $('.internalTraining').show();
+            }
+            else if (ScholarshipType == '@Convert.ToInt32(ScholarshipsTypesEnum.ExternalTraining)') {
+                $('.individual').hide();
+                $('.internalTraining').hide();
+                $('.externalTraining').show();
+            }
+        });
+
+
+        $('#txtScholarshipStartDate').calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            onSelect: customRange,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+            onSelect: function (dates) {
+                GetScholarshipEndDate();
+            }
+        });
+
+        $('#txtScholarshipPeriod').on('change', function (event) {
+            GetScholarshipEndDate();
+        });
+
+        GetQualificationsByDegree();
+    });
+
+    function GetScholarshipEndDate() {
+
+        var ScholarshipStartDate = $("#txtScholarshipStartDate").val();
+        var ScholarshipPeriod = $("#txtScholarshipPeriod").val();
+        if (ScholarshipStartDate != '' && ScholarshipPeriod != '') {
+            $.ajax({
+                type: "POST"
+               , url: "@Url.Content("~/Scholarships/GetScholarshipEndDate/")" + ScholarshipPeriod + "/" + ScholarshipStartDate
+               , success: function (d) {
+                   $('#txtScholarshipEndDate').val(d.data);
+               }
+                , error: function (xhr, status, error) {
+                    AddingFailure();
+                }
+            });
+        }
+        else
+            $('#txtScholarshipEndDate').val('');
+    }
+
+    function OnSuccess(data) {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+        ScholarshipID = data.ScholarshipID;
+    }
+
+    function OnFailure() {
+        @*$("#divAlert").load('@this.Url.Content("~/Modal/Index/" +  ModalTypes.Failure + "/Error")');*@
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+        GetEmployeeCurrentQualification(EmployeeCodeID);
+    }
+
+    function GetEmployeeCurrentQualification(EmployeeCodeID) {
+        //console.log('GetEmployeeCurrentQualification(EmployeeCodeID) ==> ', EmployeeCodeID);
+        $("#txtEmployeeCurrentQualification").val("");
+        $.ajax({
+            type: "GET"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/Employees/GetEmployeeCurrentQualification/" + EmployeeCodeID
+            //, data: "{ 'id' : '" + EmployeeCodeID + "'}"
+            , success: function (d) {
+                //debugger;
+                $("#txtEmployeeCurrentQualification").val(d.data.EmployeeCurrentQualification);
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function Reset() {
+        $('#ddlScholarshipTypes').val('@Convert.ToInt32(ScholarshipsTypesEnum.Individual)');
+        $('#txtScholarshipStartDate').val('');
+        $('#txtScholarshipEndDate').val('');
+        $('#txtScholarshipLocation').val('');
+        $('#txtScholarshipReason').val('');
+        $('#txtScholarshipPeriod').val('1');
+        $('.internalTraining').hide();
+        $('.externalTraining').hide();
+        $('.individual').show();
+        $('#txtEmployeeCurrentQualification').show();
+        //ResetOrganization();
+        //ResetJob();
+        ResetEmployee();
+    }
+
+
+    function GetQualificationsByDegree() {
+        var QualificationDegreeID = $("#ddlQualificationDegree").val();
+        $.ajax({
+            type: "get"
+            , dataType: "json"
+            , url: "/Qualifications/GetQualifications/" + QualificationDegreeID
+            , success: function (d) {
+                $("#ddlQualification").html("");
+                var qualifications = d.data;
+                //console.log("qualifications ==> ", qualifications);
+                $.each(qualifications, function (i, qualification) {
+                    $("#ddlQualification").append($('<option></option>').val(qualification.QualificationID).html(qualification.QualificationName));
+                });
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.AddNewEmployeeScholarshipText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewEmployeeScholarshipDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                <a id="OpenBusinessConditions">
+                    @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.Scholarships })
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "Scholarships", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <label class="control-label">@Resources.Globalization.EmployeeCurrentQualificationText</label>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="text" id="txtEmployeeCurrentQualification" class="form-control" readonly="readonly" />
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <span class="control-label">@Resources.Globalization.EmployeeScholarshipBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.ScholarshipType, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(model => model.ScholarshipType.ScholarshipTypeID, new SelectList(new HCMBLL.ScholarshipsTypesBLL().GetScholarshipsTypes(), "ScholarshipTypeID", "ScholarshipType"), new { @id = "ddlScholarshipTypes", @style = "width:100%" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.ScholarshipStartDate, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.ScholarshipPeriod, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.ScholarshipEndDate, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.ScholarshipStartDate, new { @class = "form-control", @id = "txtScholarshipStartDate", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.ScholarshipStartDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            <input type="number" id="txtScholarshipPeriod" min="1" class="form-control" value="1" />
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.ScholarshipEndDate, new { @class = "form-control", @id = "txtScholarshipEndDate", @readonly = "readonly" })
+                        </td>
+                    </tr>
+                    <tr class="individual internalTraining">
+                        <td>
+                            @Html.LabelFor(model => model.Location, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="individual internalTraining">
+                        <td>
+                            @Html.TextBoxFor(model => model.Location, new { @class = "form-control", @id = "txtScholarshipLocation" })
+                        </td>
+                        <td>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="individual internalTraining">
+                        <td colspan="3">
+                            @Html.LabelFor(model => model.ScholarshipReason, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr class="individual internalTraining">
+                        <td colspan="3">
+                            @Html.TextAreaFor(model => model.ScholarshipReason, new { @class = "form-control", @id = "txtScholarshipReason" })
+                        </td>
+                    </tr>
+                    <tr class="externalTraining">
+                        <td>
+                            @Html.LabelFor(model => model.Country, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="externalTraining">
+                        <td>
+                            @Html.TextBoxFor(model => model.Country, new { @class = "form-control", @id = "txtIndividualLocation" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="individual externalTraining">
+                        <td>
+                            @Html.LabelFor(model => model.QualificationsDegrees, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.Qualifications, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="individual externalTraining">
+                        <td>
+                            @Html.DropDownListFor(model => model.QualificationDegree.QualificationDegreeID, new SelectList(new HCMBLL.QualificationsDegreesBLL().GetQualificationsDegrees(), "QualificationDegreeID", "QualificationDegreeName"), new { @id = "ddlQualificationDegree", @style = "width:100%", @onchange = "GetQualificationsByDegree()" })
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.Qualification.QualificationID, new SelectList(new HCMBLL.QualificationsBLL().GetQualifications(), "QualificationID", "QualificationName"), new { @id = "ddlQualification", @style = "width:100%" })
+                        </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Scholarships"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@
+

@@ -1,0 +1,88 @@
+﻿@*@model HCM.Models.ReportPromotionRecordsByPromotionPeriodViewModel*@
+@using HCM.Models
+@using HCM.Classes.Enums
+@using HCMBLL
+@using System.Configuration
+
+@{
+    ViewBag.Title = @Resources.Globalization.ReportStopWorkText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+
+    $(document).ready(function () {
+
+    });
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Print() {
+
+        var EmployeeCodeID = $("#hdnFldEmployeeCodeID").val() ? $("#hdnFldEmployeeCodeID").val() :'';
+        var StopWorkEnded = $("#ddlStopWorkEnded").val() ? $("#ddlStopWorkEnded").val() : '';
+        //var YearID = $("#ddlYears").val();
+        @*if (PromotionPeriodID == '' || YearID == '') {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(Resources.Globalization.RequiredPromotionPeriodText))');
+        }
+        else {*@
+            var iframe = $("#divReportModal .modal-body #iframeReportContent");
+            iframe.attr('src', '@Url.Content(string.Format("~/Reports/StopWorksByEndedStatus?StopWorkEnded="))' + StopWorkEnded +'&EmployeeCodeID='+EmployeeCodeID);
+            ShowModal("#divReportModal");
+        //}
+    }
+</script>
+
+<div class="panel panel-default" style="padding:0">
+    <div class="panel-heading">
+        @Resources.Globalization.ReportStopWorkText
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("ReportStopWorksByEndedStatus", "Report", new AjaxOptions()
+        {
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.ValidationSummary()
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-12">
+                            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+
+                        </td>
+                    </tr>
+                     
+                    <tr>
+                        <td>@Resources.Globalization.StopWorkEndDateText</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownList("ddlStopWorkEnded", new List<SelectListItem>
+{
+new SelectListItem{ Text="ساري", Value = "0" },
+new SelectListItem{ Text="منتهي", Value = "1" },
+new SelectListItem{ Text="الكل", Value = "2" },
+})
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+
+
+
+
+
+        }  <input type="submit" value='@Resources.Globalization.ReportViewText' class="btn btn-primary" onclick="Print()">
+    </div>
+</div>
+

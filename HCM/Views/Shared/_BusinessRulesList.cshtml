@@ -1,0 +1,64 @@
+﻿@model IEnumerable<HCM.Models.BusinessRulesViewModel>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#OpenBusinessRules").tooltip();
+
+        $("#OpenBusinessRules").click(function () {
+            ShowModal("#divBusinessRulesModal");
+        });
+    });
+</script>
+
+<a id="OpenBusinessRules" title="@Resources.Globalization.ClickToViewBusinessRulesText">
+    <span class="glyphicon glyphicon-info-sign"></span>
+</a>
+
+<div class="modal fade" id="divBusinessRulesModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+
+                </div>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-responsive table-striped">
+                    <tr>
+                        <th class="alert alert-info">
+                            @Html.DisplayNameFor(model => model.BusinessRuleAR)
+                        </th>
+                    </tr>
+                    @if (Model.Count() <= 0 || Model == null)
+                    {
+                        <tr>
+                            <td>
+                                @Resources.Globalization.NoAnyBusinessRulesText
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BusinessRuleAR)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

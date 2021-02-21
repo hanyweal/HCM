@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="b749f96a6c3a4fdabe34248895bd4af6" Name="Diagram1" ZoomLevel="78">
+        <EntityTypeShape EntityType="HCMModel.AssigningsTypes" Width="1.5" PointX="3" PointY="12.125" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.EmployeesCodes" Width="4.25" PointX="25.75" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HCMModel.Jobs" Width="1.5" PointX="0.5" PointY="1.5" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.OrganizationsStructures" Width="2.125" PointX="20.375" PointY="5.375" IsExpanded="true" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsStructures_EmployeesCodes" />
+        <EntityTypeShape EntityType="HCMModel.Employees" Width="1.5" PointX="10.875" PointY="3.125" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesCodes_Employees" />
+        <EntityTypeShape EntityType="HCMModel.Countries" Width="1.5" PointX="17" PointY="2.5" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.KSACities" Width="1.5" PointX="9.125" PointY="2" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.KSARegions" Width="1.5" PointX="7.375" PointY="3.125" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_KSACities_KSARegions" />
+        <EntityTypeShape EntityType="HCMModel.Delegations" Width="2.375" PointX="12.875" PointY="0.5" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Delegations_Countries" />
+        <AssociationConnector Association="HCMModel.FK_Delegations_KSACities" />
+        <EntityTypeShape EntityType="HCMModel.DelegationsKinds" Width="1.5" PointX="8" PointY="0.5" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Delegations_DelegationsKinds" />
+        <EntityTypeShape EntityType="HCMModel.PassengerOrdersItineraries" Width="2.625" PointX="14.25" PointY="5.375" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.RanksCategories" Width="2" PointX="14.5" PointY="6.25" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.RanksTicketsClasses" Width="1.5" PointX="14" PointY="8.5" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.EmployeesTypes" Width="1.75" PointX="13.75" PointY="10.75" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesCodes_EmployeesTypes" />
+        <EntityTypeShape EntityType="HCMModel.QualificationsTypes" Width="1.5" PointX="12.625" PointY="15.125" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.ScholarshipsTypes" Width="2.625" PointX="12.5" PointY="4.5" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.Scholarships" Width="2.25" PointX="5.625" PointY="8.625" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Scholarships_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_Scholarships_Qualifications" />
+        <AssociationConnector Association="HCMModel.FK_Scholarships_ScholarshipTypes" />
+        <EntityTypeShape EntityType="HCMModel.CareersHistoryTypes" Width="3.125" PointX="0.875" PointY="13.5" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.EmployeesCareersHistory" Width="2" PointX="8.75" PointY="9.375" IsExpanded="true" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesCareersHistory_CareersHistoryTypes" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesCareersHistory_EmployeesCodes" />
+        <EntityTypeShape EntityType="HCMModel.BusinessCategories" Width="1.5" PointX="4" PointY="20.75" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.BusinessRules" Width="1.5" PointX="2.875" PointY="22.375" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.BusinessSubCategories" Width="1.5" PointX="1.125" PointY="20.5" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_BusinessSubCategories_BusinessCategories" />
+        <AssociationConnector Association="HCMModel.FK_BusinessConditions_BusinessSubCategories" />
+        <EntityTypeShape EntityType="HCMModel.Transfers" Width="2.25" PointX="1.625" PointY="19.25" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.TransfersTypes" Width="1.5" PointX="3.375" PointY="18.25" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesTransfers_EmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesTransfers_TransfersTypes" />
+        <EntityTypeShape EntityType="HCMModel.GovernmentFundsTypes" Width="2.25" PointX="13.75" PointY="18.5" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.GovernmentDeductionsTypes" Width="1.5" PointX="13.75" PointY="16.625" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.TicketsClasses" Width="1.5" PointX="13.75" PointY="9.75" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_RanksTicketsClasses_TicketsClasses" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesScholarships_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesScholarships_ScholarshipTypes" />
+        <EntityTypeShape EntityType="HCMModel.AllowancesAmountTypes" Width="1.5" PointX="9.125" PointY="9.25" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.EmployeesAllowances" Width="2.25" PointX="8.875" PointY="6.875" IsExpanded="false"/>
+        <AssociationConnector Association="HCMModel.FK_EmployeesAllowances_EmployeesCareersHistory" />
+        <EntityTypeShape EntityType="HCMModel.Ranks" Width="1.5" PointX="14.5" PointY="6.375" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Ranks_RanksCategories" />
+        <AssociationConnector Association="HCMModel.FK_RanksTicketsClasses_Ranks" />
+        <EntityTypeShape EntityType="HCMModel.Allowances" Width="2.25" PointX="3.25" PointY="8.375" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.JobsAllowances" Width="1.5" PointX="3.625" PointY="6.125" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Allowances_AllowancesAmountTypes" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesAllowances_Allowances" />
+        <AssociationConnector Association="HCMModel.FK_RanksAllowances_Allowances" />
+        <AssociationConnector Association="HCMModel.FK_JobsAllowances_Jobs" />
+        <EntityTypeShape EntityType="HCMModel.JobsCategories" Width="2.75" PointX="5.5" PointY="14.375" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Jobs_JobsCategories" />
+        <EntityTypeShape EntityType="HCMModel.ChangeDetailsLogs" Width="1.5" PointX="23.75" PointY="22.375" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.ChangeLogs" Width="1.5" PointX="11" PointY="24.25" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.EventTypes" Width="1.5" PointX="12" PointY="18" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_ChangeDetailsLogs_ChangeLogs" />
+        <AssociationConnector Association="HCMModel.FK_ChangeLogs_EventTypes" />
+        <EntityTypeShape EntityType="HCMModel.FinancialYears" Width="1.5" PointX="15.5" PointY="22.375" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Delegations_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_Delegations_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesAllowances_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesAllowances_EmployeesCodes1" />
+        <EntityTypeShape EntityType="HCMModel.CareersDegrees" Width="1.5" PointX="1.125" PointY="3.625" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesCareersHistory_CareersDegrees" />
+        <EntityTypeShape EntityType="HCMModel.DelegationsDetails" Width="2.5" PointX="13.375" PointY="3" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_DelegationsDetails_Delegations" />
+        <AssociationConnector Association="HCMModel.FK_DelegationsDetails_EmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesCareersHistory_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesCareersHistory_EmployeesCodes2" />
+        <EntityTypeShape EntityType="HCMModel.InternshipScholarshipsDetails" Width="2.5" PointX="16.375" PointY="8.75" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_InternshipScholarshipsDetails_EmployeesCareersHistory" />
+        <EntityTypeShape EntityType="HCMModel.InternshipScholarships" Width="4.75" PointX="18.75" PointY="3" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_InternshipScholarships_Countries" />
+        <AssociationConnector Association="HCMModel.FK_InternshipScholarships_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_InternshipScholarships_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_InternshipScholarships_KSACities" />
+        <AssociationConnector Association="HCMModel.FK_InternshipScholarshipsDetails_InternshipScholarships" />
+        <EntityTypeShape EntityType="HCMModel.InternshipScholarshipsTypes" Width="1.5" PointX="13.125" PointY="30.125" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_InternshipScholarships_InternshipScholarshipsTypes" />
+        <EntityTypeShape EntityType="HCMModel.PassengerOrders" Width="2.625" PointX="23.625" PointY="4.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HCMModel.PassengerOrdersTypes" Width="2.25" PointX="25.5" PointY="9.625" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_PassengerOrders_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_PassengerOrders_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_PassengerOrders_Ranks" />
+        <AssociationConnector Association="HCMModel.FK_PassengerOrders_TicketsClasses" />
+        <AssociationConnector Association="HCMModel.FK_PassengerOrdersItineraries_PassengerOrders" />
+        <EntityTypeShape EntityType="HCMModel.vwPassengerOrdersDetails" Width="1.5" PointX="28.25" PointY="3.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="HCMModel.OverTimes" Width="1.5" PointX="3.25" PointY="0.5" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_OverTimes_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_OverTimes_EmployeesCodes1" />
+        <EntityTypeShape EntityType="HCMModel.OverTimesDetails" Width="1.5" PointX="5.5" PointY="0.5" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_OverTimesDetails_EmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_OverTimesDetails_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_OverTimesDetails_OverTimes" />
+        <EntityTypeShape EntityType="HCMModel.Branches" Width="1.5" PointX="2.6799284511617985" PointY="26.096166458956976" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsStructures_Branches" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsStructures_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsStructures_EmployeesCodes2" />
+        <EntityTypeShape EntityType="HCMModel.SMSLogs" Width="1.5" PointX="9.8555616651920417" PointY="1.1567396377943175" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_SMSLogs_BusinessSubCategories" />
+        <AssociationConnector Association="HCMModel.FK_SMSLogs_EmployeesCodes" />
+        <EntityTypeShape EntityType="HCMModel.MaritalStatus" Width="1.5" PointX="7.875" PointY="5.375" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Employees_MaritalStatus" />
+        <EntityTypeShape EntityType="HCMModel.AssigningsReasons" Width="1.5" PointX="3" PointY="27.375" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.Vacations" Width="2.25" PointX="11.5" PointY="25.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="HCMModel.VacationsActions" Width="1.5" PointX="12" PointY="6" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.VacationsTypes" Width="1.5" PointX="6.25" PointY="21.25" IsExpanded="true" />
+        <AssociationConnector Association="HCMModel.FK_Vacations_EmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_Vacations_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_Vacations_VacationsTypes" />
+        <EntityTypeShape EntityType="HCMModel.VacationsDetails" Width="1.875" PointX="2.125" PointY="1.375" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_VacationsDetails_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_VacationsDetails_Vacations" />
+        <AssociationConnector Association="HCMModel.FK_VacationsDetails_VacationsActions" />
+        <AssociationConnector Association="HCMModel.FK_VacationsDetails_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_Vacations_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_VacationsDetails_EmployeesCodes2" />
+        <EntityTypeShape EntityType="HCMModel.EmployeesVacationsOpeningBalances" Width="1.5" PointX="17.25" PointY="16.75" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesVacationsOpeningBalances_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesVacationsOpeningBalances_VacationsTypes" />
+        <EntityTypeShape EntityType="HCMModel.MaturityYearsBalances" Width="1.5" PointX="3" PointY="15.5" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.StopWorksCategories" Width="1.5" PointX="0.32149958066712114" PointY="21.661441485239862" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.StopWorksTypes" Width="1.5" PointX="11.875" PointY="1.125" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_StopWorksTypes_StopWorksCategories" />
+        <EntityTypeShape EntityType="HCMModel.BasicSalaries" Width="1.5" PointX="10" PointY="30.25" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK__BasicSala__Caree__005FFE8A" />
+        <AssociationConnector Association="HCMModel.FK__BasicSala__RankI__015422C3" />
+        <EntityTypeShape EntityType="HCMModel.SickVacationsTypes" Width="1.5" PointX="12.625" PointY="26.625" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK__Vacations__SickV__174363E2" />
+        <EntityTypeShape EntityType="HCMModel.JobsGeneralGroups" Width="1.5" PointX="0.625" PointY="27.625" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.JobsGroups" Width="1.5" PointX="0.089096395340327358" PointY="23.078140463250755" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_JobsCategories_JobsGroups" />
+        <AssociationConnector Association="HCMModel.FK_JobsGroups_JobsGeneralGroups" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsStructures_OrganizationsStructures" />
+        <EntityTypeShape EntityType="HCMModel.Genders" Width="1.5" PointX="4.875" PointY="26" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Employees_Genders" />
+        <EntityTypeShape EntityType="HCMModel.GovernmentFunds" Width="2.625" PointX="9.125" PointY="28.125" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_GovernmentFunds_CreatedByNav" />
+        <AssociationConnector Association="HCMModel.FK_GovernmentFunds_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_GovernmentFunds_EmployeesCodes2" />
+        <AssociationConnector Association="HCMModel.FK_GovernmentFunds_GovernmentDeductionTypes" />
+        <AssociationConnector Association="HCMModel.FK_GovernmentFunds_GovernmentFundsTypes" />
+        <AssociationConnector Association="HCMModel.FK_GovernmentFunds_KSACities" />
+        <EntityTypeShape EntityType="HCMModel.OverTimesDays" Width="1.5" PointX="0.875" PointY="26.125" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_OverTimesDays_OverTimes" />
+        <AssociationConnector Association="HCMModel.FK_Scholarships_Countries" />
+        <AssociationConnector Association="HCMModel.FK_Scholarships_KSACities" />
+        <EntityTypeShape EntityType="HCMModel.ScholarshipsActions" Width="1.5" PointX="9.4707850857967433" PointY="15.218675084048265" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.ScholarshipsDetails" Width="1.5" PointX="3.5310406123898179" PointY="9.7499607250792728" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_ScholarshipsDetails_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_ScholarshipsDetails_EmployeesCodes2" />
+        <AssociationConnector Association="HCMModel.FK_ScholarshipsDetails_Scholarships" />
+        <AssociationConnector Association="HCMModel.FK_ScholarshipsDetails_ScholarshipsActions" />
+        <EntityTypeShape EntityType="HCMModel.HolidaysSettings" Width="2.375" PointX="7" PointY="18" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.HolidaysTypes" Width="1.5" PointX="9.25" PointY="16" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_HolidaysSettings_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_HolidaysSettings_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_HolidaysSettings_HolidaysTypes" />
+        <AssociationConnector Association="HCMModel.FK_HolidaysSettings_MaturityYearsBalances" />
+        <EntityTypeShape EntityType="HCMModel.HolidaysAttendance" Width="2.5" PointX="3.375" PointY="24.5" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_HolidaysAttendance_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_HolidaysAttendance_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_HolidaysAttendance_HolidaysSettings" />
+        <AssociationConnector Association="HCMModel.FK_HolidaysAttendance_OrganizationsStructures" />
+        <EntityTypeShape EntityType="HCMModel.HolidaysAttendanceDetails" Width="1.5" PointX="3.1275727521290877" PointY="14.415263778723434" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_HolidaysAttendanceDetails_EmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_OverTimesDetails_EmployeesCodes2" />
+        <AssociationConnector Association="HCMModel.FK_HolidaysAttendanceDetails_HolidaysAttendance" />
+        <AssociationConnector Association="HCMModel.FK_Vacations_HolidaysAttendanceDetails" />
+        <EntityTypeShape EntityType="HCMModel.Assignings" Width="2.625" PointX="5.5" PointY="1.25" IsExpanded="true" />
+        <AssociationConnector Association="HCMModel.FK_Assignings_AssigningsReasons" />
+        <AssociationConnector Association="HCMModel.FK_Assignings_AssigningTypes" />
+        <AssociationConnector Association="HCMModel.FK_Assignings_EmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_Assignings_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_Assignings_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_Assignings_EmployeesCodes2" />
+        <AssociationConnector Association="HCMModel.FK_Assignings_Jobs" />
+        <AssociationConnector Association="HCMModel.FK_Assignings_KSACities" />
+        <AssociationConnector Association="HCMModel.FK_Assignings_OrganizationsStructures" />
+        <EntityTypeShape EntityType="HCMModel.SportsSeasons" Width="1.5" PointX="11.936402991384455" PointY="13.865843257804329" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_SportsSeasons_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_SportsSeasons_MaturityYearsBalances" />
+        <AssociationConnector Association="HCMModel.FK_Vacations_SportsSeasons" />
+        <EntityTypeShape EntityType="HCMModel.EndOfServices" Width="2.125" PointX="2.75" PointY="5.125" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.EndOfServicesCases" Width="2" PointX="0.875" PointY="2.125" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.EndOfServicesReasons" Width="2.125" PointX="3.125" PointY="2.25" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_EndOfServices_EmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_EndOfServices_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EndOfServices_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_EndOfServices_EndOfServicesReasons" />
+        <AssociationConnector Association="HCMModel.FK_EndOfServicesReasons_EndOfServicesCases" />
+        <EntityTypeShape EntityType="HCMModel.Periods" Width="1.5" PointX="1.0261387885669893" PointY="6.9122362169028424" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Ranks_Ranks" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsJobsCategories" Width="2" PointX="7.25" PointY="30.5" IsExpanded="true" />
+        <AssociationConnector Association="HCMModel.FK_PromotionJobsCategories_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_PromotionJobsCategories_JobsCategories" />
+        <AssociationConnector Association="HCMModel.FK_PromotionJobsCategories_JobsCategories1" />
+        <EntityTypeShape EntityType="HCMModel.EmployeesQualifications" Width="1.5" PointX="1" PointY="7.75" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesQualifications_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesQualifications_QualificationsTypes" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsRecords" Width="3.5" PointX="10.375" PointY="12.75" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsRecordsStatus" Width="2.75" PointX="15.625" PointY="12.875" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecords_JobsCategories" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecords_PromotionsRecordsStatus" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecords_Ranks" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsCandidatesAddedWays" Width="1.5" PointX="6.875" PointY="27.625" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsRecordsJobsVacancies" Width="2.625" PointX="8.375" PointY="10.625" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsRecordsQualificationsKinds" Width="3.375" PointX="3.75" PointY="2.75" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsJobsVacancies_PromotionsRecords" />
+        <EntityTypeShape EntityType="HCMModel.EmployeesExperiences" Width="1.5" PointX="4.375" PointY="17.375" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesExperiences_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesExperiences_EmployeesCodes1" />
+        <EntityTypeShape EntityType="HCMModel.JobsCategoriesQualifications" Width="3.625" PointX="14.125" PointY="19.875" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_JobsCategoriesQualifications_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_JobsCategoriesQualifications_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_JobsCategoriesQualifications_JobsCategories" />
+        <EntityTypeShape EntityType="HCMModel.EmployeesEvaluations" Width="1.5" PointX="11.25" PointY="7.5" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesEvaluations_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesEvaluations_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesEvaluations_MaturityYearsBalances" />
+        <EntityTypeShape EntityType="HCMModel.EvaluationPoints" Width="1.5" PointX="10.625" PointY="34" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesEvaluations_EvaluationPoints" />
+        <EntityTypeShape EntityType="HCMModel.ExactSpecializations" Width="1.5" PointX="8.9386137393017364" PointY="8.4773625621932389" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_ExactSpecializations_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesQualifications_ExactSpecializations" />
+        <EntityTypeShape EntityType="HCMModel.EndOfServicesVacations" Width="2" PointX="2.25" PointY="17.375" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_EndOfServicesVacations_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EndOfServicesVacations_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_EndOfServicesVacations_EndOfServices" />
+        <AssociationConnector Association="HCMModel.FK_EndOfServicesVacations_VacationsTypes" />
+        <EntityTypeShape EntityType="HCMModel.GeneralSpecializations" Width="1.5" PointX="8.6118455513435634" PointY="26.5878036295007" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsRecordsQualificationsPoints" Width="2.375" PointX="12.875" PointY="20.625" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_GeneralSpecializations_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesQualifications_GeneralSpecializations" />
+        <AssociationConnector Association="HCMModel.FK_ExactSpecializations_GeneralSpecializations" />
+        <AssociationConnector Association="HCMModel.FK_JobsCategories_GeneralSpecializations" />
+        <AssociationConnector Association="HCMModel.FK_JobsCategoriesQualifications_GeneralSpecializations" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsQualificationsPoints_GeneralSpecializations" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsQualificationsPoints_PromotionsRecords" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsQualificationsPoints_PromotionsRecordsQualificationsKinds" />
+        <EntityTypeShape EntityType="HCMModel.Qualifications" Width="1.5" PointX="8.6118455513435634" PointY="26.5878036295007" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.QualificationsDegrees" Width="2.75" PointX="15.125" PointY="31.625" />
+        <AssociationConnector Association="HCMModel.FK_Qualifications_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_QualificationsDegrees_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesQualifications_Qualifications" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesQualifications_QualificationsDegrees" />
+        <AssociationConnector Association="HCMModel.FK_GeneralSpecializations_Qualifications" />
+        <AssociationConnector Association="HCMModel.FK_JobsCategories_Qualifications" />
+        <AssociationConnector Association="HCMModel.FK_JobsCategories_QualificationsDegrees" />
+        <AssociationConnector Association="HCMModel.FK_JobsCategoriesQualifications_Qualifications" />
+        <AssociationConnector Association="HCMModel.FK_JobsCategoriesQualifications_QualificationsDegrees" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsQualificationsPoints_Qualifications" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsQualificationsPoints_QualificationsDegrees" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesScholarships_Qualifications" />
+        <AssociationConnector Association="HCMModel.FK_Qualifications_QualificationsDegrees" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecords_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecords_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecords_EmployeesCodes2" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecords_EmployeesCodes3" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecords_EmployeesCodes4" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecords_EmployeesCodes5" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsDecisions" Width="1.5" PointX="11.773381562797995" PointY="23.992921423163693" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsRecordsEmployees" Width="3.75" PointX="0.75" PointY="28.875" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_EmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_NewEmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_PreviousEmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_EmployeesCodes2" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_EmployeesCodes3" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_EmployeesCodes4" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_GeneralSpecializations" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_PromotionsCandidatesAddedWays" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_PromotionsDecisions" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_PromotionsRecords" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_PromotionsRecordsJobsVacancies" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_Qualifications" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployees_QualificationsDegrees" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsPeriods" Width="1.5" PointX="7.5087355056352614" PointY="19.863196575950457" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsPeriods_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsPeriods_MaturityYearsBalances" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsPeriods_Periods" />
+        <AssociationConnector Association="HCMModel.FK_PromotionJobsCategories_PromotionsPeriods" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecords_PromotionsPeriods" />
+        <EntityTypeShape EntityType="HCMModel.SenioritysPointsDeclarations" Width="1.25" PointX="8.6118455513435634" PointY="26.5878036295007" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesQualifications_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_JobsCategoriesQualifications_PromotionsPeriods" />
+        <EntityTypeShape EntityType="HCMModel.OrganizationsJobsStatus" Width="1.5" PointX="7.3935497158176968" PointY="25.798076492640224" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsRecordsEmployeesEducationsDetails" Width="1.5" PointX="3.0176903042093337" PointY="10.671590511999833" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsRecordsEmployeesEvaluationsDetails" Width="1.5" PointX="3.649370023817462" PointY="3.671528132479418" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsRecordsEmployeesSeniorityDetails" Width="1.5" PointX="8.1661886834382038" PointY="30.422645463805015" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployeesEducationsDetails_GeneralSpecializations" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployeesEducationsDetails_PromotionsRecordsEmployees" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployeesEvaluationsDetails_PromotionsRecordsEmployees" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployeesSeniorityDetails_PromotionsRecordsEmployees" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployeesEducationsDetails_Qualifications" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsEmployeesEducationsDetails_QualificationsDegrees" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsRecordsActionsTypes" Width="1.5" PointX="1.1697053840242817" PointY="9.6007349237803066" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.PromotionsRecordsLogs" Width="3" PointX="16" PointY="23.75" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsLogs_PromotionsActionsTypes" ManuallyRouted="true" >
+          <ConnectorPoint PointX="1.875" PointY="10.025" />
+          <ConnectorPoint PointX="1.875" PointY="13.261495225871554" />
+          <ConnectorPoint PointX="2.1647905416666666" PointY="13.261495225871554" />
+          <ConnectorPoint PointX="2.3314572083333336" PointY="13.261495225871554" />
+          <ConnectorPoint PointX="2.3347919166666666" PointY="13.261495225871554" />
+          <ConnectorPoint PointX="2.5014585833333336" PointY="13.261495225871554" />
+          <ConnectorPoint PointX="2.6041666666666665" PointY="13.261495225871554" />
+          <ConnectorPoint PointX="2.7708333333333335" PointY="13.261495225871554" />
+          <ConnectorPoint PointX="3.4754169166666666" PointY="13.261495225871554" />
+          <ConnectorPoint PointX="3.6420835833333336" PointY="13.261495225871554" />
+          <ConnectorPoint PointX="3.8094804166666663" PointY="13.261495225871553" />
+          <ConnectorPoint PointX="4.2083333333333339" PointY="13.261495225871554" />
+          <ConnectorPoint PointX="4.2349999999999994" PointY="13.261495225871554" />
+          <ConnectorPoint PointX="4.2349999999999994" PointY="66.1308820947171" />
+          <ConnectorPoint PointX="12.61381656127393" PointY="38.218706660317409" />
+          <ConnectorPoint PointX="12.61381656127393" PointY="38.059002167492679" />
+          <ConnectorPoint PointX="12.992464970188319" PointY="36.790401453782444" />
+          <ConnectorPoint PointX="12.992464970188319" PointY="36.630626350362782" />
+          <ConnectorPoint PointX="13.346758994671143" PointY="35.47741130536015" />
+          <ConnectorPoint PointX="13.395704975517175" PointY="35.318093796162955" />
+          <ConnectorPoint PointX="14.398715470188318" PointY="32.053328621422139" />
+          <ConnectorPoint PointX="14.398715470188318" PointY="31.893553518002474" />
+          <ConnectorPoint PointX="14.728777036576348" PointY="31.130382534897041" />
+          <ConnectorPoint PointX="14.794935933611969" PointY="30.977409406142979" />
+          <ConnectorPoint PointX="14.836212970188317" PointY="30.881968313354193" />
+          <ConnectorPoint PointX="14.836212970188317" PointY="30.419806471174365" />
+          <ConnectorPoint PointX="15.034972212721806" PointY="29.851890159664404" />
+          <ConnectorPoint PointX="15.090027787278194" PointY="29.69457944328423" />
+          <ConnectorPoint PointX="15.148715470188318" PointY="29.526890675785697" />
+          <ConnectorPoint PointX="15.148715470188318" PointY="29.367115572366028" />
+          <ConnectorPoint PointX="15.275487156932607" PointY="29.1311626132828" />
+          <ConnectorPoint PointX="15.275487156932607" PointY="28.972482440911616" />
+          <ConnectorPoint PointX="15.400487156932607" PointY="28.742044643027324" />
+          <ConnectorPoint PointX="15.400487156932607" PointY="28.583364470656139" />
+          <ConnectorPoint PointX="15.773715470188318" PointY="27.421525721088653" />
+          <ConnectorPoint PointX="15.773715470188318" PointY="27.261750617668984" />
+          <ConnectorPoint PointX="15.895715470188318" PointY="27.010558481931792" />
+          <ConnectorPoint PointX="16" PointY="25.130531485278738" />
+        </AssociationConnector>
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsLogs_EmployeesCodes" />
+        <EntityTypeShape EntityType="HCMModel.EmployeesEvaluationsDetails" Width="1.5" PointX="4.375" PointY="28.5" />
+        <EntityTypeShape EntityType="HCMModel.EvaluationsQuarters" Width="1.5" PointX="0.59043643092291265" PointY="29.183416067242351" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesEvaluationsDetails_EmployeesEvaluations" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesEvaluationsDetails_EvaluationsQuarters" />
+        <AssociationConnector Association="HCMModel.FK_Employees_Countries" />
+        <EntityTypeShape EntityType="HCMModel.DelegationsTypes" Width="1.5" PointX="17.375" PointY="4.875" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Delegations_DelegationsTypes" />
+        <EntityTypeShape EntityType="HCMModel.JobsKinds" Width="1.5" PointX="21" PointY="15.625" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.NormalVacationsTypes" Width="1.5" PointX="18.375" PointY="18.875" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Vacations_NormalVacationsTypes" />
+        <EntityTypeShape EntityType="HCMModel.OrganizationsJobs" Width="1.5" PointX="23.25" PointY="13.875" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesCareersHistory_OrganizationsJobs" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsJobs_Jobs" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsJobs_JobsKinds" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsJobs_OrganizationsJobsStatus" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsJobs_OrganizationsStructures" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsJobs_Ranks" />
+        <AssociationConnector Association="HCMModel.FK_PromotionsRecordsJobsVacancies_OrganizationsJobs" />
+        <EntityTypeShape EntityType="HCMModel.RanksCategoriesVacationsBalances" Width="1.5" PointX="23.25" PointY="10.875" />
+        <AssociationConnector Association="HCMModel.FK_RanksCategoriesVacationsBalances_RanksCategories" />
+        <AssociationConnector Association="HCMModel.FK_RanksCategoriesVacationsBalances_VacationsTypes" />
+        <AssociationConnector Association="HCMModel.FK_PassengerOrders_EmployeesCareersHistory" />
+        <EntityTypeShape EntityType="HCMModel.StopWorks" Width="3.375" PointX="16.125" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="HCMModel.FK_StopWorks_EmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_StopWorks_CreatedByNav" />
+        <AssociationConnector Association="HCMModel.FK_StopWorks_LastUpdatedByNav" />
+        <AssociationConnector Association="HCMModel.FK_StopWorks_StopWorksTypes" />
+        <EntityTypeShape EntityType="HCMModel.EmployeesDegreesUpgrades" Width="1.5" PointX="10.5" PointY="37.5" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesDegreesUpgrades_EmployeesCodes" />
+        <EntityTypeShape EntityType="HCMModel.Teachers" Width="1.5" PointX="10.625" PointY="0.75" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Teachers_EmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_Teachers_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_Teachers_EmployeesCodes1" />
+        <EntityTypeShape EntityType="HCMModel.PromotionCardsPrinting" Width="1.875" PointX="10.625" PointY="20" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_PromotionCardsPrinting_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_PromotionCardsPrinting_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_PromotionCardsPrinting_EmployeesCodes2" />
+        <AssociationConnector Association="HCMModel.FK_PromotionCardsPrinting_PromotionsPeriods" />
+        <EntityTypeShape EntityType="HCMModel.InsteadDeportations" Width="2.875" PointX="12.75" PointY="1.25" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_InsteadDeportations_EmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_InsteadDeportations_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_InsteadDeportations_EmployeesCodes1" />
+        <EntityTypeShape EntityType="HCMModel.AllowancesCalculationTypes" Width="1.5" PointX="19.5" PointY="12.375" IsExpanded="false" />
+        <AssociationConnector Association="HCMModel.FK_Allowances_AllowancesCalculationTypes" />
+        <EntityTypeShape EntityType="HCMModel.vwQualificationsBasedOnAssignings" Width="1.5" PointX="23.375" PointY="23.75" />
+        <EntityTypeShape EntityType="HCMModel.vwActualEmployeesBasedOnAssignings" Width="1.5" PointX="25.375" PointY="11.75" />
+        <EntityTypeShape EntityType="HCMModel.ContractorsBasicSalaries" Width="1.5" PointX="10.5" PointY="40.5" />
+        <AssociationConnector Association="HCMModel.FK_ContractorsBasicSalaries_EmployeesCodes" />
+        <EntityTypeShape EntityType="HCMModel.EmployeeExperiencesWithDetails" Width="1.5" PointX="10.5" PointY="0.75" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.SectorsTypes" Width="1.5" PointX="8.25" PointY="39.875" />
+        <AssociationConnector Association="HCMModel.FK_EmployeeExperiencesWithDetails_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EmployeeExperiencesWithDetails_SectorsTypes" />
+        <EntityTypeShape EntityType="HCMModel.TempEmployeesBasicSalaries" Width="1.5" PointX="23.375" PointY="19.75" />
+        <AssociationConnector Association="HCMModel.FK_EmployeeExperiencesWithDetails_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_ContractorsBasicSalaries_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_ContractorsBasicSalaries_EmployeesCodes2" />
+        <AssociationConnector Association="HCMModel.FK_Allowances_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_Allowances_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_Employees_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_Employees_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_Ranks_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_Ranks_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_Transfers_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_Transfers_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_JobsAllowances_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_JobsAllowances_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_Scholarships_EmployeesCodes1" />
+        <EntityTypeShape EntityType="HCMModel.EmployeesNormalVacationsBalances" Width="1.5" PointX="20.375" PointY="18.75" IsExpanded="false" />
+        <EntityTypeShape EntityType="HCMModel.EmployeesUnderPrivateCompanies" Width="1.5" PointX="20.5" PointY="23.75" />
+        <EntityTypeShape EntityType="HCMModel.EVacationsRequests" Width="2.75" PointX="31.125" PointY="22.125" />
+        <AssociationConnector Association="HCMModel.FK_EVacationsRequests_EmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_EVacationsRequests_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EVacationsRequests_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_EVacationsRequests_EmployeesCodes2" />
+        <AssociationConnector Association="HCMModel.FK_EVacationsRequests_VacationsTypes" />
+        <AssociationConnector Association="HCMModel.FK_Assignings_AssigningsReasons1" />
+        <AssociationConnector Association="HCMModel.FK__AuthorizedToApproveOnEVacationsRequests_OrganizationsStructures" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesCodes_OrganizationsStructures" />
+        <EntityTypeShape EntityType="HCMModel.EVacationRequestsStatus" Width="1.5" PointX="24.375" PointY="0.875" />
+        <AssociationConnector Association="HCMModel.FK_EVacationsRequests_EVacationRequestsApprovalStatus" />
+        <EntityTypeShape EntityType="HCMModel.Lenders" Width="1.5" PointX="30.75" PointY="17.125" />
+        <AssociationConnector Association="HCMModel.FK_Lenders_EmployeesCareersHistory" />
+        <AssociationConnector Association="HCMModel.FK_Lenders_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_Lenders_EmployeesCodes2" />
+        <AssociationConnector Association="HCMModel.FK_Lenders_KSACities" />
+        <EntityTypeShape EntityType="HCMModel.EServicesAuthorizations" Width="1.5" PointX="33.875" PointY="17.125" />
+        <EntityTypeShape EntityType="HCMModel.EServicesTypes" Width="1.5" PointX="31.625" PointY="14.125" />
+        <AssociationConnector Association="HCMModel.FK_EServicesAuthorizations_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EServicesAuthorizations_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_EServicesAuthorizations_EmployeesCodes2" />
+        <AssociationConnector Association="HCMModel.FK_EServicesAuthorizations_EServicesTypes" />
+        <AssociationConnector Association="HCMModel.FK_EServicesAuthorizations_OrganizationsStructures" />
+        <EntityTypeShape EntityType="HCMModel.GovernmentFundsDeactiveReasons" Width="1.5" PointX="27.375" PointY="4.875" />
+        <AssociationConnector Association="HCMModel.FK_GovernmentFunds_GovernmentFundsDeactiveReasons" />
+        <AssociationConnector Association="HCMModel.FK_EVacationsRequests_Jobs" />
+        <AssociationConnector Association="HCMModel.FK_EVacationsRequests_OrganizationsStructures" />
+        <AssociationConnector Association="HCMModel.FK_Vacations_EVacationsRequests" />
+        <EntityTypeShape EntityType="HCMModel.PassengerOrdersEscorts" Width="3.75" PointX="27" PointY="0.75" />
+        <AssociationConnector Association="HCMModel.FK_PassengerOrdersEscorts_PassengerOrders" />
+        <EntityTypeShape EntityType="HCMModel.EServicesProxies" Width="2" PointX="36.125" PointY="24.125" />
+        <EntityTypeShape EntityType="HCMModel.EServicesProxiesStatus" Width="1.5" PointX="32.625" PointY="29.875" />
+        <AssociationConnector Association="HCMModel.FK_EServicesProxies_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EServicesProxies_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_EServicesProxies_EServicesProxiesStatus" />
+        <AssociationConnector Association="HCMModel.FK_EServicesProxies_EServicesTypes" />
+        <AssociationConnector Association="HCMModel.FK_EServicesProxies_EmployeesCodes2" />
+        <AssociationConnector Association="HCMModel.FK_EServicesProxies_EmployeesCodes3" />
+        <EntityTypeShape EntityType="HCMModel.JobsOperationsTypes" Width="1.5" PointX="27.375" PointY="11.875" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsJobs_JobsOperationsTypes" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsJobs_OrganizationsJobs" />
+        <EntityTypeShape EntityType="HCMModel.OrganizationsManagers" Width="4.75" PointX="36.75" PointY="18.875" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsManagers_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsManagers_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsManagers_EmployeesCodes2" />
+        <AssociationConnector Association="HCMModel.FK_OrganizationsManagers_OrganizationsStructures" />
+        <EntityTypeShape EntityType="HCMModel.EmployeesOldJobs" Width="1.5" PointX="30.75" PointY="32.875" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesOldJobs_EmployeesCodes" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesOldJobs_EmployeesCodes1" />
+        <AssociationConnector Association="HCMModel.FK_EmployeesOldJobs_EmployeesCodes2" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

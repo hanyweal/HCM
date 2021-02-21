@@ -1,0 +1,145 @@
+﻿@model HCM.Models.LendersViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+@using HCM.Classes.Extensions
+@{
+    ViewBag.Title = Resources.Globalization.EditLenderText;
+}
+
+<script type="text/javascript">
+
+    function OkFunction() {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Lenders/PrintLender/")' + '@Model.LenderID');
+        ShowModal("#divReportModal");
+    }
+
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EditLenderDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                <a id="OpenBusinessConditions">
+
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Edit", "Lenders", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.LenderBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.LenderStartDate, new { @class = "control-label" })
+                            @Html.HiddenFor(model => model.LenderID)
+                            @Html.HiddenFor(model => model.IsFinished)
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.LenderEndDate, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.LenderOrganization, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.LenderStartDate, new
+                                                                                {
+                                                                                    @class = "TxtHijriPicker form-control",
+                                                                                    @id = "txtLenderStartDate",
+                                                                                    @readonly = "readonly",
+                                                                                    @Value = Model.LenderStartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                                                                })
+                            @Html.ValidationMessageFor(model => model.LenderStartDate, "", new { @class = "text-danger" })
+                            @*@Html.DropDownListFor(model => model.AssigningTypeID, new SelectList(new HCMBLL.AssigningsTypesBLL().GetAssigningsTypes(), "AssigningTypeID", "AssigningTypeName"), new { @id = "ddlAssigningTypes", @style = "width:100%" })*@
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.LenderEndDate, new
+                                                                            {
+                                                                                @class = "TxtHijriPicker form-control",
+                                                                                @id = "txtLenderEndDate",
+                                                                                @readonly = "readonly",
+                                                                                @Value = Model.LenderEndDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                                                            })
+                            @Html.ValidationMessageFor(model => model.LenderEndDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.LenderOrganization, new { @class = "form-control", @id = "txtLenderOrganization" })
+                            @Html.ValidationMessageFor(model => model.LenderOrganization, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.KSACity, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @*@Html.LabelFor(model => model.IsFinished, new { @class = "control-label" })*@
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(model => model.KSACity.KSACityID, new SelectList(new HCMBLL.KSACitiesBLL().GetKSACities(), "KSACityID", "KSACityName"), new { @id = "ddlKSACities", @style = "width:100%" })
+                        </td>
+                        <td>
+                            @*@Html.CheckBoxFor(model => model.IsFinished)*@
+                        </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", Model.Employee.GetEmployee())
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Lenders"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@
+

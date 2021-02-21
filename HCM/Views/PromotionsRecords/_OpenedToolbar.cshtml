@@ -1,0 +1,114 @@
+﻿@using HCM.Classes.Enums
+
+<script type="text/javascript">
+
+    var extentedFuncForOpenedToolbar;
+
+    $(document).ready(function () {
+        
+        $("#btnDeletePromotionRecord").click(function () {
+            var PromotionRecordID = $("#hdnFldPromotionRecordID").val() != '' ? $("#hdnFldPromotionRecordID").val() : 0;
+            $.confirm({
+                confirmButton: '@Resources.Globalization.ConfirmButtonText',
+                cancelButton: '@Resources.Globalization.CancelButtonText',
+                animation: 'zoom',
+                content: '@Resources.Globalization.DeleteCofirmationMessageText',
+                title: '@Resources.Globalization.CofirmationMessageTitle',
+                buttons: {
+                    confirm: {
+                        action: function () {
+                            $.ajax({
+                                type: "get"
+                               , dataType: "json"
+                               , url: "/PromotionsRecords/Delete/" + PromotionRecordID
+                               , success: function (d) {
+                                   
+                                   $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText), "")');
+                                   $("#divToolbar").load('@RazorHelper.ShowPormotionToolbar(this, PromotionsRecordsToolbarEnum.Open)');
+
+                                   if (typeof extentedFuncForOpenedToolbar !== 'undefined' && $.isFunction(window[extentedFuncForOpenedToolbar])) {
+                                       window[extentedFuncForOpenedToolbar]();
+                                   } 
+
+                               }
+                               , error: function (xhr, status, error) {
+                                   OnFailure();
+                               }
+                            });
+                        },
+                        btnClass: 'btn-blue',
+                        text: '@Resources.Globalization.ConfirmButtonText',
+                    },
+                    cancel: {
+                        action: function () { },
+                        text: '@Resources.Globalization.CancelButtonText',
+                    },
+                },
+            });
+        });
+
+        $("#btnRefreshPromotionRecord").click(function () {
+            var PromotionRecordID = $("#hdnFldPromotionRecordID").val() != '' ? $("#hdnFldPromotionRecordID").val() : 0;
+            $.confirm({
+                confirmButton: '@Resources.Globalization.ConfirmButtonText',
+                cancelButton: '@Resources.Globalization.CancelButtonText',
+                animation: 'zoom',
+                content: '@Resources.Globalization.PromotionRecordRefreshCofirmationMessageText',
+                title: '@Resources.Globalization.CofirmationMessageTitle',
+                buttons: {
+                    confirm: {
+                        action: function () {
+                            $.ajax({
+                                type: "get"
+                               , dataType: "json"
+                               , url: "/PromotionsRecords/RefreshPromotionRecord/" + PromotionRecordID
+                               , success: function (d) {
+                                   $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.RefreshedDoneAlertText), "")');
+                                   BindCandidates("refresh", PromotionRecordID);
+                               }
+                               , error: function (xhr, status, error) {
+                                   OnFailure();
+                               }
+                            });
+                        },
+                        btnClass: 'btn-blue',
+                        text: '@Resources.Globalization.ConfirmButtonText',
+                    },
+                    cancel: {
+                        action: function () { },
+                        text: '@Resources.Globalization.CancelButtonText',
+                    },
+                },
+            });
+        });
+
+    });
+
+    function ResetPromotionRecord() {
+
+        $("#hdnFldPromotionRecordID").val('');
+        $("#txtPromotionRecordNo").val('');
+        $("#txtPromotionRecordStatusName").val('');
+        ResetJobCategory();
+        EditModeJobsCategories();
+        EditModePromotionsPeriods();
+        ResetCandidates();
+    }
+
+    function RedirectToList() {
+        window.location = '/PromotionsRecords/Index';
+    }
+</script>
+
+<div class="btn-group">
+    <button id="btnRefreshPromotionRecord" class="btn btn-default" type="button">
+        <span class="glyphicon glyphicon-refresh"></span> @Resources.Globalization.RefreshPromotionRecordText
+    </button>
+    @Html.Partial("~/Views/Shared/_JobsVacanciesPopup.cshtml")
+    @Html.Partial("~/Views/PromotionsRecords/_AddingCandidateManuallyInPromotion.cshtml")
+    <button id="btnDeletePromotionRecord" class="btn btn-default" type="button" title="@Resources.Globalization.DeleteText">
+        <span class="glyphicon glyphicon-remove"></span>
+        @Resources.Globalization.DeleteText
+    </button>   
+    @Html.Partial("~/Views/PromotionsRecords/_PromotionRecordsLog.cshtml")
+</div>

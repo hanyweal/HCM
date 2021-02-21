@@ -1,0 +1,13 @@
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMWindowsService\bin\Debug\HCMWindowsService.exe.config
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMWindowsService\bin\Debug\HCMWindowsService.exe
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMWindowsService\bin\Debug\HCMWindowsService.pdb
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMWindowsService\bin\Debug\System.Configuration.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMWindowsService\bin\Debug\System.Configuration.Install.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMWindowsService\bin\Debug\System.Net.Http.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMWindowsService\obj\Debug\HCMWindowsService.csprojAssemblyReference.cache
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMWindowsService\obj\Debug\HCMWindowsService.NormalVacationSrv.resources
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMWindowsService\obj\Debug\HCMWindowsService.ProjectInstaller.resources
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMWindowsService\obj\Debug\HCMWindowsService.csproj.GenerateResource.cache
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMWindowsService\obj\Debug\HCMWindowsService.csproj.CopyComplete
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMWindowsService\obj\Debug\HCMWindowsService.exe
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMWindowsService\obj\Debug\HCMWindowsService.pdb

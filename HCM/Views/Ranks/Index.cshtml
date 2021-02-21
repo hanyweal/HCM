@@ -1,0 +1,126 @@
+﻿@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@{
+    ViewBag.Title = @Resources.Globalization.RankNameText;
+}
+
+<script>
+
+    function PrintJobsVacancies(ID)
+    {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Ranks/PrintJobVacanciesByRankID/")' + ID);
+        ShowModal("#divReportModal");
+    }
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblRanks").DataTable({
+            //"destroy":true,
+              dom: 'Bfrtip',
+            "ajax": {
+                "url": "/Ranks/GetRanks",
+                "type": "get",
+                "datatype": "json"
+            },
+             "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "paging": false,
+            "columns": [
+                {
+                    "data": "RankCategory.RankCategoryName",
+                    "autowidth": true
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true
+                },
+                {
+                    "data": "RankID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        var checked = row.IsActiveForPromotion ? "checked" : "";
+                        return '<input type="checkbox" data-id="' + data + '" ' + checked + ' class="promotion" />';
+                    }
+                },
+                {
+                    "data": "RankID",
+                    "autowidth": true,
+                    "render": function (data, row) {
+                        Url = 'PrintJobsVacancies(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" /></a>'
+
+                    }
+                }
+            ]
+        });
+
+        $('#btnUpdate').click(function () {
+
+            var table = $('#tblRanks').dataTable();
+            var rowcollection = table.$(".promotion:checked");
+            var RankIDs = '';
+            rowcollection.each(function (index, elem) {
+                RankIDs = (RankIDs.length > 0 ? RankIDs + ',' : RankIDs) + $(this).closest('tr').find('.promotion').data('id');
+            });
+
+            if (RankIDs == '')
+                RankIDs = '0';
+
+            $.ajax({
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                url: "@Url.Content("~/Ranks/UpdateIsPromotion")" + "/" + RankIDs,
+                //data: JSON.stringify(ObjToPass),
+                success: function () {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+                },
+                error: function (xhr, status, error) {
+                    $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                }
+            });
+
+
+        });
+
+
+    });
+
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.RanksDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblRanks" class="table table-responsive table-hover dataTable">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.RankCategoryNameText</td>
+                    <td>@Resources.Globalization.RankNameText</td>
+                    <td>@Resources.Globalization.IsActiveForPromotionText</td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+        <table class="table table-responsive table-condensed">
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <center>
+                            <input type="button" class="btn btn-default" id="btnUpdate" value="@Resources.Globalization.UpdatingText" /> 
+                        </center>
+                    </div>
+                </td>
+            </tr>
+        </table> 
+    </div>
+</div>

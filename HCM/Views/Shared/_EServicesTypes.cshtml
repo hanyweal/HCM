@@ -1,0 +1,37 @@
+﻿@model IEnumerable<HCM.Models.EServicesTypesViewModel>
+@using HCM.Classes.Enums;
+
+<script type="text/javascript">
+    var extentedFuncOnClickService;
+
+    function ClickService(eServiceTypeID) {
+
+        SetSelectedCSS(eServiceTypeID);
+        if (typeof extentedFuncOnClickService !== 'undefined' && $.isFunction(window[extentedFuncOnClickService])) {
+            window[extentedFuncOnClickService](eServiceTypeID);
+        }
+    }
+
+    function SetSelectedCSS(eServiceTypeID) {
+        $('.service').removeClass('shadow_green');
+        $('.' + eServiceTypeID).addClass('shadow_green');
+    }
+</script>
+@foreach (var item in Model)
+{
+    <a onclick="ClickService('@item.EServiceTypeID');">
+        <div class="col-md-3">
+            <div class="wrapper_service">
+                <div id="form_centent_service" class="service @item.EServiceTypeID">
+                    <div class="fade_In_service">
+                        @item.EServiceTypeName
+                    </div>
+                    <div id="form_footer_service">
+                        <img src='@string.Format("/Content/Images/{0}.png", @item.EServiceTypeName)' height="64" width="64" />
+                        <input type="hidden" name="hdnEServiceTypeID" value="@item.EServiceTypeID" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+}

@@ -1,0 +1,292 @@
+﻿@model HCM.Models.OrganizationStructureViewModel
+
+@{
+    ViewBag.Title = Resources.Globalization.OrganizationStructureText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool IsCreatePermission = new HCM.Classes.Helpers.PSAHelper().IsCreatePermission(Request.Url.ToString());
+    bool IsUpdatePermission = new HCM.Classes.Helpers.PSAHelper().IsUpdatePermission(Request.Url.ToString());
+    bool IsDeletePermission = new HCM.Classes.Helpers.PSAHelper().IsDeletePermission(Request.Url.ToString());
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#RebindOrganizationStructure").click(function () {
+            BindOrgTree();
+            ResetOrganization();
+            ResetParentOrganization();
+            ResetChildOrganization();
+        });
+
+        $("#btnDelete").confirm({
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+                        //$("#btnDelete").submit();
+                        if ($("#hdnFldOrganizationID").val() != '') {
+                            var OrganizationID = $('#hdnFldOrganizationID').val();
+                            $.ajax({
+                                type: "POST"
+                                //, dataType: "json" : if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                                , contentType: "application/json; charset=utf-8"
+                                , url: "/OrganizationStructure/Delete"
+                                , data: "{ 'id' :" + OrganizationID + "}"
+                                , success: function () {
+                                    DeletingSuccess();
+                                }
+                            , error: function (xhr, status, error) {
+                                OnFailure();
+                            }
+                            });
+                        }
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+        $("#btnSave").click(function () {
+            if ($("#hdnFldOrganizationID").val() != '') {
+                var Organization =
+                {
+                    OrganizationID: $('#hdnFldOrganizationID').val(),
+                    OrganizationCode: $('#txtOrganizationCode').val(),
+                    OrganizationName: $('#txtOrganizationName').val(),
+                    BranchID: $('#ddlBranches').val(),
+                };
+
+                $.ajax({
+                    type: "POST"
+                    //, dataType: "json" : if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                    , contentType: "application/json; charset=utf-8"
+                    , url: "@Url.Content("~/OrganizationStructure/Edit")"
+                    , data: JSON.stringify(Organization)
+                    , success: function () {
+                        EditSuccess();
+                    }
+                , error: function (xhr, status, error) {
+                    OnFailure();
+                }
+                });
+            }
+        });
+
+        $("#btnAdd").click(function () {
+            var ChildOrganization =
+            {
+                OrganizationCode: $('#txtChildOrganizationCode').val(),
+                OrganizationName: $('#txtChildOrganizationName').val(),
+                ParentOrganizationID: $('#hdnFldOrganizationID').val(),
+                BranchID: $('#ddlChildBranches').val(),
+            };
+
+            $.ajax({
+                type: "POST"
+                //, dataType: "json" :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                , contentType: "application/json; charset=utf-8"
+                , url: "@Url.Content("~/OrganizationStructure/Create")"
+                , data: JSON.stringify(ChildOrganization)
+                , success: function () {
+                    AddingSuccess();
+                }
+            , error: function (xhr, status, error) {
+                OnFailure();
+            }
+            });
+        });
+
+    });
+
+    function EditSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+
+    function ResetChildOrganization() {
+        $('#txtChildOrganizationCode').val('');
+        $('#txtChildOrganizationName').val('');
+    }
+
+    function AddingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText))');
+        ResetChildOrganization();
+        BindOrgTree();
+    }
+
+    function DeletingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+        BindOrgTree();
+        ResetOrganization();
+        ResetParentOrganization();
+        ResetChildOrganization();
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "/Error")');
+    }
+
+    function OnOrganizationStructureNodeSelected() {
+        GetByOrganizationID($('#hdnFldOrganizationID').val());
+        $("#btnSave").attr("disabled", false);
+        $("#btnDelete").attr("disabled", false);
+    }
+
+    function GetByOrganizationID(OrganizationID) {
+        $.ajax({
+            type: "POST"
+           , dataType: "json"
+           , contentType: "application/json; charset=utf-8"
+             , url: "/OrganizationStructure/GetByOrganizationID"
+             , data: "{ 'id' :" + OrganizationID + "}"
+            @*, url: "@Url.Content("~/OrganizationStructure/GetByOrganizationID/" + OrganizationID)"*@
+           , success: function (d) {
+               $('#txtOrganizationCode').val(d.data.OrganizationCode);
+               $('#txtOrganizationName').val(d.data.OrganizationName);
+               $("#ddlBranches").val(d.data.Branch.BranchID);
+           }
+           , error: function (xhr, status, error) {
+               alert(error.message);
+           },
+        });
+    }
+
+    function ResetParentOrganization() {
+        $('#txtOrganizationCode').val('');
+        $('#txtOrganizationName').val('');
+        $("#btnSave").attr("disabled", true);
+        $("#btnDelete").attr("disabled", true);
+    }
+
+    function ResetChildOrganization() {
+        $('#txtChildOrganizationCode').val('');
+        $('#txtChildOrganizationName').val('');
+    }
+
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.OrganizationStructureDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                <a id="RebindOrganizationStructure">
+                    <span class="glyphicon glyphicon-refresh" title="@Resources.Globalization.RefreshOrganizationStructureTooltip"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-responsive table-condensed table-striped">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <div id="divOrganizationStructure" style="width:100%;height:500px; overflow:scroll">
+                            @Html.Partial("~/Views/Shared/_OrganizationStructure.cshtml")
+                        </div>
+                    </td>
+                    <td class="col-md-8">
+                        <div class="panel panel-default" style="padding:0px">
+                            <div class="panel-heading">
+                                @Resources.Globalization.OrganizationParentText
+                            </div>
+                            <div class="panel-body">
+                                <table class="table table-responsive table-condensed table-striped">
+                                    <tr>
+                                        <td class="col-md-4">
+                                            @Html.LabelFor(model => model.OrganizationCode, new { @class = "control-label" })
+                                        </td>
+                                        <td class="col-md-4">
+                                            @Html.LabelFor(model => model.OrganizationName, new { @class = "control-label" })
+                                        </td>
+                                        <td class="col-md-4">
+                                            @Html.LabelFor(model => model.BranchName, new { @class = "control-label" })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-md-4">
+                                            @Html.TextBoxFor(model => model.OrganizationCode, new { @class = "form-control", @id = "txtOrganizationCode" })
+                                        </td>
+                                        <td class="col-md-4">
+                                            @Html.TextBoxFor(model => model.OrganizationName, new { @class = "form-control", @id = "txtOrganizationName" })
+                                        </td>
+                                        <td class="col-md-4">
+                                            @Html.DropDownListFor(model => model.BranchID, new SelectList(new HCMBLL.BranchesBLL().GetBranches(), "BranchID", "BranchName"), new { @id = "ddlBranches", @style = "width:100%" })
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="row">
+                                    <div class="col-md-9"></div>
+                                    <div class="col-md-3">
+                                        @if (IsUpdatePermission)
+                                        {
+                                            <input id="btnSave" type="submit" class="btn btn-default" value="@Resources.Globalization.SaveText" disabled="disabled" />
+                                        }
+                                        @if (IsDeletePermission)
+                                        {
+                                            <input id="btnDelete" type="submit" class="btn btn-default" value="@Resources.Globalization.DeleteText" disabled="disabled" />
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+
+                        @if (IsCreatePermission)
+                        {
+                            <div class="panel panel-default" style="padding:0px">
+                                <div class="panel-heading">
+                                    @Resources.Globalization.WantedAddedOrganizationText
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table table-responsive table-condensed table-striped">
+                                        <tr>
+                                            <td class="col-md-4">
+                                                @Html.LabelFor(model => model.OrganizationCode, new { @class = "control-label" })
+                                            </td>
+                                            <td class="col-md-4">
+                                                @Html.LabelFor(model => model.OrganizationName, new { @class = "control-label" })
+                                            </td>
+                                            <td class="col-md-4">
+                                                @Html.LabelFor(model => model.BranchName, new { @class = "control-label" })
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col-md-4">
+                                                @Html.TextBoxFor(model => model.OrganizationCode, new { @class = "form-control", @id = "txtChildOrganizationCode" })
+                                            </td>
+                                            <td class="col-md-4">
+                                                @Html.TextBoxFor(model => model.OrganizationName, new { @class = "form-control", @id = "txtChildOrganizationName" })
+                                            </td>
+                                            <td class="col-md-4">
+                                                @Html.DropDownListFor(model => model.BranchID, new SelectList(new HCMBLL.BranchesBLL().GetBranches(), "BranchID", "BranchName"), new { @id = "ddlChildBranches", @style = "width:100%" })
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="row">
+                                        <div class="col-md-9"></div>
+                                        <div class="col-md-3">
+                                            <input id="btnAdd" type="submit" class="btn btn-default" value="@Resources.Globalization.AddText" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

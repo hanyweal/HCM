@@ -1,0 +1,179 @@
+﻿@{
+    ViewBag.Title = Resources.Globalization.EndOfServicesText;
+}
+<script>
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblEndOfServices").DataTable({
+            //"destroy":true,
+            "ajax": {
+                "url": "/EndOfServices/GetEndOfServices",
+                "type": "get",
+                "datatype": "json",
+                "data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+            "serverSide": true,
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "EndOfServiceDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "EndOfServiceDecisionNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EndOfServiceDecisionDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "EndOfServiceCase",
+                    "autowidth": true
+                },
+                {
+                    "data": "EndOfServiceReason",
+                    "autowidth": true
+                },
+                {
+                    "data": "EndOfServiceID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Details", "EndOfServices")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "EndOfServiceID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "EndOfServices")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit"  title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "EndOfServiceID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "EndOfServices")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    }
+                },
+                   {
+                       "data": "EndOfServiceID",
+                       "autowidth": true,
+                       "render": function (data, type, row) {
+                           Url = '@Url.Action("AddEndOfServiceVacations", "EndOfServices")' + "/" + data;
+                           return '<a href="' + Url + '"><span Class="glyphicon glyphicon-plus-sign"  title="' + '@Resources.Globalization.AddEndOfServicesVacationsText' + '"/></a>'
+                       }
+                   },
+                {
+                    "data": "EndOfServiceID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = 'PrintVacationsByEndOfServiceID(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" title="' + '@Resources.Globalization.PrintVacationsByEndOfServiceText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "EndOfServiceID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = 'PrintEmployeeCareerHistoryByEndOfServiceID(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" title="' + '@Resources.Globalization.PrintEmployeeCareerHistoryByEndOfServiceText' + '"/></a>'
+                    }
+                },
+                 {
+                     "data": "EndOfServiceID",
+                     "autowidth": true,
+                     "render": function (data, type, row) {
+                         Url = 'PrintEndOfServicesByEndOfServiceID(' + data + ');';
+                         return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-print" title="' + '@Resources.Globalization.PrintEndOfServiceDecisionText' + '"/></a>'
+                     }
+                 },
+            ]
+        });
+
+         $("#ExportExcelButton").click(function () {
+                 $.ajax({
+                     type: "GET"
+                      , contentType: "application/json;"
+                      , url: "/EndOfServices/ExportExcel"
+                      , success: function (response)
+                      {
+                          var url = "/WebForms/Reports/FileDownload.aspx?fileName=" + response.DownLoadFile;
+                          window.location.href = url;
+                      }
+                      , error: function (xhr, status, error) {
+
+                      }
+                 });
+             });
+    });
+
+    function PrintVacationsByEndOfServiceID(EndOfServiceID) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/EndOfServices/PrintVacationsByEndOfServiceID/")' + EndOfServiceID);
+        ShowModal("#divReportModal");
+    }
+
+    function PrintEmployeeCareerHistoryByEndOfServiceID(EndOfServiceID) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/EndOfServices/PrintEmployeeCareerHistoryByEndOfServiceID/")' + EndOfServiceID);
+        ShowModal("#divReportModal");
+    }
+
+    function PrintEndOfServicesByEndOfServiceID(EndOfServiceID) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/EndOfServices/PrintEndOfService/")' + EndOfServiceID);
+        ShowModal("#divReportModal");
+    }
+</script>
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchEndOfServicesDescText
+    </div>
+    <input id="ExportExcelButton" type="button" style="float:left" value="@Resources.Globalization.ExportToExcelText" />
+    <div class="panel-body">
+        <table id="tblEndOfServices" class="table table-responsive table-hover dataTable" style="width:100%">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                    <td>@Resources.Globalization.EndOfServiceDateText</td>
+                    <td>@Resources.Globalization.EndOfServiceDecisionNoText</td>
+                    <td>@Resources.Globalization.EndOfServiceDecisionDateText</td>
+                    <td>@Resources.Globalization.EndOfServiceCaseText</td>
+                    <td>@Resources.Globalization.EndOfServiceReasonText</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+

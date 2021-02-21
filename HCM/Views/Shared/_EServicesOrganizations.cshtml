@@ -1,0 +1,37 @@
+﻿@model HCM.Models.EServicesAuthorizationsViewModel
+@using HCM.Classes.Enums;
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#ddlWindowsUserOrganizationStructures').on('change', function (event) {
+
+            console.log('ddlWindowsUserOrganizationStructures change', $('#ddlWindowsUserOrganizationStructures').val());
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                url: "@Url.Content("~/BaseEServices/ChangeWindowsUserOrganization/")" + $('#ddlWindowsUserOrganizationStructures').val(),
+                //data: null,
+                success: OnSuccessOrganizationStructure,
+                error: OnFailureOrganizationStructure
+            });
+        });
+    });
+
+    function OnSuccessOrganizationStructure() {
+        location.reload();
+    }
+
+    function OnFailureOrganizationStructure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+</script>
+@{
+    Session["CurrentUrl"] = @Request.Url.AbsoluteUri;
+}
+
+@using (Html.BeginForm("ChangeWindowsUserOrganization", "BaseEServices", FormMethod.Post))
+{
+    @Html.DropDownListFor(model => model.Organization.OrganizationID, new SelectList(ViewBag.OrganizationStructures, "OrganizationID", "OrganizationName", ViewBag.OrganizationID), new { @id = "ddlWindowsUserOrganizationStructures", @style = "width:100%" })
+}

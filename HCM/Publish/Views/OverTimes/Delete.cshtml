@@ -1,0 +1,213 @@
+﻿@model HCM.Models.OverTimesViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.DeleteOverTimeText;
+}
+
+<script type="text/javascript">
+    function OkFunction() {
+        window.location.href = "/OverTimes/Index";
+    }
+
+    $(document).ready(function () {
+        BindOverTimeEmployees();
+    });
+
+    function BindOverTimeEmployees() {
+        $("#tblOverTimeEmployees").DataTable({
+            "destroy": true,
+            "searching": false,
+            "ordering": false,
+            "paging": false,
+            "ajax": {
+                "url": "/OverTimes/GetOverTimeEmployeesByOverTimeID/" + '@Model.OverTimeID',
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.Employee.EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "OverTimeDetailID",
+                    "width": "5%",
+                    "sorting": false,
+                    "render": function (data, type, row) {
+                        Url = 'RemoveEmployeeFromOverTime(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                    }
+                }
+            ]
+        });
+    }
+
+    function OnSuccess() {
+        $("#BtnDelete").attr("disabled", "disabled");
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText),"OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function RemoveEmployeeFromOverTime(OverTimeDetailID) {
+        $.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $.ajax({
+                            type: "POST"
+                            , contentType: "application/json; charset=utf-8"
+                            , url: "/OverTimes/RemoveEmployeeFromDB/" + OverTimeDetailID
+                            , success: function () {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+                                BindOverTimeEmployees();
+                            }
+                        , error: function (xhr, status, error) {
+                            OnFailure();
+                        }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.DeleteOverTimeText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.DeleteOverTimeDescText
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Delete", "OverTimes", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "DELETE",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            <span class="control-label">@Resources.Globalization.OverTimeBasicInfoText</span>
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.HiddenFor(model => model.OverTimeID)
+                            @Html.LabelFor(model => model.OverTimeStartDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-9">
+                            @Html.DisplayFor(model => model.OverTimeStartDate)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.OverTimeEndDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-9">
+                            @Html.DisplayFor(model => model.OverTimeEndDate)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.OverTimePeriod, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-9">
+                            @Html.DisplayFor(model => model.OverTimePeriod)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.WeekWorkHoursAvg, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-9">
+                            @Html.DisplayFor(model => model.WeekWorkHoursAvg)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.FridayHoursAvg, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-9">
+                            @Html.DisplayFor(model => model.FridayHoursAvg)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.SaturdayHoursAvg, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-9">
+                            @Html.DisplayFor(model => model.SaturdayHoursAvg)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.Requester, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-9">
+                            @Html.DisplayFor(model => model.Requester)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.Tasks, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-9">
+                            @Html.DisplayFor(model => model.Tasks)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+
+            <table id="tblOverTimeEmployees" class="table table-responsive table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                        <td>@Resources.Globalization.EmployeeNameArText</td>
+                        <td></td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" id="BtnDelete" name="BtnDelete" value="@Resources.Globalization.DeleteText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "OverTimes"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

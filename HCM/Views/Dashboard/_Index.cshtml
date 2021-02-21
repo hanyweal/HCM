@@ -1,0 +1,68 @@
+﻿@model HCM.Models.DashboardViewModel
+
+<div class="dashboard">
+    <div class="dashboard-section">
+        <div class="dashboard-container">
+            <div class="dashboard-items">
+                <div class="dashboard-title">
+                    <span>
+                        @*@Resources.Globalization.ProjectsTotalText*@
+                    </span>
+                </div>
+                <span class="dashboard-icons">
+                    @Html.DisplayFor(model => model.ProjectsCount)
+                </span>
+            </div>
+            <div class="dashboard-items">
+                <div class="dashboard-title">
+                    <span>
+                        @*@Resources.Globalization.GroupsTotalText*@
+                    </span>
+                </div>
+                <span class="dashboard-icons">
+                    @Html.DisplayFor(model => model.GroupsCount)
+                </span>
+            </div>
+            <div class="dashboard-items">
+                <div class="dashboard-title">
+                    <span>
+                       @*@Resources.Globalization.UsersTotalText*@
+                    </span>
+                </div>
+                <span class="dashboard-icons">
+                    @Html.DisplayFor(model => model.UsersCount)
+                </span>
+            </div>
+            <div class="dashboard-items">
+                <div class="dashboard-title">
+                    <span>
+                        @*@Resources.Globalization.UsersTotalText*@
+                    </span>
+                </div>
+                <span class="dashboard-icons">
+                    @Html.DisplayFor(model => model.UsersCount)
+                </span>
+            </div>
+            <div class="dashboard-items">
+                <div class="dashboard-title">
+                    <span>
+                        @*@Resources.Globalization.UsersTotalText*@
+                    </span>
+                </div>
+                <span class="dashboard-icons">
+                    @Html.DisplayFor(model => model.UsersCount)
+                </span>
+            </div>
+            <div class="dashboard-items">
+                <div class="dashboard-title">
+                    <span>
+                        @*@Resources.Globalization.UsersTotalText*@
+                    </span>
+                </div>
+                <span class="dashboard-icons">
+                    @Html.DisplayFor(model => model.UsersCount)
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

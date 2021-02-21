@@ -1,0 +1,195 @@
+﻿@{
+    ViewBag.Title = Resources.Globalization.BasicSalariesListText;
+}
+<script>
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        getContractorsBasicSalaries();
+        getBasicSalaries();
+
+        $("#ExportExcelButtonContractorsBasicSalaries").click(function () {
+            $.ajax({
+                type: "GET"
+                , contentType: "application/json;"
+                , url: "/BasicSalaries/ExportExcelContractorsBasicSalaries"
+                , success: function (response) {
+                    var url = "/WebForms/Reports/FileDownload.aspx?fileName=" + response.DownLoadFile;
+                    window.location.href = url;
+                }
+                , error: function (xhr, status, error) {
+
+                }
+            });
+        });
+    });
+
+    function getContractorsBasicSalaries() {
+        
+        $("#tblContractorsBasicSalaries").DataTable({
+            //"destroy":true,            
+            "ajax": {
+                "url": "/BasicSalaries/GetContractorsBasicSalaries",
+                "type": "get",
+                "datatype": "json",
+                "data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.  
+            },          
+            "serverSide": true,
+            "columns": [
+                {
+                    "data": "ContractorBasicSalaryID",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "RankCategoryName",
+                    "autowidth": true
+                },                
+                {
+                    "data": "BasicSalary",
+                    "render": $.fn.dataTable.render.number(',', '.', 0, ''),
+                    "autowidth": true
+                },
+                {
+                    "data": "TransfareAllowance",
+                    "render": $.fn.dataTable.render.number(',', '.', 0, ''),
+                    "autowidth": true
+                }, 
+                {
+                    "data": "ContractorBasicSalaryID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("DetailsContractorsBasicSalaries", "BasicSalaries")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "ContractorBasicSalaryID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("EditContractorsBasicSalaries", "BasicSalaries")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit"  title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                    }
+                }, 
+                {
+                    "data": "ContractorBasicSalaryID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("DeleteContractorsBasicSalaries", "BasicSalaries")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    }
+                }, 
+            ]
+        });
+    }
+
+    function getBasicSalaries() {
+        
+        $("#tblBasicSalaries").DataTable({
+            //"destroy":true,
+            dom: 'Bfrtip',
+            "ajax": {
+                "url": "/BasicSalaries/GetBasicSalaries",
+                "type": "get",
+                "datatype": "json"
+            },
+             "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "CareerDegreeName",
+                    "autowidth": true
+                },
+                {
+                    "data": "RankCategoryName",
+                    "autowidth": true
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true
+                },                
+                {
+                    "data": "BasicSalary",
+                    "render": $.fn.dataTable.render.number(',', '.', 0, ''),
+                    "autowidth": true,
+                    "searchable":false
+                },
+                
+            ]
+        });
+    }
+</script>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchBasicSalariesDescText
+    </div>
+
+    <div class="panel-body">
+
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#TabBasicSalary" data-toggle="tab">@Resources.Globalization.BasicSalaryBasedOnRankDegreeText</a>
+            </li>
+            <li>
+                <a href="#TabContractorBasicSalary" data-toggle="tab">@Resources.Globalization.BasicSalaryForContractorsText</a>
+            </li>
+        </ul>
+        <div class="tab-content clearfix">
+
+            <div id="TabBasicSalary" class="tab-pane active padding-5">
+                <table id="tblBasicSalaries" class="table table-responsive table-hover dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.CareerDegreeNameText</td>
+                            <td>@Resources.Globalization.RankCategoryNameText</td>
+                            <td>@Resources.Globalization.RankNameText</td>
+                            <td>@Resources.Globalization.BasicSalaryText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>             
+            <div id="TabContractorBasicSalary" class="tab-pane padding-5">
+                <p>
+                    @Html.ActionLink(@Resources.Globalization.CreateNewText, "CreateContractorsBasicSalaries")
+                </p>
+                <input id="ExportExcelButtonContractorsBasicSalaries" type="button" style="float:left" value="@Resources.Globalization.ExportToExcelText" />
+                <table id="tblContractorsBasicSalaries" class="table table-responsive table-hover dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.SequenceNoText</td>
+                            <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                            <td>@Resources.Globalization.EmployeeNameArText</td>
+                            <td>@Resources.Globalization.RankCategoryNameText</td>
+                            <td>@Resources.Globalization.BasicSalaryText</td>
+                            <td>@Resources.Globalization.TransfareAllowanceText</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+             
+        </div>
+
+    </div>
+
+    
+</div>
+
+
+

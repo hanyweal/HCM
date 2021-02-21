@@ -1,0 +1,315 @@
+﻿@model HCM.Models.PassengerOrdersViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+@using HCM.Classes.Extensions
+
+@{
+    ViewBag.Title = Resources.Globalization.EditPassengerOrderText;
+}
+
+<script type="text/javascript">
+
+    function OkFunction() {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/PassengerOrders/PrintPassengerOrder/")' + '@Model.PassengerOrderID');
+        ShowModal("#divReportModal");
+    }
+
+    $(document).ready(function () {
+
+        $("#OpenDelegationDetailsPopup").hide(); // the user can not change the delegeation detail in edit
+        $("#OpenInternshipScholarshipsDetailsPopup").hide(); // the user can not change the intrernshipScholarship detail in edit
+
+        BindItinerary();
+        $("#btnAdd").click(function () {
+
+            var ObjToPassForAdd = {
+                PassengerOrderID: '@Model.PassengerOrderID',
+                PassengerOrdersItineraryRequest: {
+                    PassengerOrder: { PassengerOrderID: '@Model.PassengerOrderID' },
+                    FromCity: $('#txtFromCity').val(),
+                    ToCity: $('#txtToCity').val()
+                }
+            };
+
+            $.ajax({
+                type: "POST"
+                //, dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+                , contentType: "application/json; charset=utf-8"
+                , url: "@Url.Content("~/PassengerOrders/CreatePassengerOrderItineraryDB")"
+                , data: JSON.stringify(ObjToPassForAdd)
+                , success: function () {
+                    AddingSuccess();
+                }
+                , error: function (xhr, status, error) {
+                    AddingFailure();
+                }
+            });
+        });
+
+    });
+
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function AddingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText))');
+
+        //reset tha fields
+        $("#txtFromCity").val('');
+        $("#txtToCity").val('');
+
+        // rebind tha data
+        BindItinerary();
+
+        //ResetEmployeeData();
+    }
+
+    function AddingFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+        GetPassengerOrderBalance(EmployeeCodeID);
+    }
+
+    function BindItinerary() {
+        $("#tblPassengerOrderEmployees").DataTable({
+            destroy: true,
+            "searching": false,
+            "ordering": false,
+            "paging": false,
+            "ajax": {
+                "url": "/PassengerOrders/GetPassengerOrdersItinerariesByPassengerOrderID/" + '@Model.PassengerOrderID',
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "FromCity",
+                    "autowidth": true
+                },
+                {
+                    "data": "ToCity",
+                    "autowidth": true
+                }
+            ]
+        });
+    }
+
+    function getEmployeeOtherDetails(EmployeeCodeID) {
+        $.ajax({
+            type: "POST"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/Employees/GetByEmployeeCodeID"
+            , data: "{ 'id' : '" + EmployeeCodeID + "'}"
+            , success: function (d) {
+                $("#txtRankName").val(d.data.EmployeeCurrentJob.OrganizationJob.Rank.RankName);
+                $("#hdnFldRankID").val(d.data.EmployeeCurrentJob.OrganizationJob.Rank.RankID);
+                getEmployeeTicketClass(d.data.EmployeeCurrentJob.OrganizationJob.Rank.RankID);
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function getEmployeeTicketClass(RankID) {
+        $.ajax({
+            type: "GET"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/RanksTicketsClasses/GetRanksTicketsClassesByRankID/" + RankID
+            , success: function (d) {
+                $("#txtTicketClassName").val(d.data.TicketClass.TicketClassName);
+                $("#hdnFldTicketClassID").val(d.data.TicketClass.TicketClassID);
+            }
+            , error: function (xhr, status, error) {
+                alert(xhr);
+                alert(status);
+                alert(error.message);
+            }
+        });
+    }
+
+    function resetEmployeeOtherDetails() {
+        $("#txtRankName").val('');
+        $("#txtTicketClassName").val('');
+        $("#hdnFldRankID").val('');
+        $("#hdnFldTicketClassID").val('');
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.EditPassengerOrderText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EditPassengerOrderDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Edit", "PassengerOrders", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.EmployeeText</span>
+            if (Model.PassengerOrderTypeID == (int)PassengerOrdersTypesEnum.Delegation)
+            {
+                @Html.Partial("~/Views/Shared/_DelegationDetailsPopup.cshtml", Model.DelegationDetailRequest.GetDelegationDetail())
+            }
+            else if (Model.PassengerOrderTypeID == (int)PassengerOrdersTypesEnum.InternshipScholarship)
+            {
+                @Html.Partial("~/Views/Shared/_InternshipScholarshipsDetailsPopup.cshtml", Model.InternshipScholarshipDetailRequest.GetInternshipScholarshipDetail())
+            }
+
+            @Html.HiddenFor(model => model.PassengerOrderID)
+            @Html.HiddenFor(model => model.PassengerOrderTypeID)
+            <span class="control-label">@Resources.Globalization.PassengerOrderBasicInfoText</span>
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.PassengerOrderType, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(model => model.PassengerOrderTypeID, new SelectList(new HCMBLL.PassengerOrdersTypesBLL().GetPassengerOrdersTypes(), "PassengerOrderTypeID", "PassengerOrderTypeName"), new { @id = "ddlPassengerOrdersTypes", @style = "width:100%;", @disabled = "disabled" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.TravellingDate, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.RankName, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.TicketsClasses, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.TravellingDate, new
+                       {
+                           @class = "TxtHijriPicker form-control",
+                           @id = "txtTravellingDate",
+                           @Value = Model.TravellingDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                       })
+                            @Html.ValidationMessageFor(model => model.TravellingDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.RankName, new { @class = "form-control", @id = "txtRankName", @readonly = "readonly" })
+                            @Html.HiddenFor(model => model.RankID, new { @id = "hdnFldRankID" })
+                            @Html.ValidationMessageFor(model => model.RankID, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.TicketClassName, new { @class = "form-control", @id = "txtTicketClassName", @readonly = "readonly" })
+                            @Html.HiddenFor(model => model.TicketClassID, new { @id = "hdnFldTicketClassID" })
+                            @Html.ValidationMessageFor(model => model.TicketClassID, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.Going, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.Returning, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.CheckBoxFor(model => model.Going)
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(model => model.Returning)
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="control-label">@Resources.Globalization.FromCityText</label>
+                        </td>
+                        <td>
+                            <label class="control-label">@Resources.Globalization.ToCityText</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.PassengerOrdersItineraryRequest.FromCity, new { @class = "form-control", @id = "txtFromCity" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.PassengerOrdersItineraryRequest.ToCity, new { @class = "form-control", @id = "txtToCity" })
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:center">
+                            <input id="btnAdd" type="button" class="btn btn-default" value="@Resources.Globalization.AddText" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table id="tblPassengerOrderEmployees" class="table table-responsive table-condensed table-striped dataTable">
+                <thead>
+                    <tr>
+                        <td>@Resources.Globalization.FromCityText</td>
+                        <td>@Resources.Globalization.ToCityText</td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "PassengerOrders"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@
+
+
+
+

@@ -1,0 +1,216 @@
+﻿@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+<style>
+    .overlay {
+        position: fixed;
+        text-align: center;
+        top: 0;
+        left: 0;
+        z-index: 10 !important;
+        background-color: rgba(0,0,0,0.5);
+        display: none;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#btnOpenPromotionRecordQualificationPointsPopup").click(function () {
+
+            var PromotionRecordID = $('#hdnFldPromotionRecordID').val(); 
+            if (PromotionRecordID == "") PromotionRecordID = 0; 
+
+            BindPromotionsRecordsQualificationsPoints(PromotionRecordID);
+            ShowModal("#divPromotionsRecordsQualificationsPointsModal");
+
+        });
+    });
+
+    function BindPromotionsRecordsQualificationsPoints(PromotionRecordID) {
+
+        $.ajax({
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/PromotionRecordQualificationPoints/GetPromotionsRecordsQualificationsKinds")",
+            success: function (res) {
+                var PromotionRecordQualificationKindList = res.data;
+                LoadQualifications(PromotionRecordID, PromotionRecordQualificationKindList);
+            },
+            error: OnFailure
+        });
+    }
+
+    function LoadQualifications(PromotionRecordID, PromotionRecordQualificationKindList) {
+        
+        var url = "/PromotionRecordQualificationPoints/GetByPromotionRecordID/" + PromotionRecordID;
+        
+        var tblPromotionsRecordsQualificationsPoints = $("#tblPromotionsRecordsQualificationsPoints").DataTable({
+            "ajax": {
+                "url": url,
+                "type": "get",
+                "datatype": "json",
+                //"data": RemoveExtraColumnsFromURL,
+                //"global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.  
+            },
+            //"serverSide": true,
+            "destroy": true, 
+            "columns": [
+                {
+                    "data": "QualificationDegreeName",
+                    "autowidth": true,
+                    "defaultContent": ""
+                },
+                {
+                    "data": "QualificationName",
+                    "autowidth": true,
+                    "defaultContent": ""
+                },
+                {
+                    "data": "GeneralSpecializationName",
+                    "autowidth": true,
+                    "defaultContent": ""
+                },                
+                {
+                    "data": "Points",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        return "<span class='points" + row.PromotionRecordQualificationPointID + "'>" + data + "</span>";
+                    }
+                },
+                {
+                    "data": "PromotionRecordQualificationPointID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        var content;
+
+                        //console.log('row.PromotionRecordStatusEnum ', PromotionRecordQualificationKindList); 
+
+                        if (row.PromotionRecordStatusID == '@Convert.ToInt32(PromotionsRecordsStatusEnum.Open)') {
+                            content = "<div class='row'>";
+                            var checked = '';
+                            for (i = 0; i < PromotionRecordQualificationKindList.length; i++) {
+                                if (row.PromotionRecordQualificationKindID && PromotionRecordQualificationKindList[i].PromotionRecordQualificationKindID == row.PromotionRecordQualificationKindID)
+                                    checked = 'checked';
+                                else
+                                    checked = '';
+
+                                content = content + "<div class='col-md-4'>";
+                                content = content + "<div class='checkbox-inline' style='padding:0px;'><label>";
+                                content = content + "<input type='radio' name='name" + data + "' " + checked +
+                                        " onclick='UpdatePromotionRecordQualificationPoint(" + JSON.stringify(row) + ", $(this).val())' value='" + PromotionRecordQualificationKindList[i].PromotionRecordQualificationKindID + "' />";
+                                content = content + "&nbsp;&nbsp;&nbsp;&nbsp;";
+                                content = content + PromotionRecordQualificationKindList[i].PromotionRecordQualificationKindName;
+                                content = content + "</label></div>";
+                                content = content + "</div>";
+                            }
+
+                            content = content + "</div>";
+                        }
+                        else {
+                            content = row.PromotionRecordQualificationKindName;
+                        }
+                        return content;
+                    }
+                },
+            ]
+        });
+
+    }
+
+    function UpdatePromotionRecordQualificationPoint(row, PromotionRecordQualificationKindID) {
+
+        var ObjToQualificationPoint = {
+            PromotionRecordQualificationPointID: row.PromotionRecordQualificationPointID,
+            QualificationDegree: { QualificationDegreeID: row.QualificationDegreeID },
+            Qualification: { QualificationID: row.QualificationID },
+            GeneralSpecialization: { GeneralSpecializationID: row.GeneralSpecializationID },
+            PromotionRecordQualificationKind: { PromotionRecordQualificationKindID: PromotionRecordQualificationKindID }
+        };
+
+        //var ObjToQualificationPoint = {
+        //    PromotionRecordQualificationPointID: row.PromotionRecordQualificationPointID,
+        //    QualificationDegree: { QualificationDegreeID: row.QualificationDegree.QualificationDegreeID },
+        //    Qualification: { QualificationID: row.Qualification.QualificationID },
+        //    GeneralSpecialization: { GeneralSpecializationID: row.GeneralSpecialization.GeneralSpecializationID },
+        //    PromotionRecordQualificationKind: { PromotionRecordQualificationKindID: PromotionRecordQualificationKindID }
+        //};
+
+        //console.log('ObjToQualificationPoint', ObjToQualificationPoint);
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/PromotionRecordQualificationPoints/UpdateQualificationKind")",
+            data: JSON.stringify(ObjToQualificationPoint),
+            success: OnSuccess,
+            error: OnFailure
+        });
+
+    }
+
+    function OnSuccess(data) {
+        //$("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText),"")');
+        //console.log('OnSuccess data', data, $(".points" + data.PromotionRecordQualificationPointID).val());
+        
+        //$(".points" + data.PromotionRecordQualificationPointID).html(data.Points);
+        //$(".points").fadeIn(400);
+        $(".points" + data.PromotionRecordQualificationPointID)
+			.fadeOut(1000, function () {
+			    $(".points" + data.PromotionRecordQualificationPointID).html(data.Points);
+			    $(".points" + data.PromotionRecordQualificationPointID).fadeIn(400);
+			});
+
+    }
+
+    function OnFailure() {
+        console.log('OnFailure data');
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+</script>
+
+<button id="btnOpenPromotionRecordQualificationPointsPopup" class="btn btn-default" title="@Resources.Globalization.SearchAboutPromotionsRecordsQualificationsPointsTooltip" type="button">
+    <span class="glyphicon glyphicon-education"></span> @Resources.Globalization.ShowPromotionsRecordsQualificationsPointsText
+</button>
+
+<div class="modal fade" id="divPromotionsRecordsQualificationsPointsModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.PromotionsRecordsQualificationsPointsListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="divPromotionsRecordsQualificationsPointsAlert" class="alert alert-info">
+                            @Resources.Globalization.PromotionsRecordsQualificationsPointsDescText
+                        </div>
+                    </div>
+                </div>
+                <table id="tblPromotionsRecordsQualificationsPoints" class="table table-responsive table-hover dataTable font-12" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.QualificationDegreeNameText</td>
+                            <td>@Resources.Globalization.QualificationNameText</td>
+                            <td>@Resources.Globalization.GeneralSpecializationNameText</td> 
+                            <td>@Resources.Globalization.PointsText</td> 
+                            <td>@Resources.Globalization.PromotionRecordQualificationKindNameText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

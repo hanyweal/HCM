@@ -1,0 +1,123 @@
+﻿
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var content = '@ViewBag.Message';
+        content = content.replace(/NewLine/g, '<br/>'); // <br/> is not wotking from Exception class directly  -- this is workaround
+        var theme = 'light';
+        var icon = '@ViewBag.GlyphiconClass';
+        var okText = '@Resources.Globalization.CloseText';
+        var boxWidth = '350px';
+        var useBootstrap = false; // this is to implement custom width
+
+        if ('@ViewBag.Class' == "alert-warning") {
+            $.alert({
+                title: ' @Resources.Globalization.WarningMessageText',
+                content: content,
+                rtl: true,
+                theme: theme,
+                type: 'orange',
+                typeAnimated: true,
+                icon: icon,
+                boxWidth: boxWidth,
+                useBootstrap: useBootstrap,
+                buttons: {
+                    ok: {
+                        btnClass: 'btn-orange',
+                        text: okText,
+                        keys: ['enter']
+                    },
+                },
+                //closeIcon: true,
+            });
+        }
+
+        else if ('@ViewBag.Class' == "alert-success") {
+            $.alert({
+                title: '@Resources.Globalization.MessageFromSystemText',
+                content: content,
+                rtl: true,
+                theme: theme,
+                type: 'green',
+                typeAnimated: true,
+                icon: icon,
+                boxWidth: boxWidth,
+                useBootstrap: useBootstrap,
+                buttons: {
+                    ok: {
+                        btnClass: 'btn-green',
+                        text: okText,
+                        keys: ['enter'],
+                        action: function () {
+                            var CallBackFnName = '@ViewBag.CallBackFnName';
+                            if (typeof CallBackFnName !== 'undefined' && $.isFunction(window[CallBackFnName])) {
+                                window[CallBackFnName]();
+                            }
+                        },
+                    },
+                    
+                },
+
+                //boxWidth: '90%',
+                //closeIcon: true,
+                //columnClass: 'col-md-4'
+            });
+        }
+
+        else if ('@ViewBag.Class' == "alert-danger") {
+            $.alert({
+                title: '@Resources.Globalization.ErrorMessageText',
+                content: content,
+                rtl: true,
+                theme: theme,
+                type: 'red',
+                typeAnimated: true,
+                icon: icon,
+                boxWidth: '400px',
+                useBootstrap: useBootstrap,
+                buttons: {
+                    ok: {
+                        btnClass: 'btn-red',
+                        text: okText,
+                        keys: ['enter']
+                    },
+                },
+                //closeIcon: true,
+            });
+        }
+
+        else {
+            $.alert({
+                title: '@Resources.Globalization.NoticeMessageText',
+                content: content,
+                rtl: true,
+                theme: theme,
+                type: 'blue',
+                typeAnimated: true,
+                icon: icon,
+                boxWidth: boxWidth,
+                useBootstrap: useBootstrap,
+                buttons: {
+                    ok: {
+                        btnClass: 'btn-blue',
+                        text: okText,
+                        keys: ['enter']
+                    },
+                },
+                //closeIcon: true,
+            });
+        }
+    });
+
+    // should be set after the "jquery-confirm" plugin has loaded 
+    @*jconfirm.defaults = {
+        title: '@Resources.Globalization.CofirmationMessageTitle',
+        //post: true,
+        animation: 'zoom',
+        boxWidth: '250px',
+        useBootstrap: false,
+
+
+    };*@
+   
+</script>

@@ -1,0 +1,122 @@
+﻿@model HCM.Models.EmployeesDegreesUpgradesViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+@using HCM.Controllers
+
+@{
+    ViewBag.Title = Resources.Globalization.AddNewEmployeeDegreeUpgradeText;
+}
+
+<script type="text/javascript">
+    
+    $(document).ready(function () {
+        
+        $("#BtnSave").confirm({
+            animation: 'zoom',
+            content: '@Resources.Globalization.EmployeeDegreeUpgradeCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () { $("#BtnSave").submit(); },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+         
+    });
+
+    function OnSuccess() {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+
+        $('#txtAllowanceAmount').val('');
+    }
+
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.AddNewEmployeeDegreeUpgradeText</p>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewEmployeeDegreeUpgradeDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "EmployeesDegreesUpgrades", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <span class="control-label">@Resources.Globalization.EmployeeDegreeUpgradeBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.EmployeeDegreeUpgradeYear, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.EmployeeDegreeUpgradeYear, new SelectList(new EmployeesDegreesUpgradesController().GetYears()), new { @id = "ddlEmployeeDegreeUpgradeYears", @style = "width:100%" })
+                            @Html.ValidationMessageFor(model => model.EmployeeDegreeUpgradeYear, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input id="BtnSave" type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "EmployeesDegreesUpgrades"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }*@

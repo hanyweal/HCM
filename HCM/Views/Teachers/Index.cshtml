@@ -1,0 +1,101 @@
+﻿
+@{
+    ViewBag.Title = Resources.Globalization.TeachersText;
+}
+
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+
+<script>
+
+     $(document).ready(function () {
+
+        @*$.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }*@
+
+        $("#tblTeacher").DataTable({
+              dom: 'Bfrtip',
+            "ajax": {
+                "url": "/Teachers/GetTeachers",
+                "type": "get",
+                "datatype": "json"
+            },
+             "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "StartDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "EndDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "CreatedBy",
+                    "autowidth": true
+                },
+                {
+                    "data": "CreatedDate",
+                    "autowidth": true,
+                    "render": RenderDateTime
+                },
+                {
+                    "data": "TeacherID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "Teachers")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.EditText' + '"/></a>'
+                    }
+                },
+                {
+                    "data": "TeacherID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "Teachers")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" title="' + '@Resources.Globalization.DeleteText' + '"/></a>'
+                    }
+                },
+            ]
+        });
+    });
+</script>
+
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchTeacherDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblTeacher" class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                    <td>@Resources.Globalization.StartDateText</td>
+                    <td>@Resources.Globalization.EndDateText</td>
+                    <td>@Resources.Globalization.CreatedByText</td>
+                    <td>@Resources.Globalization.CreatedDateText</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+

@@ -1,0 +1,553 @@
+﻿@model HCM.Models.ScholarshipsViewModel
+@using HCMBLL.Enums;
+@using HCM.Models;
+
+@{
+    ViewBag.Title = @Resources.Globalization.ScholarshipsText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+    var ScholarshipID = 0;
+
+    function ResizeModal(h) {
+        iframe.css('height', h);
+        $('#divModal .modal-body').css('height', h);
+    }
+
+    function OkFunction() {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Scholarships/PrintScholarship/")' + ScholarshipID);
+        ShowModal("#divReportModal");
+    }
+
+    $(document).ready(function () {
+
+        extentedFuncForEmployeePopup = "StartFunction";
+        extentedFuncForEmployeePopupReset = "Reset";
+        errorFunc = "ErrorFunction";
+
+        $('.internalTraining').show();
+        $('.externalTraining').hide();
+
+
+        $('#ddlScholarshipTypes').on('change', function (event) {
+
+            var ScholarshipType = $('#ddlScholarshipTypes').val();
+            if (ScholarshipType == '@Convert.ToInt32(ScholarshipsTypesEnum.Internal)') {
+                $('.internalTraining').show();
+                $('.externalTraining').hide();
+            }
+            else if (ScholarshipType == '@Convert.ToInt32(ScholarshipsTypesEnum.External)') {
+                $('.internalTraining').hide();
+                $('.externalTraining').show();
+            }
+            BindEmployeeScholarships($('#hdnFldEmployeeCodeID').val());
+        });
+
+
+        $('#ddlScholarshipActions').on('change', function (event) {
+            var ScholarshipAction = $('#ddlScholarshipActions').val();
+
+            if (ScholarshipAction == '@Convert.ToInt32(ScholarshipsActionsEnum.Add)') {
+                $('#tblScholarship').show();
+                $('#tblEmployeeScholarshipDetails').hide();
+            }
+            else {
+                $('#tblScholarship').hide();
+                $('#tblEmployeeScholarshipDetails').show();
+            }
+        });
+
+        $("#divScholarshipDetailsModal").on('hidden.bs.modal', function () {
+            BindEmployeeScholarships($('#hdnFldEmployeeCodeID').val());
+        });
+
+        $('#txtScholarshipPeriod').val('1');
+
+         $("#ExportExcelButton").click(function () {
+                 $.ajax({
+                     type: "GET"
+                      , contentType: "application/json;"
+                      , url: "/Scholarships/ExportExcel"
+                      , success: function (response)
+                      {
+                          var url = "/WebForms/Reports/FileDownload.aspx?fileName=" + response.DownLoadFile;
+                          window.location.href = url;
+                      }
+                      , error: function (xhr, status, error) {
+
+                      }
+                 });
+             });
+
+    });
+
+
+    function StartFunction() {
+        BindEmployeeScholarships($('#hdnFldEmployeeCodeID').val());
+    }
+
+    function ErrorFunction() {
+        $("#tblValidScholarships").DataTable().clear().destroy();
+        $("#tblFinishedScholarships").DataTable().clear().destroy();
+        $("#tblCanceledScholarships").DataTable().clear().destroy();
+    }
+
+    function OnSuccess(data) {
+        Reset();
+        ScholarshipID = data.ScholarshipID;
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+        BindEmployeeScholarships($('#hdnFldEmployeeCodeID').val());
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+    }
+
+    function OpenEdit(ScholarshipID) {
+        var iframe = $("#divScholarshipDetailsModal .modal-body #iframeContent");
+        iframe.attr('src', '@Url.Content("~/Scholarships/Edit/")' + ScholarshipID);
+        ShowModal("#divScholarshipDetailsModal");
+    }
+
+    function OpenScholarshipDetails(ScholarshipID) {
+
+        var iframe = $("#divScholarshipDetailsModal .modal-body #iframeContent");
+        var ScholarshipAction = $("#ddlScholarshipActions").val();
+        if (ScholarshipAction == '@Convert.ToInt32(ScholarshipsActionsEnum.Extend)') {
+            iframe.attr('src', '@Url.Content("~/Scholarships/Extend/")' + ScholarshipID);
+        }
+        else if (ScholarshipAction == '@Convert.ToInt32(ScholarshipsActionsEnum.Break)') {
+            iframe.attr('src', '@Url.Content("~/Scholarships/Break/")' + ScholarshipID);
+        }
+        else if (ScholarshipAction == '@Convert.ToInt32(ScholarshipsActionsEnum.Cancel)') {
+            iframe.attr('src', '@Url.Content("~/Scholarships/Cancel/")' + ScholarshipID);
+        }
+        else if (ScholarshipAction == '@Convert.ToInt32(ScholarshipsActionsEnum.Joining)') {
+            iframe.attr('src', '@Url.Content("~/Scholarships/Joining/")' + ScholarshipID);
+        }
+        ShowModal("#divScholarshipDetailsModal");
+    }
+
+    function BindEmployeeScholarships(EmployeeCodeID) {
+
+        var ScholarshipTypeID = $('#ddlScholarshipTypes').val();
+
+        GetEmployeeValidScholarships(EmployeeCodeID, ScholarshipTypeID);
+        GetEmployeeFinishedScholarships(EmployeeCodeID, ScholarshipTypeID);
+        GetEmployeeCanceledScholarships(EmployeeCodeID, ScholarshipTypeID);
+    }
+
+    function GetEmployeeValidScholarships(EmployeeCodeID, ScholarshipTypeID) {
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Scholarships/GetEmployeeValidScholarships/")" + EmployeeCodeID + "/" + ScholarshipTypeID,
+            success: function (result) {
+                $("#tblValidScholarships").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "ScholarshipID",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "ScholarshipStartDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "ScholarshipPeriod",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "ScholarshipEndDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        {
+                            "data": "ScholarshipID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = 'OpenScholarshipDetails(' + data + ');';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                            }
+                        },
+                        {
+                            "data": "ScholarshipID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = 'OpenEdit(' + data + ');';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                            }
+                        },
+                    ]
+                });
+            }
+        });
+    }
+
+    function GetEmployeeFinishedScholarships(EmployeeCodeID, ScholarshipTypeID) {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Scholarships/GetEmployeeFinishedScholarships/")" + EmployeeCodeID + "/" + ScholarshipTypeID,
+            success: function (result) {
+                $("#tblFinishedScholarships").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "ScholarshipID",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "ScholarshipStartDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "ScholarshipPeriod",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "ScholarshipEndDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        {
+                            "data": "ScholarshipID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = 'OpenScholarshipDetails(' + data + ');';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                            }
+                        },
+                        {
+                            "data": "ScholarshipID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = 'OpenEdit(' + data + ');';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                            }
+                        },
+                    ]
+                });
+            }
+        });
+    }
+
+    function GetEmployeeCanceledScholarships(EmployeeCodeID, ScholarshipTypeID) {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Scholarships/GetEmployeeCanceledScholarships/")" + EmployeeCodeID + "/" + ScholarshipTypeID,
+            success: function (result) {
+                $("#tblCanceledScholarships").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "ScholarshipID",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "ScholarshipStartDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "ScholarshipPeriod",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "ScholarshipEndDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        {
+                            "data": "ScholarshipID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                Url = 'OpenScholarshipDetails(' + data + ');';
+                                return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                            }
+                        },
+                    ]
+                });
+            }
+        });
+    }
+
+    function GetEmployeeCurrentQualification(EmployeeCodeID) {
+        $("#txtEmployeeCurrentQualification").val("");
+        $.ajax({
+            type: "GET"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/Employees/GetEmployeeCurrentQualification/" + EmployeeCodeID
+            , success: function (d) {
+                $("#txtEmployeeCurrentQualification").val(d.data.EmployeeCurrentQualification);
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function Reset() {
+        $('#ddlScholarshipTypes').val('@Convert.ToInt32(ScholarshipsTypesEnum.Internal)');
+        $('#txtScholarshipStartDate').val('');
+        $('#txtScholarshipEndDate').val('');
+        $('#txtScholarshipLocation').val('');
+        $('#txtScholarshipReason').val('');
+        $('#txtScholarshipPeriod').val('1');
+        $('.internalTraining').show();
+        $('.externalTraining').hide();
+        $('#txtEmployeeCurrentQualification').show();
+        //ResetEmployee();
+    }
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.ScholarshipsText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.ScholarshipsDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.Scholarships })
+            </div>
+        </div>
+    </div>
+    <input id="ExportExcelButton" type="button" style="float:left" value="@Resources.Globalization.ExportToExcelText" />
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "Scholarships", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }, new { id = "frmScholarship" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+            <br />
+
+
+            <span class="control-label">@Resources.Globalization.EmployeeScholarshipBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.ScholarshipType, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.ScholarshipAction, new { @class = "control-label" })
+                        </td>
+                        <td class="internalTraining col-md-4">@Html.LabelFor(model => model.KSACities, new { @class = "control-label" })</td>
+                        <td class="externalTraining col-md-4">
+                            @Html.LabelFor(model => model.Countries, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.ScholarshipType.ScholarshipTypeID, new SelectList(new HCMBLL.ScholarshipsTypesBLL().GetScholarshipsTypes(), "ScholarshipTypeID", "ScholarshipType"), new { @id = "ddlScholarshipTypes", @style = "width:100%" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.ScholarshipAction.ScholarshipActionID, new SelectList(new HCMBLL.ScholarshipsActionsBLL().GetScholarshipsActions(), "ScholarshipActionID", "ScholarshipActionName"), new { @id = "ddlScholarshipActions", @style = "width:100%" })
+                        </td>
+                        <td class="internalTraining col-md-4">
+                            @Html.DropDownListFor(model => model.KSACity.KSACityID, new SelectList(new HCMBLL.KSACitiesBLL().GetKSACities(), "KSACityID", "KSACityName"), new { @id = "ddlKSACities", @style = "width:100%" })
+                        </td>
+                        <td class="externalTraining col-md-4">
+                            @Html.DropDownListFor(model => model.Country.CountryID, new SelectList(new HCMBLL.CountriesBLL().GetCountries(), "CountryID", "CountryName"), new { @id = "ddlScholarshipCountry", @style = "width:100%" })
+                        </td>
+                        <td></td>
+                    </tr>
+            </table>
+            @Html.Partial("~/Views/Scholarships/_Scholarships.cshtml", @Model)
+        }
+
+        <table id="tblEmployeeScholarshipDetails" class="table table-responsive table-striped" style="width:100%" hidden>
+            <tbody>
+                <tr>
+                    <td>
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#TabValidScholarships" data-toggle="tab">@Resources.Globalization.ValidScholarshipsText</a>
+                            </li>
+                            <li>
+                                <a href="#TabFinishedScholarships" data-toggle="tab">@Resources.Globalization.FinishedScholarshipsText</a>
+                            </li>
+                            <li>
+                                <a href="#TabCanceledScholarships" data-toggle="tab">@Resources.Globalization.CanceledScholarshipsText</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content clearfix">
+                            <div id="TabValidScholarships" class="tab-pane active padding-5">
+                                <div id="divValidScholarships">
+                                    <table id="tblValidScholarships" class="table table-responsive table-hover" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <td>
+                                                    @Resources.Globalization.SequenceNoText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.ScholarshipStartDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.ScholarshipPeriodText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.ScholarshipEndDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.CreatedByText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.CreatedDateText
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="TabFinishedScholarships" class="tab-pane padding-5">
+                                <div id="divFinishedScholarships">
+                                    <table id="tblFinishedScholarships" class="table table-responsive table-hover" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <td>
+                                                    @Resources.Globalization.SequenceNoText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.ScholarshipStartDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.ScholarshipPeriodText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.ScholarshipEndDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.CreatedByText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.CreatedDateText
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="TabCanceledScholarships" class="tab-pane padding-5">
+                                <div id="divCanceledScholarships">
+                                    <table id="tblCanceledScholarships" class="table table-responsive table-hover" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <td>
+                                                    @Resources.Globalization.SequenceNoText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.ScholarshipStartDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.ScholarshipPeriodText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.ScholarshipEndDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.CreatedByText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.CreatedDateText
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="divScholarshipDetailsModal">
+    <div class="modal-dialog" style="width:1100px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                </div>
+            </div>
+            <div class="modal-body">
+                <iframe id="iframeContent" style="width:100%;height:550px;border:none;"></iframe>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*@section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }*@
+
+

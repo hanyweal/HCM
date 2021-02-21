@@ -1,0 +1,8 @@
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDAL\bin\Debug\HCMDAL.dll.config
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDAL\bin\Debug\HCMDAL.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDAL\bin\Debug\HCMDAL.pdb
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDAL\bin\Debug\CommonUtilities.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDAL\obj\Debug\HCMDAL.csproj.CopyComplete
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDAL\obj\Debug\HCMDAL.dll
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDAL\obj\Debug\HCMDAL.pdb
+G:\Zeeshan Rais\Projects Azure DevOps\HumanResources\HCM\Sprint 4 in night shift\HCMDAL\obj\Debug\HCMDAL.csprojAssemblyReference.cache

@@ -1,0 +1,167 @@
+﻿@model HCM.Models.AssigningsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.DetailsAssigningText;
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var AssigningType = '@Model.AssigningType.AssigningTypeID';
+        if (AssigningType == '@Convert.ToInt32(AssigningsTypesEnum.Internal)') {
+            $('#tblInternal').show();
+            $('#tblExternal').hide();
+        }
+        else {
+            $('#tblInternal').hide();
+            $('#tblExternal').show();
+        }
+    });
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.DetailsAssigningText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.DetailsAssigningDescText
+    </div>
+    <div class="panel-body">
+        @Html.AntiForgeryToken()
+        @*<span class="control-label">@Resources.Globalization.AssigningBasicInfoText</span>*@
+        <table class="table table-responsive table-condensed">
+            <tbody>
+                <tr>
+                    <td class="col-md-2">
+                       <b>@Resources.Globalization.EmployeeCodeNoText</b>
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.Employee.EmployeeCodeNo)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        <b>@Resources.Globalization.EmployeeNameArText</b>
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.Employee.EmployeeNameAr)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.AssigningType, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.AssigningType.AssigningTypeName)
+                        @Html.HiddenFor(model => model.AssigningType.AssigningTypeID)
+                        @Html.HiddenFor(model => model.AssigningID)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.AssginingStartDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.AssginingStartDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.AssginingEndDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.AssginingEndDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.AssigningReason, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.AssigningReason.AssigningReasonName)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table id="tblInternal" class="table table-responsive table-condensed">
+            <tbody>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.OrganizationName, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.OrganizationStructure.OrganizationName)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.JobName, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.Job.JobName)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table id="tblExternal" class="table table-responsive table-condensed" hidden="hidden">
+            <tbody>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.ExternalOrganization, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.ExternalOrganization)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.ExternalKSARegion, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.ExternalKSARegion.KSARegionName)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.ExternalKSACity, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.ExternalKSACity.KSACityName)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        @*<span class="control-label">@Resources.Globalization.EmployeesText</span>*@
+        <table class="table table-responsive table-condensed">
+            <tbody>
+                
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.CreatedBy, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.CreatedBy)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.LabelFor(model => model.CreatedDate, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-10">
+                        @Html.DisplayFor(model => model.CreatedDate)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Assignings"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

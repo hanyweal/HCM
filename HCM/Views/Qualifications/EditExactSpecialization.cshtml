@@ -1,0 +1,143 @@
+﻿@model HCM.Models.ExactSpecializationsViewModel
+@using HCM.Models;
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums
+
+@{
+    ViewBag.Title = @Resources.Globalization.EditExactSpecializationText;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+         //GetGeneralSpecialization();
+    });
+
+    function OnSuccess() {
+        //Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+    function AddingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText))');
+    }
+    function AddingFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }  
+
+    function Reset() {
+        $("#ddlQualification").html("");
+        insertSelectionOptionToDDL('ddlQualification');
+        $("#ddlGeneralSpecialization").html("");
+        insertSelectionOptionToDDL('ddlGeneralSpecialization');
+        $("#txtExactSpecializationName").val("");       
+    }
+
+    function GetQualification() {
+        var QualificationDegreeID = $("#ddlQualificationDegree").val();
+        $.ajax({
+            type: "get"
+            , dataType: "json"
+            , url: "/Qualifications/GetQualifications/" + QualificationDegreeID
+            , success: function (d) {
+                $("#ddlQualification").html("");
+                $("#ddlGeneralSpecialization").html("");
+                var Qualifications = d.data;
+                $.each(Qualifications, function (i, Qualification) {
+                    $("#ddlQualification").append($('<option></option>').val(Qualification.QualificationID).html(Qualification.QualificationName));
+                });
+                insertSelectionOptionToDDL('ddlQualification');
+                insertSelectionOptionToDDL('ddlGeneralSpecialization');
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function GetGeneralSpecialization() {
+        var QualificationID = $("#ddlQualification").val();
+        $.ajax({
+            type: "get"
+            , dataType: "json"
+            , url: "/Qualifications/GetGeneralSpecializations/" + QualificationID
+            , success: function (d) {
+                $("#ddlGeneralSpecialization").html("");
+                var GeneralSpecializations = d.data;
+                $.each(GeneralSpecializations, function (i, GeneralSpecialization) {
+                    $("#ddlGeneralSpecialization").append($('<option></option>').val(GeneralSpecialization.GeneralSpecializationID).html(GeneralSpecialization.GeneralSpecializationName));
+                });
+                insertSelectionOptionToDDL('ddlGeneralSpecialization');
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.EditExactSpecializationText</p>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EditExactSpecializationDescText
+            </div>
+           
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("EditExactSpecialization", "Qualifications", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.ExactSpecializationBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>  
+                        <td class="col-md-3">@Html.LabelFor(model => model.QualificationDegreeID, new { @class = "control-label" })</td>                
+                        <td class="col-md-3">@Html.LabelFor(model => model.QualificationID, new { @class = "control-label" })</td>
+                        <td class="col-md-3">@Html.LabelFor(model => model.GeneralSpecializationID, new { @class = "control-label" })</td>
+                        <td class="col-md-3">@Html.LabelFor(model => model.ExactSpecializationName, new { @class = "control-label" })</td>
+                        @Html.HiddenFor(model => model.ExactSpecializationID)
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">@Html.DropDownListFor(model => model.QualificationDegreeID, new SelectList(new HCMBLL.QualificationsDegreesBLL().GetQualificationsDegrees(), "QualificationDegreeID", "QualificationDegreeName"), new { @id = "ddlQualificationDegree", @style = "width:100%", @onchange = "GetQualification()" })</td>
+                        <td class="col-md-3">@Html.DropDownListFor(model => model.QualificationID, new SelectList(new HCMBLL.QualificationsBLL().GetByQualificationDegreeID(Model.QualificationDegreeID), "QualificationID", "QualificationName"), new { @id = "ddlQualification", @style = "width:100%", @onchange = "GetGeneralSpecialization()" })</td>
+                        <td class="col-md-3">@Html.DropDownListFor(model => model.GeneralSpecializationID, new SelectList(new HCMBLL.GeneralSpecializationsBLL().GetByQualificationID(Model.QualificationID), "GeneralSpecializationID", "GeneralSpecializationName"), new { @id = "ddlGeneralSpecialization", @style = "width:100%" })</td>
+                        <td class="col-md-3">
+                            @Html.TextBoxFor(model => model.ExactSpecializationName, new { @class = "form-control", @id = "txtExactSpecializationName" })
+                            @Html.ValidationMessageFor(model => model.ExactSpecializationName, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" onclick="Reset();" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Qualifications"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>

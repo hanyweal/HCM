@@ -1,0 +1,281 @@
+﻿@model HCM.Models.DelegationsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.DeleteDelegationText;
+}
+<script type="text/javascript">
+
+    function OkFunction() {
+        window.location.href = "/Delegations/Index";
+    }
+
+    $(document).ready(function () {
+        BindDelegationEmployees();
+        $("#BtnDelete").confirm({
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () { $("#BtnDelete").submit(); },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+
+        var DelegationType = '@Model.DelegationType.DelegationTypeID';
+        if (DelegationType == '@Convert.ToInt32(DelegationsTypesEnum.Internal)') {
+            $('.internal').show();
+            $('.external').hide();
+        }
+        else {
+            $('.internal').hide();
+            $('.external').show();
+        }
+
+    });
+
+    function OnSuccess() {
+        $("#BtnDelete").attr("disabled", "disabled");
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText),"OkFunction")');
+    }
+
+    function OnFailure() {
+        //alert('OnFailure');
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function RemoveEmployeeFromDelegation(DelegationDetailID) {
+        $.confirm({
+            confirmButton: '@Resources.Globalization.ConfirmButtonText',
+            cancelButton: '@Resources.Globalization.CancelButtonText',
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $.ajax({
+                            type: "POST"
+                            //, dataType: "json"
+                            , contentType: "application/json; charset=utf-8"
+                            //, url: "@Url.Action("RemoveEmployeeFromDB", "Delegations")"
+                            , url: "/Delegations/RemoveEmployeeFromDB/" + DelegationDetailID
+                            , success: function () {
+                                $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+                                // rebind tha data
+                                BindDelegationEmployees();
+                            }
+                        , error: function (xhr, status, error) {
+                            OnFailure();
+                        }
+                        });
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    }
+
+    function BindDelegationEmployees() {
+        $("#tblDelegationEmployees").DataTable({
+            destroy: true,
+            "searching": false,
+            "ordering": false,
+            "paging": false,
+            "ajax": {
+                "url": "/Delegations/GetDelegationEmployeesByDelegationID/" + '@Model.DelegationID',
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.Employee.EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "IsPassengerOrderCompensation",
+                    "render" : RenderCheckBox,
+                    "autowidth": true,
+                },
+                {
+                    "data": "DelegationDetailID",
+                    "width": "5%",
+                    "sorting": false,
+                    "render": function (data, type, row) {
+                        Url = 'RemoveEmployeeFromDelegation(' + data + ');';
+                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                    }
+                }
+            ]
+        });
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.DeleteDelegationText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.DeleteDelegationDescText
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Delete", "Delegations", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            InsertionMode = InsertionMode.Replace,
+            HttpMethod = "DELETE",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            <span class="control-label">@Resources.Globalization.DelegationBasicInfoText</span>
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.DelegationsTypes, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.DelegationType.DelegationTypeName)
+                            @Html.HiddenFor(model => model.DelegationType.DelegationTypeID)
+                            @Html.HiddenFor(model => model.DelegationID)
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.DelegationsKinds, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.DelegationKind.DelegationKindName)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.DelegationStartDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.DelegationStartDate , new
+                                                                                {
+                                                                                    @Value = Model.DelegationStartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                                                                })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.DelegationEndDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.DelegationEndDate)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.DelegationPeriod, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.DelegationPeriod)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.DelegationDistancePeriod, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.DelegationDistancePeriod)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.DelegationReason, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.DelegationReason)
+                        </td>
+                    </tr>
+                    <tr class="internal">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.KSARegions, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.KSARegion.KSARegionName)
+                        </td>
+                    </tr>
+                    <tr class="internal">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.KSACities, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.KSACity.KSACityName)
+                        </td>
+                    </tr>
+                    <tr class="external">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.Countries, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-10">
+                            @Html.DisplayFor(model => model.Country.CountryName)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.IsApprove, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(model => model.IsApprove, new { @class = "disabled" })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+
+            <table id="tblDelegationEmployees" class="table table-responsive table-hover" width="100%">
+                <thead>
+                    <tr>
+                        <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                        <td>@Resources.Globalization.EmployeeNameArText</td>
+                        <td>@Resources.Globalization.IsPassengerOrderCompensation؟</td>
+                        <td></td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" id="BtnDelete" name="BtnDelete" value="@Resources.Globalization.DeleteText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Delegations"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

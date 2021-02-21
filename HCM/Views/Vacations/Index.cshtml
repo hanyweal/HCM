@@ -1,0 +1,763 @@
+﻿@model HCM.Models.VacationsViewModel
+@using HCMBLL.Enums;
+@using HCM.Models;
+
+@{
+    ViewBag.Title = @Resources.Globalization.VacationsText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+ <script type="text/javascript">
+
+    extentedFuncForEmployeePopup = "focusToStartDate";
+    extentedFuncForEmployeePopupReset = "Reset";
+    errorFunc = "ErrorFunction";
+    var VacationDetailID;
+
+    $(document).ready(function () {
+
+        insertSelectionOptionToDDL('ddlVacationTypes');
+
+        //$('#TDSickVacationType').hide();
+        //$('#LBLSickVacationType').hide();
+        $('#tblVacation').hide();        //used to hide all Divs for Balances on _vacation partial view
+        //$('#divNormalBalance').show();
+
+        $('#ddlVacationTypes').on('change', function (event) {
+            ResetSportsVacationType('ddlSportsSeasonDescription');
+            //$('#ddlVacationActions').val('@Convert.ToInt32(VacationsActionsEnum.Add)');
+            $('#ddlVacationActions').val($("#ddlVacationActions option:first").val());
+            VacationActionChange();
+            $('#tblVacation').hide();
+            $('#tblEmployeeVacations').hide();
+
+            if ($(this).val() == '0') {
+                $('#tblVacation').hide();        //used to hide all Divs for Balances on _vacation partial view
+            }
+            else {
+
+                var VacationAction = $('#ddlVacationActions').val();
+
+                if (VacationAction == '@Convert.ToInt32(VacationsActionsEnum.Add)') {
+                    $('#tblVacation').show();
+                    GetLastNVacations();
+                    $("#txtVacationStartDate").focus();
+                }
+                else {
+                    $('#tblVacation').hide();
+                    $('#tblEmployeeVacations').show();
+                }
+
+                BindEmployeeVacations($('#hdnFldEmployeeCodeID').val());
+            }
+        });
+
+        $('#ddlVacationActions').on('change', function (event) {
+            VacationActionChange();
+        });
+
+        $("#divVacationDetailsModal").on('hidden.bs.modal', function () {
+            BindEmployeeVacations($('#hdnFldEmployeeCodeID').val());
+        });
+    });
+
+    function VacationActionChange() {
+        var VacationType = $('#ddlVacationTypes').val();
+        var VacationAction = $('#ddlVacationActions').val();
+
+        if (VacationType == '0') {
+            $('#tblVacation').hide();
+        }
+        else {
+            if (VacationAction == '@Convert.ToInt32(VacationsActionsEnum.Add)') {
+                $('#tblVacation').show();
+                $('#tblEmployeeVacations').hide();
+            }
+            else {
+                $('#tblVacation').hide();
+                $('#tblEmployeeVacations').show();
+            }
+        }
+    }
+
+    function focusToStartDate() {
+        //$("#txtVacationStartDate").focus();
+        BindGender($('#hdnFldEmployeeCodeID').val());
+        GetLastNVacations();
+        $("#ddlVacationTypes").focus();
+        ResetSportsVacationType('ddlSportsSeasonDescription');
+    }
+
+    function ErrorFunction() {
+        $("#tblValidVacations").DataTable().clear().destroy();
+        $("#tblFinishedVacations").DataTable().clear().destroy();
+        $("#tblCanceledVacations").DataTable().clear().destroy();
+    }
+
+    function OnSuccess(data) {
+        ResetEmployee();
+        Reset();
+        VacationDetailID = data.VacationDetailID;
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+    }
+
+    function OpenEdit(VacationID) {
+        var iframe = $("#divVacationDetailsModal .modal-body #iframeContent");
+        iframe.attr('src', '@Url.Content("~/Vacations/Edit/")' + VacationID);
+        ShowModal("#divVacationDetailsModal");
+    }
+
+    function OpenVacationToCreateAction(VacationID) {
+
+        var iframe = $("#divVacationDetailsModal .modal-body #iframeContent");
+        var VacationAction = $("#ddlVacationActions").val();
+        if (VacationAction == '@Convert.ToInt32(VacationsActionsEnum.Extend)') {
+            iframe.attr('src', '@Url.Content("~/Vacations/Extend/")' + VacationID);
+        }
+        else if (VacationAction == '@Convert.ToInt32(VacationsActionsEnum.Break)') {
+            iframe.attr('src', '@Url.Content("~/Vacations/Break/")' + VacationID);
+        }
+        else if (VacationAction == '@Convert.ToInt32(VacationsActionsEnum.Cancel)') {
+            iframe.attr('src', '@Url.Content("~/Vacations/Cancel/")' + VacationID);
+        }
+        ShowModal("#divVacationDetailsModal");
+    }
+
+    function OpenVacationDetails(VacationID) {
+
+        var iframe = $("#divVacationDetailsModal .modal-body #iframeContent");
+        iframe.attr('src', '@Url.Content("~/Vacations/VacationDetails/")' + VacationID);
+        ShowModal("#divVacationDetailsModal");
+    }
+
+    function BindEmployeeVacations(EmployeeCodeID) {
+
+        var VacationTypeID = $('#ddlVacationTypes').val();
+        $('.divBalance').hide();        //used to hide all Divs for Balances on _vacation partial view
+
+        if (VacationTypeID == '0') {
+            $('#divExceptionalBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Exceptional)') {
+            $('#divExceptionalBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Normal)') {
+            $('#divNormalBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Sick)') {
+            $('#divSickBalance').show();
+            $('#divSickDDL').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.AccompanimentSick)') {
+            $('#divAccompanimentSickBalance').show();
+            $('#divSickDDL').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Accompaniment)') {
+            $('#divAccompanimentBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Born)') {
+            $('#divBornBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Dead)') {
+            $('#divDeadBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.MotherHood)') {
+            $('#divMotherHoodBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Birth)') {
+            $('#divBirthBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Studies)') {
+            $('#divStudiesBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Sports)') {
+            $('#divSportsBalance').show();
+        }
+         else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Emergency)') {
+            $('#divEmergencyBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Compensatory)') {
+            $('#divCompensatory').show();
+        }
+         else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Marriage)') {
+            $('#divMarriageBalance').show();
+        }
+        else if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Exam)') {
+            $('#divExamBalance').show();
+        }
+        else {
+            $('#divExceptionalBalance').show();
+        }
+        GetEmployeeValidVacations(EmployeeCodeID, VacationTypeID);
+        GetEmployeeFinishedVacations(EmployeeCodeID, VacationTypeID);
+        GetEmployeeCanceledVacations(EmployeeCodeID, VacationTypeID);
+
+        if (VacationTypeID == '@Convert.ToInt16(@VacationsTypesEnum.Normal)') {
+
+            var VacationStartDate = $('#txtVacationStartDate').val();
+            GetVacationBalance(EmployeeCodeID, VacationTypeID, VacationStartDate);
+        }
+        else {
+            GetVacationBalance(EmployeeCodeID, VacationTypeID);
+        }
+    }
+
+    function GetEmployeeValidVacations(EmployeeCodeID, VacationTypeID) {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Vacations/GetEmployeeValidVacations/")" + EmployeeCodeID + "/" + VacationTypeID,
+            success: function (result) {
+                $("#tblValidVacations").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": true,
+                    "order": [[1, "desc"]],
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "VacationID",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "VacationStartDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "VacationPeriod",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "VacationEndDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "WorkDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        {
+                            "data": "VacationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+
+                                if ('@Model.HasUpdatingAccess' == 'True') {
+                                    Url = 'OpenVacationToCreateAction(' + data + ');';
+                                    return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                                }
+                                else
+                                    return '';
+                            }
+                        },
+                        {
+                            "data": "VacationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+
+                                if ('@Model.HasUpdatingAccess' == 'True') {
+                                    Url = 'OpenEdit(' + data + ');';
+                                    return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                                }
+                                else
+                                    return '';
+                            }
+                        },
+                        {
+                            "data": "HasDetailsWithoutCreation",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+                                if (data == true) {
+
+                                    if ('@Model.HasDeletingAccess' == 'True') {
+                                        Url = 'OpenVacationDetails(' + row.VacationID + ');';
+                                        return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-plus-sign title="' + '@Resources.Globalization.VacationActionsText' + '"/></a>'
+                                    }
+                                    else
+                                        return '';
+                                }
+                                else
+                                    return "";
+                            }
+                        }
+                    ]
+                });
+            }
+        });
+    }
+
+    function GetEmployeeFinishedVacations(EmployeeCodeID, VacationTypeID) {
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Vacations/GetEmployeeFinishedVacations/")" + EmployeeCodeID + "/" + VacationTypeID,
+            success: function (result) {
+                $("#tblFinishedVacations").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": true,
+                    "order": [[1, "desc"]],
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "VacationID",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "VacationStartDate",
+                            "autowidth": false,
+                            "render": RenderDate,
+
+                        },
+                        {
+                            "data": "VacationPeriod",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "VacationEndDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "WorkDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                         {
+                            "data": "NormalVacationTypeName",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        {
+                            "data": "VacationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+
+                                if ('@Model.HasUpdatingAccess' == 'True') {
+                                    Url = 'OpenVacationToCreateAction(' + data + ');';
+                                    return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                                }
+                                else
+                                    return '';
+                            }
+                        },
+                        {
+                            "data": "VacationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+
+                                if ('@Model.HasUpdatingAccess' == 'True') {
+                                    Url = 'OpenEdit(' + data + ');';
+                                    return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-edit" title="' + '@Resources.Globalization.UpdatingText' + '"/></a>'
+                                }
+                                else
+                                    return '';
+                            }
+                        },
+                         {
+                             "data": "HasDetailsWithoutCreation",
+                             "autowidth": false,
+                             "render": function (data, type, row) {
+                                 if (data == true) {
+                                     if ('@Model.HasDeletingAccess' == 'True') {
+                                         Url = 'OpenVacationDetails(' + row.VacationID + ');';
+                                         return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-plus-sign title="' + '@Resources.Globalization.VacationActionsText' + '"/></a>'
+                                     }
+                                     else
+                                         return '';
+                                 }
+                                 else
+                                     return "";
+                             }
+                         }
+                    ]
+                });
+            }
+        });
+    }
+
+    function GetEmployeeCanceledVacations(EmployeeCodeID, VacationTypeID) {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Vacations/GetEmployeeCanceledVacations/")" + EmployeeCodeID + "/" + VacationTypeID,
+            success: function (result) {
+                $("#tblCanceledVacations").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": true,
+                    "order": [[1, "desc"]],
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "VacationID",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "VacationStartDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "VacationPeriod",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "VacationEndDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "WorkDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "IsCanceled",
+                            "autowidth": false,
+                            "render": RenderCheckBox
+                        },
+                        {
+                            "data": "CreatedBy",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "CreatedDate",
+                            "autowidth": false,
+                            "render": RenderDateTime
+                        },
+                        {
+                            "data": "VacationID",
+                            "autowidth": false,
+                            "render": function (data, type, row) {
+
+                                if ('@Model.HasUpdatingAccess' == 'True') {
+                                    Url = 'OpenVacationToCreateAction(' + data + ');';
+                                    return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                                }
+                                else
+                                    return '';
+
+                            }
+                        },
+                         {
+                             "data": "HasDetailsWithoutCreation",
+                             "autowidth": false,
+                             "render": function (data, type, row) {
+                                 if (data == true) {
+                                     if ('@Model.HasDeletingAccess' == 'True') {
+                                         Url = 'OpenVacationDetails(' + row.VacationID + ');';
+                                         return '<a onclick="' + Url + '"><span Class="glyphicon glyphicon-plus-sign title="' + '@Resources.Globalization.VacationActionsText' + '"/></a>'
+                                     }
+                                     else
+                                         return '';
+                                 }
+                                 else
+                                     return "";
+                             }
+                         }
+                    ]
+                });
+            }
+        });
+    }
+
+    function GetVacationsType(GenderID) {
+
+        if (GenderID != 'NULL')
+            GenderID = GenderID;
+        else
+            GenderID = '@Convert.ToInt16(@GendersEnum.Male)';
+
+        $.ajax({
+            type: "POST"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/Vacations/GetVacationsType/" + GenderID
+            , success: function (d) {
+                $("#ddlVacationTypes").html("");
+                var VacationsTypes = d.data;
+                $.each(VacationsTypes, function (i, data) {
+                    $("#ddlVacationTypes").append($('<option></option>').val(data.VacationTypeID).html(data.VacationTypeName));
+                    $('.divBalance').hide();
+                    $('#divNormalBalance').show();
+                    ResetVacationBalance();
+                });
+                insertSelectionOptionToDDL('ddlVacationTypes');
+                $('#ddlVacationActions').val('@Convert.ToInt32(VacationsActionsEnum.Add)');
+                $('#tblVacation').hide();
+                $('#tblEmployeeVacations').hide();
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function BindGender(EmployeeCodeID) {
+
+        $.ajax({
+            type: "POST"
+       , dataType: "json"
+       , contentType: "application/json; charset=utf-8"
+       , url: "/Employees/GetByEmployeeCodeID"
+       , data: "{ 'id' : '" + EmployeeCodeID + "'}"
+       , success: function (d) {
+           $("#hdnFldEmployeeGenderID").val(d.data.Employee.Gender != null ? d.data.Employee.Gender.GenderID : 'NULL');
+           GetVacationsType($("#hdnFldEmployeeGenderID").val());
+       }
+       , error: function (xhr, status, error) {
+           alert(error.message);
+       }
+        });
+    }
+
+    function Reset() {
+        $("#txtVacationStartDate").val('');
+        $("#txtVacationEndDate").val('');
+        $("#txtVacationPeriod").val('');
+        $("#txtWorkDate").val('');
+        $("#txtNotes").val('');
+        $('#ddlVacationTypes').val(0);
+        $('#ddlNormalVacationTypeID').val('');
+        ResetVacationBalance();
+        ResetSportsVacationType();
+        ResetDate(); // declared in _UmAlquraCalender.cshtml partial view
+    }
+
+    function OkFunction() {
+
+        //console.log('VacationDetailID', VacationDetailID);
+
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Vacations/PrintVacationByVacationDetailsID/")' + VacationDetailID);
+        ShowModal("#divReportModal");
+    }
+</script>
+
+<p style="font-size:larger">@Resources.Globalization.VacationsText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.VacationsDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.Vacations })
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "Vacations", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }, new { id = "frmVacation" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+            <br />
+            <table class="table table-responsive table-striped">
+                <tr>
+                    <td class="col-md-6">
+                        @Html.LabelFor(model => model.VacationType, new { @class = "control-label" })
+                    </td>
+                    <td class="col-md-6">
+                        @Html.LabelFor(model => model.VacationAction, new { @class = "control-label" })
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-6">
+                        @Html.DropDownListFor(model => model.VacationType.VacationTypeID, new SelectList(new HCMBLL.VacationsTypesBLL().GetVacationsTypes(Convert.ToInt16(GendersEnum.Male)), "VacationTypeID", "VacationTypeName"), new { @id = "ddlVacationTypes", @style = "width:100%" })
+                    </td>
+                    <td class="col-md-6">
+                        @Html.DropDownListFor(model => model.VacationAction.VacationActionID,
+                     new SelectList(new HCMBLL.VacationsActionsBLL().GetVacationsActions((PSADTO.AuthenticationResult)Session["Authentication"]), "VacationActionID", "VacationActionName"), new { @id = "ddlVacationActions", @style = "width:100%" })
+                    </td>
+                </tr>
+            </table>
+
+            @Html.Partial("~/Views/Vacations/_Vacation.cshtml", @Model)
+        }
+
+        <table id="tblEmployeeVacations" class="table table-responsive table-striped" style="width:100%" hidden>
+            <tbody>
+                <tr>
+                    <td>
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#TabValidVacations" data-toggle="tab">@Resources.Globalization.ValidVacationsText</a>
+                            </li>
+                            <li>
+                                <a href="#TabFinishedVacations" data-toggle="tab">@Resources.Globalization.FinishedVacationsText</a>
+                            </li>
+                            <li>
+                                <a href="#TabCanceledVacations" data-toggle="tab">@Resources.Globalization.CanceledVacationsText</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content clearfix">
+                            <div id="TabValidVacations" class="tab-pane active padding-5">
+                                <div id="divValidVacations">
+                                    <table id="tblValidVacations" class="table table-responsive table-hover" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <td>
+                                                    @Resources.Globalization.SequenceNoText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.VacationStartDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.VacationPeriodText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.VacationEndDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.WorkDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.CreatedByText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.CreatedDateText
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="TabFinishedVacations" class="tab-pane padding-5">
+                                <div id="divFinishedVacations">
+                                    <table id="tblFinishedVacations" class="table table-responsive table-hover" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <td>
+                                                    @Resources.Globalization.SequenceNoText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.VacationStartDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.VacationPeriodText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.VacationEndDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.WorkDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.NormalVacationTypeText 
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.CreatedByText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.CreatedDateText
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="TabCanceledVacations" class="tab-pane padding-5">
+                                <div id="divCanceledVacations">
+                                    <table id="tblCanceledVacations" class="table table-responsive table-hover" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <td>
+                                                    @Resources.Globalization.SequenceNoText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.VacationStartDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.VacationPeriodText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.VacationEndDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.WorkDateText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.IsVacationCanceledText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.CreatedByText
+                                                </td>
+                                                <td>
+                                                    @Resources.Globalization.CreatedDateText
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="divVacationDetailsModal">
+    <div class="modal-dialog" style="width:1100px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                </div>
+            </div>
+            <div class="modal-body">
+                <iframe id="iframeContent" style="width:100%;height:550px;border:none;"></iframe>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

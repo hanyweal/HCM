@@ -1,0 +1,95 @@
+﻿
+@{
+    ViewBag.Title = @Resources.Globalization.AllowanceText;
+}
+
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+
+<script>
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }
+
+        $("#tblAllowances").DataTable({
+            //"destroy":true,
+               dom: 'Bfrtip',
+            "ajax": {
+                "url": "/Allowances/GetAllowances",
+                "type": "get",
+                "datatype": "json"
+            },
+             "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "AllowanceName",
+                    "autowidth": true
+                },
+                {
+                    "data": "AllowanceAmountType.AllowanceAmountTypeName",
+                    "autowidth": true
+                },    
+                {
+                    "data": "AllowanceCalculationType.AllowanceCalculationTypeName",
+                    "autowidth": true
+                },                
+                {
+                    "data": "AllowanceAmount",
+                    "autowidth": true
+                },
+                {
+                    "data": "IsActive",
+                    "autowidth": true,
+                    "render": RenderCheckBox
+                },
+                {
+                    "data": "AllowanceID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "Allowances")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" /></a>'
+                    }
+                },
+                {
+                    "data": "AllowanceID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "Allowances")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                    }
+                }, 
+            ]
+        });
+    });
+     
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchAllowancesDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblAllowances" class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.AllowanceNameText</td>
+                    <td>@Resources.Globalization.AllowanceAmountTypeText</td>
+                    <td>@Resources.Globalization.AllowanceCalculationTypeText</td>
+                    <td>@Resources.Globalization.AllowanceAmountText</td>
+                    <td>@Resources.Globalization.IsActiveText</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

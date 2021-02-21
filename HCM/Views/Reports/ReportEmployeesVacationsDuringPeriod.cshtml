@@ -1,0 +1,179 @@
+﻿@model HCM.Models.ReportEmployeesVacationsDuringPeriodViewModel
+@using HCM.Classes.Enums
+@using HCMBLL
+@using System.Configuration
+
+@{
+    ViewBag.Title = @Resources.Globalization.ReportEmployeesVacationsDuringPeriodText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <script>
+
+    $(document).ready(function () {
+        insertSelectionOptionToDDL('ddlVacationsTypes');
+         @*$("#ExportExcelButton").confirm({
+            animation: 'zoom',
+            content: '@Resources.Globalization.ConfirmMessageForPrintActiveEmployeesWithFullDataText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $.ajax({
+                            type: "GET",
+                            contentType: "application/json;",
+                            url: "/Reports/ExportReportEmployeesVacationsDuringPeriod",
+                            success: function (response) {
+                                var url = "/WebForms/Reports/FileDownload.aspx?fileName=" + response.DownLoadFile;
+                                window.location.href = url;
+                            },
+                            error: function (xhr, status, error) {
+
+                            }
+                        });},
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });*@
+
+    });
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+        function Print(data) {
+
+            //alert(returnData.data[0].OverTimePeriod);
+            //var data = returnData.data;
+
+            $("#tblOverTimes").DataTable({
+                dom: 'Bfrtip',//to Export to Excel
+             "destroy": true,
+             "paging": true,
+             "searching": false,
+             "ordering": true,
+                "aaData": data.data,
+              //to Export to Excel
+            "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+                },
+                //to Export to Excel
+                "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                     "autowidth": true,
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true,
+                },
+                {
+                    "data": "EmployeeIDNo",
+                    "autowidth": true,
+                },
+                {
+                    "data": "OrganizationName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "VacationStartDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "VacationEndDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "VacationPeriod",
+                    "autowidth": true,
+                },
+                {
+                    "data": "VacationTypeName",
+                    "autowidth": true
+                },
+            ]
+        });
+    }
+    </script>
+
+<div class="panel panel-default" style="padding:0">
+    <div class="panel-heading">
+        @Resources.Globalization.ReportEmployeesVacationsDuringPeriodText
+    </div>
+    @*<input id="ExportExcelButton" type="button" style="float:left" value="@Resources.Globalization.ExportToExcelText" />*@
+    <div class="panel-body">
+        @using (Ajax.BeginForm("ReportEmployeesVacationsDuringPeriod", "Reports", new AjaxOptions()
+        {
+            OnSuccess = "Print",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.ValidationSummary()
+            <div class="form-group">
+                <table class="table table-responsive table-condensed table-striped">
+                    <tbody>
+                        <tr>
+                            <td class="col-md-3">@Html.LabelFor(model => model.VacationTypeID, new { @class = "control-label" })</td>
+                            <td class="col-md-3">&nbsp;</td>
+                            <td class="col-md-3">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-3">
+                                @Html.DropDownListFor(model => model.VacationTypeID, new SelectList(new HCMBLL.VacationsTypesBLL().GetVacationsTypes(), "VacationTypeID", "VacationTypeName"), new { @id = "ddlVacationsTypes", @style = "width:34%" })
+                            </td>
+                            <td class="col-md-3"></td>
+                            <td class="col-md-3"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.StartDate, new { @class = "control-label" })
+                            </td>
+                            <td>
+                                @Html.LabelFor(model => model.EndDate, new { @class = "control-label" })
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control TxtHijriPicker", @id = "txtStartDate", @Value = Model.StartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) })
+                                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control TxtHijriPicker", @id = "txtEndDate", @Value = Model.EndDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) })
+                                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                            </td>
+                            <td>
+                                <input type="submit" value='@Resources.Globalization.ReportViewText' class="btn btn-primary">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <table id="tblOverTimes" class="table table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                        <td>@Resources.Globalization.EmployeeNameArText</td>
+                        <td>@Resources.Globalization.EmployeeIDNoText</td>
+                        <td>@Resources.Globalization.OrganizationNameText</td>
+                        <td>@Resources.Globalization.VacationStartDateText</td>
+                        <td>@Resources.Globalization.VacationEndDateText</td>
+                        <td>@Resources.Globalization.PeriodText</td>
+                        <td>@Resources.Globalization.VacationTypeText</td>
+                    </tr>
+                </thead>
+            </table>
+        }
+    </div>
+</div>
+

@@ -1,0 +1,261 @@
+﻿@model HCM.Models.JobsCategoriesViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = @Resources.Globalization.AddNewJobCategoryText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+    var JobCategoryID = 0;
+    $(document).ready(function () {
+        GetJobsGroups();
+        //ResetQualificationsDDL();
+        //ResetGeneralSpecializationsDDL();
+    });
+
+    function OnSuccess(data) {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "")');
+        JobCategoryID = data.JobCategoryID;
+        GetJobsGroups();
+
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function GetJobsGroups() {
+        var JobGeneralGroupID = $("#ddlJobsGeneralGroups").val();
+        $.ajax({
+            type: "get"
+            , dataType: "json"
+            , url: "/Jobs/GetJobsGroupsByJobGeneralGroupID/" + JobGeneralGroupID
+            , success: function (d) {
+                $("#ddlJobsGroups").html("");
+                var JobsGroups = d.data;
+                $.each(JobsGroups, function (i, jobGroup) {
+                    $("#ddlJobsGroups").append($('<option></option>').val(jobGroup.JobGroupID).html(jobGroup.JobGroupName));
+                });
+
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+    function Reset() {
+        //$("#ddlQualificationDegrees").val("");
+        //ResetQualificationsDDL();
+        //ResetGeneralSpecializationsDDL();
+        $('#txtJobCategoryNo').val('');
+        $("#ddlJobsGeneralGroups").val(1);
+        $('#ddlJobsGroups').val(1);
+        $('#txtJobCategoryName').val('');
+    }
+    function validatenumber(event) {
+        //alert(event.keyCode);
+        var key = window.event ? event.keyCode : event.which;
+        if (event.keyCode == 8 || event.keyCode == 46) {
+            return true;
+        }
+        else if (key < 48 || key > 57) {          // disabled paste option
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+
+    
+
+    @* function BindQualificationsDDL() {
+        ResetQualificationsDDL();
+        var QualificationDegreeID = $("#ddlQualificationDegrees").val();
+        GetQualifications(QualificationDegreeID);
+    }
+
+    function BindGeneralSpecializationsDDL() {
+        ResetGeneralSpecializationsDDL();
+        var QualificationID = $("#ddlQualifications").val();
+        GetGeneralSpecializations(QualificationID);
+    }
+
+
+   function GetQualifications(QualificationDegreeID) {
+        if (QualificationDegreeID != null && QualificationDegreeID != 0) {
+            $.ajax({
+                type: "get"
+                , dataType: "json"
+                , url: "/Qualifications/GetQualifications/" + QualificationDegreeID
+                , success: function (d) {
+                    ResetQualificationsDDL();
+                    ResetGeneralSpecializationsDDL();
+                    var Qualifications = d.data;
+                    $.each(Qualifications, function (i, Qualification) {
+                        $("#ddlQualifications").append($('<option></option>').val(Qualification.QualificationID).html(Qualification.QualificationName));
+                    });
+                    BindGeneralSpecializationsDDL();
+                }
+                , error: function (xhr, status, error) {
+                    alert(error.message);
+                }
+            });
+        }
+        else {
+            BindGeneralSpecializationsDDL();
+        }
+    }
+
+
+    function GetGeneralSpecializations(QualificationID) {
+        if (QualificationID != null && QualificationID != 0) {
+            $.ajax({
+                type: "get"
+                , dataType: "json"
+                , url: "/Qualifications/GetGeneralSpecializations/" + QualificationID
+                , success: function (d) {
+                     ResetGeneralSpecializationsDDL();
+                    var GeneralSpecializations = d.data;
+                    $.each(GeneralSpecializations, function (i, GeneralSpecialization) {
+                        $("#ddlGeneralSpecializations").append($('<option></option>').val(GeneralSpecialization.GeneralSpecializationID).html(GeneralSpecialization.GeneralSpecializationName));
+                    });
+                }
+                , error: function (xhr, status, error) {
+                    alert(error.message);
+                }
+            });
+        }
+    }
+
+    function ResetQualificationsDDL() {
+        $('#ddlQualifications').empty();
+        $("#ddlQualifications").append($('<option></option>').val(0).html('@Resources.Globalization.SelectFromDropDownText'));
+    }
+
+    function ResetGeneralSpecializationsDDL() {
+        $('#ddlGeneralSpecializations').empty();
+        $("#ddlGeneralSpecializations").append($('<option></option>').val(0).html('@Resources.Globalization.SelectFromDropDownText'));
+    }*@
+</script>
+<p style="font-size:larger">@Resources.Globalization.AddNewJobCategoryText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewJobCategoryDescText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("CreateJobCategory", "Jobs", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.JobCategoryBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobGroupID, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobGeneralGroup, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobCategoryName, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.JobGeneralGroup.JobGeneralGroupID, new SelectList(new HCMBLL.JobsGeneralGroupsBLL().GetJobsGeneralGroups(), "JobGeneralGroupID", "JobGeneralGroupName"), new { @id = "ddlJobsGeneralGroups", @style = "width:100%", @onchange = "GetJobsGroups()" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.JobGroupID, new SelectList(new HCMBLL.JobsGroupsBLL().GetJobsGroups(), "JobGroupID", "JobGroupName"), new { @id = "ddlJobsGroups", @style = "width:100%" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.JobCategoryName, new
+                       {
+                            @class = "form-control",
+                            @id = "txtJobCategoryName",
+                            @onkeypress = "return(AcceptArabicKeyPress(event))"
+                            //@onkeydown = "return(ArbKeyPressOrder(this,event))"
+                       })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobCategoryNo, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.JobCategoryNo, new { @class = "form-control", @id = "txtJobCategoryNo", @maxlength = "5", @onkeypress = "return(AcceptDigitalKeyPress(event))" })
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                        <td class="col-md-4">
+                        </td>
+                    </tr>
+
+                    @*<tr>
+                        <td class="col-md-12" colspan="3">
+                            @Resources.Globalization.MinimumJobCategoryQualificationText
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.QualificationDegree, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.Qualification, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.GeneralSpecialization, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+
+                        <td class="col-md-4">@Html.DropDownListFor(model => model.QualificationDegree.QualificationDegreeID, new SelectList(new HCMBLL.QualificationsDegreesBLL().GetQualificationsDegrees(), "QualificationDegreeID", "QualificationDegreeName"), @Resources.Globalization.SelectFromDropDownText, new { @id = "ddlQualificationDegrees", @style = "width:100%", @onchange = "BindQualificationsDDL()" })</td>
+                        <td class="col-md-4">@Html.DropDownListFor(model => model.Qualification.QualificationID, new SelectList(string.Empty, "QualificationID", "QualificationName"), new { @id = "ddlQualifications", @style = "width:100%", @onchange = "BindGeneralSpecializationsDDL()" })</td>
+                        <td class="col-md-4">@Html.DropDownListFor(model => model.GeneralSpecialization.GeneralSpecializationID, new SelectList(string.Empty, "GeneralSpecializationID", "GeneralSpecializationName"), new { @id = "ddlGeneralSpecializations", @style = "width:100%" })</td>
+                    </tr>*@
+                </tbody>
+            </table>
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Jobs"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+

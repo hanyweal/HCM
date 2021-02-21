@@ -1,0 +1,363 @@
+﻿@model HCM.Models.EmployeesViewModel
+@using HCM.Classes.Enums;
+
+<script type="text/javascript">
+
+    var extentedFuncForEmployeePopup;
+    var extentedFuncForEmployeePopupReset;
+    var errorFunc;
+
+    $(document).ready(function () {
+
+        //$(document).on('show.bs.modal', '.modal', function () {
+        //    var zIndex = 1040 + (10 * $('.modal:visible').length);
+        //    $(this).css('z-index', zIndex);
+        //    setTimeout(function () {
+        //        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+        //    }, 0);
+        //});
+
+        $(document).on('show.bs.modal', '.modal', function () {
+            $('.modal:visible').length && $(document.body).addClass('modal-open');
+        });
+
+        BindEmployees@(Model.PartialName)();
+        OpenEmployeesPopup@(Model.PartialName)();
+        if ('@Model.IsShowAllFields' == 'False') {
+            $('.ShowingFields').hide();
+        }
+
+        $("#txtEmployeeCodeNo@(Model.PartialName)").keydown(function (e) {
+            var code = e.keyCode || e.which;
+            //console.log('onchange',code);
+            if (code === 13) { // user pressed on enterkey
+                e.preventDefault();
+                GetEmployee();
+            }
+        });
+
+        $("#txtEmployeeCodeNo@(Model.PartialName)").change(function () {
+            GetEmployee();
+        });
+
+        $("#OpenEmployeesPopup@(Model.PartialName)").click(function () {
+            ShowModal("#divEmployeesModal@(Model.PartialName)");
+        });
+    });
+
+    function OpenEmployeesPopup@(Model.PartialName)() {
+        $("#OpenEmployeesPopup@(Model.PartialName)").click(function () {
+            ShowModal("#divEmployeesModal@(Model.PartialName)");
+        });
+    }
+
+    function GetEmployee() {
+        var val = $("#txtEmployeeCodeNo@(Model.PartialName)").val();
+        if (val != '') {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                url: "/Employees/GetEmployeeByEmployeeCodeNo/" + val,
+                success: function (d) {
+                    if (d.EmployeeCodeID) {
+                        closeEmployeesPopup@(Model.PartialName)(d.EmployeeCodeID);
+                    }
+                    else {
+                        ResetEmployee@(Model.PartialName)();
+                        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Notice, Globals.Utilities.RemoveSpace(@Resources.Globalization.NoEmployeeFoundText))');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert(error.message);
+                }
+            });
+        }
+        else {
+            ResetEmployee@(Model.PartialName)();
+        }
+    }
+
+    function BindEmployees@(Model.PartialName)() {
+        var tblEmployees = $("#tblEmployees@(Model.PartialName)").DataTable({
+            "ajax": {
+                "url": "/Employees/GetEmployeesCodes",
+                "type": "get",
+                "datatype": "json",
+                "data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+            "serverSide": true,
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeIDNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCodeID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        return '<a onClick="closeEmployeesPopup@(Model.PartialName)(' + data + ')"><span class="glyphicon glyphicon-thumbs-up" /></a>'
+                    }
+                },
+            ]
+        });
+    }
+
+    function ResetEmployee@(Model.PartialName)() {
+        $("#txtEmployeeCodeNo@(Model.PartialName)").val('');
+        $("#hdnFldEmployeeCodeID@(Model.PartialName)").val('');
+        $("#txtEmployeeNameAr@(Model.PartialName)").val('');
+        $("#txtEmployeeNameEn@(Model.PartialName)").val('');
+        $("#txtEmployeeIDNo@(Model.PartialName)").val('');
+        $("#txtEmployeeJobName@(Model.PartialName)").val('');
+        $("#txtEmployeeRankCategoryName@(Model.PartialName)").val('');
+        $("#txtEmployeeRankName@(Model.PartialName)").val('');
+        $("#txtEmployeeJobNo@(Model.PartialName)").val('');
+        $("#txtEmployeeOrganizationName@(Model.PartialName)").val('');
+        $("#txtEmployeeCurrentQualification@(Model.PartialName)").val('');
+        $("#txtHiringDate@(Model.PartialName)").val('');
+        $("#txtCurrentJobJoinDate@(Model.PartialName)").val('');
+        $("#hdnFldEmployeeCareerHistoryID@(Model.PartialName)").val('');
+        $("#hdnFldEmployeeGenderID").val('');
+        $("#txtEmployeeBirthDate@(Model.PartialName)").val('');
+        $("#txtEmployeeCurrentOrganization@(Model.PartialName)").val('');
+
+        if (typeof extentedFuncForEmployeePopupReset !== 'undefined' && $.isFunction(window[extentedFuncForEmployeePopupReset])) {
+            window[extentedFuncForEmployeePopupReset]();
+        }
+    }
+
+    function GetEmployeeData@(Model.PartialName)(EmployeeCodeID) {
+
+        $.ajax({
+            type: "POST"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/Employees/GetByEmployeeCodeID"
+            , data: "{ 'id' : '" + EmployeeCodeID + "'}"
+            , success: function (d) {
+                DestroyModal("#divEmployeesModal@(Model.PartialName)");
+
+                $("#hdnFldEmployeeCodeID@(Model.PartialName)").val(d.data.EmployeeCodeID);
+                $("#txtEmployeeCodeNo@(Model.PartialName)").val(d.data.EmployeeCodeNo);
+                $("#txtEmployeeNameAr@(Model.PartialName)").val(d.data.Employee.EmployeeNameAr);
+                $("#txtEmployeeNameEn@(Model.PartialName)").val(d.data.Employee.EmployeeNameEn);
+                $("#txtEmployeeIDNo@(Model.PartialName)").val(d.data.Employee.EmployeeIDNo);
+                $("#txtEmployeeJobNo@(Model.PartialName)").val(d.data.EmployeeCurrentJob != null ? d.data.EmployeeCurrentJob.OrganizationJob.JobNo : null);
+                $("#txtEmployeeJobName@(Model.PartialName)").val(d.data.EmployeeCurrentJob != null ? d.data.EmployeeCurrentJob.OrganizationJob.Job.JobName : null);
+                $("#txtEmployeeOrganizationName@(Model.PartialName)").val(d.data.EmployeeCurrentJob != null ? d.data.EmployeeCurrentJob.OrganizationJob.OrganizationStructure.OrganizationName : null);
+                $("#txtEmployeeRankCategoryName@(Model.PartialName)").val(d.data.EmployeeCurrentJob != null ? d.data.EmployeeCurrentJob.OrganizationJob.Rank.RankCategory.RankCategoryName : null);
+                $("#txtEmployeeRankName@(Model.PartialName)").val(d.data.EmployeeCurrentJob != null ? d.data.EmployeeCurrentJob.OrganizationJob.Rank.RankName : null);
+                $("#txtHiringDate@(Model.PartialName)").val(d.data.HiringRecord != null ? RenderDate(d.data.HiringRecord.JoinDate) : null);
+                $("#txtCurrentJobJoinDate@(Model.PartialName)").val(d.data.EmployeeCurrentJob != null ? RenderDate(d.data.EmployeeCurrentJob.JoinDate) : null);
+                $("#hdnFldEmployeeCareerHistoryID@(Model.PartialName)").val(d.data.EmployeeCurrentJob != null ? d.data.EmployeeCurrentJob.EmployeeCareerHistoryID : null);
+                $("#hdnFldEmployeeGenderID").val(d.data.Employee.Gender != null ? d.data.Employee.Gender.GenderID : 'NULL');
+                $("#txtEmployeeBirthDate@(Model.PartialName)").val(d.data.Employee.EmployeeBirthDate != null ? RenderDate(d.data.Employee.EmployeeBirthDate) : null);
+
+                GetCurrentActualOrgAndActualJob(d.data != null ? d.data.EmployeeCodeNo : null);
+
+                if (typeof extentedFuncForEmployeePopup !== 'undefined' && $.isFunction(window[extentedFuncForEmployeePopup])) {
+                    window[extentedFuncForEmployeePopup]();
+                }
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function closeEmployeesPopup@(Model.PartialName)(EmployeeCodeID) {
+        GetEmployeeData@(Model.PartialName)(EmployeeCodeID);
+    }
+
+    function SetEmployeePopupToReadonly@(Model.PartialName)() {
+        $('#txtEmployeeCodeNo@(Model.PartialName)').attr('disabled', 'disabled');
+        $('#OpenEmployeesPopup@(Model.PartialName)').hide();
+    }
+
+    function GetCurrentActualOrgAndActualJob(EmployeeCodeNo) {
+
+        $("#txtEmployeeCurrentOrganization@(Model.PartialName)").val('');
+        if (EmployeeCodeNo) {
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                url: "/Employees/GetCurrentActualOrgAndActualJob/" + EmployeeCodeNo,
+                success: function (d) {
+                    $("#txtEmployeeCurrentOrganization@(Model.PartialName)").val(d.data?.Organization?.FullOrganizationName);
+                },
+                error: function (xhr, status, error) {
+                    alert(error.message);
+                }
+            });
+        }
+    }
+
+    function DestroyEmployeeModal@(Model.PartialName)(){        
+        $("#divEmployeesModal@(Model.PartialName)").modal('hide');
+    }
+</script>
+
+<table class="table table-responsive table-condensed table-striped">
+    <tr>
+        <td>
+            @Html.LabelFor(model => model.EmployeeCodeNo, new { @class = "control-label" })
+        </td>
+        <td>
+            @Html.LabelFor(model => model.EmployeeNameAr, new { @class = "control-label" })
+        </td>
+        <td>
+            @Html.LabelFor(model => model.EmployeeNameEn, new { @class = "control-label" })
+        </td>
+        <td class="col-md-3">
+            @Html.LabelFor(model => model.EmployeeIDNo, new { @class = "control-label" })
+        </td>
+    </tr>
+    <tr>
+        <td class="col-md-3">
+            <div id="divEmployeesSearch@(Model.PartialName)" class="input-group">
+                @Html.TextBoxFor(model => model.EmployeeCodeNo, new { @class = "form-control", @id = "txtEmployeeCodeNo" + @Model.PartialName })
+                <span id="OpenEmployeesPopup@(Model.PartialName)" class="input-group-addon clickable" title="@Resources.Globalization.SearchAboutEmployeeTooltip">
+                    <i id="iEmployeesSearch" class="glyphicon glyphicon-search"></i>
+                </span>
+            </div>
+            @*@Html.TextBoxFor(model => model.EmployeeCodeNo, new { @class = "form-control hide", @id = "txtEmployeeCodeNoReadonly" + @Model.PartialName , @readonly="readonly" })*@
+            @Html.HiddenFor(model => model.EmployeeCodeID, new { @id = "hdnFldEmployeeCodeID" + @Model.PartialName })
+            @Html.HiddenFor(model => model.GenderID, new { @id = "hdnFldEmployeeGenderID" })
+            @Html.HiddenFor(model => model.EmployeeCareerHistoryID, new { @id = "hdnFldEmployeeCareerHistoryID" + @Model.PartialName })
+            @Html.ValidationMessageFor(model => model.EmployeeCodeNo, "", new { @class = "text-danger" })
+        </td>
+        <td class="col-md-3">
+            @Html.TextBoxFor(model => model.EmployeeNameAr, new { @class = "form-control", @id = "txtEmployeeNameAr" + @Model.PartialName, @readonly = "readonly" })
+        </td>
+        <td class="col-md-3">
+            @Html.TextBoxFor(model => model.EmployeeNameEn, new { @class = "form-control", @id = "txtEmployeeNameEn" + @Model.PartialName, @readonly = "readonly" })
+        </td>
+        <td class="col-md-3">
+            @Html.TextBoxFor(model => model.EmployeeIDNo, new { @class = "form-control", @id = "txtEmployeeIDNo" + @Model.PartialName, @readonly = "readonly" })
+        </td>
+    </tr>
+
+    <tr class="ShowingFields">
+        <td class="col-md-3">
+            @Html.LabelFor(model => model.EmployeeJobNo, new { @class = "control-label" })
+        </td>
+        <td class="col-md-3">
+            @Html.LabelFor(model => model.EmployeeJobName, new { @class = "control-label" })
+        </td>
+        <td class="col-md-3">
+            @Html.LabelFor(model => model.EmployeeOrganizationName, new { @class = "control-label" })
+        </td>
+        <td class="col-md-3">
+            @Html.LabelFor(model => model.CurrentJobJoinDate, new { @class = "control-label" })
+        </td>
+    </tr>
+    <tr class="ShowingFields">
+        <td class="col-md-3">
+            @Html.TextBoxFor(model => model.EmployeeJobNo, new { @class = "form-control", @id = "txtEmployeeJobNo" + @Model.PartialName, @readonly = "readonly" })
+        </td>
+        <td class="col-md-3">
+            @Html.TextBoxFor(model => model.EmployeeJobName, new { @class = "form-control", @id = "txtEmployeeJobName" + @Model.PartialName, @readonly = "readonly" })
+        </td>
+        <td class="col-md-3">
+            @Html.TextBoxFor(model => model.EmployeeOrganizationName, new { @class = "form-control", @id = "txtEmployeeOrganizationName" + @Model.PartialName, @readonly = "readonly" })
+        </td>
+        <td class="col-md-3">
+            @Html.TextBoxFor(model => model.CurrentJobJoinDate, new { @class = "form-control", @id = "txtCurrentJobJoinDate" + @Model.PartialName, @readonly = "readonly", @Value = Model.CurrentJobJoinDate.HasValue ? Model.CurrentJobJoinDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null })
+        </td>
+    </tr>
+
+    <tr class="ShowingFields">
+        <td class="col-md-3">
+            @Html.LabelFor(model => model.EmployeeBirthDate, new { @class = "control-label" })
+        </td>
+        <td class="col-md-3">
+            @Html.LabelFor(model => model.EmployeeRankCategoryName, new { @class = "control-label" })
+        </td>
+        <td class="col-md-3">
+            @Html.LabelFor(model => model.EmployeeRankName, new { @class = "control-label" })
+        </td>
+        <td class="col-md-3">
+            @Html.LabelFor(model => model.HiringDate, new { @class = "control-label" })
+        </td>
+    </tr>
+    <tr class="ShowingFields">
+        <td class="col-md-3">
+            @Html.TextBoxFor(model => model.EmployeeBirthDate, new { @class = "form-control", @id = "txtEmployeeBirthDate" + @Model.PartialName, @readonly = "readonly", @Value = Model.EmployeeBirthDate.HasValue ? Model.EmployeeBirthDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null })
+        </td>
+        <td class="col-md-3">
+            @Html.TextBoxFor(model => model.EmployeeRankCategoryName, new { @class = "form-control", @id = "txtEmployeeRankCategoryName" + @Model.PartialName, @readonly = "readonly" })
+        </td>
+        <td class="col-md-3">
+            @Html.TextBoxFor(model => model.EmployeeRankName, new { @class = "form-control", @id = "txtEmployeeRankName" + @Model.PartialName, @readonly = "readonly" })
+        </td>
+        <td class="col-md-3">
+            @Html.TextBoxFor(model => model.HiringDate, new { @class = "form-control", @id = "txtHiringDate" + @Model.PartialName, @readonly = "readonly", @Value = Model.HiringDate.HasValue ? Model.HiringDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null })
+        </td>
+    </tr>
+
+    <tr class="ShowingFields">
+        <td class="col-md-12" colspan="4">
+            @Html.LabelFor(model => model.EmployeeCurrentOrganization, new { @class = "control-label" })
+        </td>
+    </tr>
+    <tr class="ShowingFields">
+        <td class="col-md-12" colspan="4">
+            @Html.TextBoxFor(model => model.EmployeeCurrentOrganization, new { @class = "form-control", @id = "txtEmployeeCurrentOrganization" + @Model.PartialName, @readonly = "readonly", })
+        </td>
+    </tr>
+</table>
+
+<div class="modal fade" id="divEmployeesModal@(Model.PartialName)">
+    
+    <div class="modal-dialog" style="width:800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.EmployeesListText
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        @*<div class="alert alert-danger" style="padding:6px">
+                            <p>@Resources.Globalization.EmployeeMustBeCreatedFirstText</p>
+                        </div>*@
+                    </div>
+                </div>
+                <table id="tblEmployees@(Model.PartialName)" class="table table-responsive table-hover dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                            <td>@Resources.Globalization.EmployeeNameArText</td>
+                            <td>@Resources.Globalization.EmployeeIDNoText</td>
+                            @*<td>@Resources.Globalization.EmployeeJobNameText</td>*@
+                            <td>@Resources.Globalization.SelectText</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            @*<div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>*@
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" onclick="DestroyEmployeeModal@(Model.PartialName)();">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

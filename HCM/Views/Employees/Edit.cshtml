@@ -1,0 +1,209 @@
+﻿@model HCM.Models.EmployeesViewModel
+@using HCM.Classes.Enums
+@{
+    ViewBag.Title = Resources.Globalization.EditEmployeeText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.EditEmployeeText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EditEmployeeDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                <a id="OpenBusinessConditions">
+
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Edit", "Employees", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.EmployeeID)
+            <table id="tblEmployeeProfile" class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">@Html.LabelFor(c => c.EmployeeIDNo)</td>
+                        <td class="col-md-4">@Html.LabelFor(c => c.EmployeeNameAr)</td>
+                        <td class="col-md-4">@Html.LabelFor(c => c.EmployeeNameEn)</td>@*No EmployeeNameEn Found In ViewModel*@
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(c => c.EmployeeIDNo, new { @class = "form-control", @type = "number" })
+                            @Html.ValidationMessageFor(model => model.EmployeeIDNo, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    @Html.TextBoxFor(c => c.EmployeeNameAr, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    @Html.TextBoxFor(c => c.EmployeeNameEn, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(c => c.EmployeeBirthDate)@*No EmployeeBirthDate Found In ViewModel*@
+                        <td>@Html.LabelFor(c => c.EmployeeBirthPlace)</td>@*No EmployeeBirthPlace Found In ViewModel*@
+                        <td>@Html.LabelFor(c => c.EmployeeMobileNo)</td>@*No EmployeeMobileNo Found In ViewModel*@
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.EmployeeBirthDate, new
+                                                                               {
+                                                                                   @class = "TxtHijriPicker form-control",
+                                                                                   @id = "txtEmployeeBirthDate",
+                                                                                   @readonly = "readonly",
+                                                                                   @Value = Model.EmployeeBirthDate.HasValue ? Model.EmployeeBirthDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                                                                               })
+                            @Html.ValidationMessageFor(model => model.EmployeeBirthDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>@Html.TextBoxFor(c => c.EmployeeBirthPlace, new { @class = "form-control" })</td>
+                        <td>@Html.TextBoxFor(c => c.EmployeeMobileNo, new { @class = "form-control", @readonly = "readonly" })</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(c => c.EmployeePassportNo)</td>@*No EmployeePassportNo Found In ViewModel*@
+                        <td>@Html.LabelFor(c => c.EmployeeEMail)</td>@*No EmployeeEMail Found In ViewModel*@
+                        <td>@Html.LabelFor(c => c.EmployeeIDIssueDate)</td>@*No EmployeeIDIssueDate Found In ViewModel*@
+                    </tr>
+                    <tr>
+                        <td>@Html.TextBoxFor(c => c.EmployeePassportNo, new { @class = "form-control" })</td>
+                        <td>@Html.TextBoxFor(c => c.EmployeeEMail, new { @class = "form-control" })</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.EmployeeIDIssueDate, new
+                                                                                    {
+                                                                                        @class = "TxtHijriPicker form-control",
+                                                                                        @id = "txtEmployeeIDIssueDate",
+                                                                                        @readonly = "readonly",
+                                                                                        @Value = Model.EmployeeIDIssueDate.HasValue ? Model.EmployeeIDIssueDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                                                                                    })
+                            @Html.ValidationMessageFor(model => model.EmployeeIDIssueDate, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(c => c.EmployeePassportSource)</td>@*No EmployeePassportSource Found In ViewModel*@
+                        <td>@Html.LabelFor(c => c.EmployeePassportIssueDate)</td>@*No EmployeePassportIssueDate Found In ViewModel*@
+                        <td>@Html.LabelFor(c => c.EmployeePassportEndDate)</td>@*No EmployeePassportEndDate Found In ViewModel*@
+                    </tr>
+                    <tr>
+                        <td>@Html.TextBoxFor(c => c.EmployeePassportSource, new { @class = "form-control" })</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.EmployeePassportIssueDate, new
+                                                                                        {
+                                                                                            @class = "TxtHijriPicker form-control",
+                                                                                            @id = "txtEmployeePassportIssueDate",
+                                                                                            @readonly = "readonly",
+                                                                                            @Value = Model.EmployeePassportIssueDate.HasValue ? Model.EmployeePassportIssueDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                                                                                        })
+                            @Html.ValidationMessageFor(model => model.EmployeePassportIssueDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.EmployeePassportEndDate, new
+                                                                                        {
+                                                                                            @class = "TxtHijriPicker form-control",
+                                                                                            @id = "txtEmployeePassportEndDate",
+                                                                                            @readonly = "readonly",
+                                                                                            @Value = Model.EmployeePassportEndDate.HasValue ? Model.EmployeePassportEndDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                                                                                        })
+                            @Html.ValidationMessageFor(model => model.EmployeePassportEndDate, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(c => c.EmployeeIDExpiryDate)</td>
+                        <td>@Html.LabelFor(c => c.EmployeeIDIssuePlace)</td>
+                        <td>@Html.LabelFor(c => c.EmployeeIDCopyNo)</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.EmployeeIDExpiryDate, new
+                                                                                       {
+                                                                                           @class = "TxtHijriPicker form-control",
+                                                                                           @id = "txtEmployeeIDExpiryDate",
+                                                                                           @readonly = "readonly",
+                                                                                           @Value = Model.EmployeeIDExpiryDate.HasValue ? Model.EmployeeIDExpiryDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                                                                                       })
+                            @*@Html.ValidationMessageFor(model => model.EmployeeIDExpiryDate, "", new { @class = "text-danger" })*@
+                        </td>
+                        <td>@Html.TextBoxFor(c => c.EmployeeIDIssuePlace, new { @class = "form-control" })</td>
+                        <td>@Html.TextBoxFor(c => c.EmployeeIDCopyNo, new { @class = "form-control", @type = "number", @maxlength = "2" })</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(c => c.MaritalStatus)</td>
+                        <td>@Html.LabelFor(c => c.DependentCount)</td>
+                        <td>@Html.LabelFor(c => c.GenderID)</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(model => model.MaritalStatus.MaritalStatusID, new SelectList(new HCMBLL.MaritalStatusBLL().GetMaritalStatus(), "MaritalStatusID", "MaritalStatusName"), new { @id = "ddlMaritalStatus", @style = "width:100%" })
+                        </td>
+                        <td>@Html.TextBoxFor(c => c.DependentCount, new { @class = "form-control", @type = "number", @maxlength = "2" })</td>
+                        <td>
+                            @Html.DropDownListFor(model => model.GenderID, new SelectList(new HCMBLL.GendersBLL().GetGenders(), "GenderID", "GenderName"), new { @id = "ddlGender", @style = "width:100%" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(c => c.CountryID)</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(model => model.CountryID, new SelectList(new HCMBLL.CountriesBLL().GetCountries(), "CountryID", "CountryName"), new { @id = "ddlCountry", @style = "width:100%" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Employees"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@
+
+
+
+

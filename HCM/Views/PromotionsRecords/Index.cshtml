@@ -1,0 +1,131 @@
+﻿@using HCM.Classes.Enums;
+@{
+    ViewBag.Title = Resources.Globalization.PromotionsRecordsText;
+}
+
+<script>
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            //$("#divAlert").load('@Url.Content("~/Modal/Index/" +  ModalTypes.Failure + "/Error")');
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+        }
+
+        var tabl = $("#tblPromotionsRecords").DataTable({
+            dom: 'Bfrtip',
+            "ajax": {
+                "url": "/PromotionsRecords/GetPromotionsRecords",
+                "type": "get",
+                "datatype": "json",
+            },
+            "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "PromotionRecordNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "PromotionRecordDate",
+                    "autowidth": true,
+                    "render": RenderDate
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobCategoryName",
+                    "autowidth": true
+                },
+                {
+                    "data": "PromotionYear",
+                    "autowidth": true,
+                },
+                {
+                    "data": "PromotionPeriod",
+                    "autowidth": true
+                },
+                {
+                    "data": "PromotionRecordStatusName",
+                    "autowidth": true
+                },
+                {
+                    "data": "TotalJobVacancies",
+                    "autowidth": true
+                },
+                {
+                    "data": "TotalIncludedCandidates",
+                    "autowidth": true
+                },
+                {
+                    "data": "TotalPromotedCandidates",
+                    "autowidth": true
+                },
+                {
+                    "data": "CreatedBy",
+                    "autowidth": false,
+                },
+                {
+                    "data": "CreatedDate",
+                    "autowidth": false,
+                    "render": RenderDateTime
+                },
+                {
+                    "data": "PromotionRecordID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Manage", "PromotionsRecords")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-book"  title="' + '@Resources.Globalization.ManageText' + '"/></a>'
+                    }
+                },
+                @*{
+                    "data": "PromotionRecordID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Details", "PromotionsRecords")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-info-sign" title="' + '@Resources.Globalization.DetailsText' + '"/></a>'
+                    }
+                },*@
+            ]
+        });
+
+        @*$(".dt-buttons").addClass("text text-left");
+        $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');*@
+    });
+</script>
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.SearchPromotionsRecordsDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblPromotionsRecords" class="table table-responsive table-hover dataTable">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.PromotionRecordNoText</td>
+                    <td>@Resources.Globalization.PromotionRecordDateText</td>
+                    <td>@Resources.Globalization.RankNameText</td>
+                    <td>@Resources.Globalization.JobCategoryNameText</td>
+                    <td>@Resources.Globalization.YearText</td>
+                    <td>@Resources.Globalization.PromotionRecordPeriodNameText</td>
+                    <td>@Resources.Globalization.PromotionRecordStatusNameText</td>
+                    <td>@Resources.Globalization.TotalJobVacanciesText</td>
+                    <td>@Resources.Globalization.TotalIncludedCandidatesText</td>
+                    <td>@Resources.Globalization.TotalPromotedCandidatesText</td>
+                    <td>@Resources.Globalization.CreatedByText</td>
+                    <td>@Resources.Globalization.CreatedDateText</td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+

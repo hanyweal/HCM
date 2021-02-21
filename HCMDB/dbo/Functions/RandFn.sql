@@ -1,0 +1,10 @@
+﻿
+CREATE FUNCTION RandFn()
+RETURNS DECIMAL(18,18)
+AS
+BEGIN
+DECLARE @rndValue DECIMAL(18,18)
+SELECT @rndValue = rndResult
+FROM rndView
+RETURN @rndValue
+END

@@ -1,0 +1,138 @@
+﻿@model HCM.Models.EmployeesUpdateViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.EditEmployeeNameText;
+}
+
+<script type="text/javascript">
+
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+    function Reset() {
+        ResetEmployee();
+        $('.form-control').val('');
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.EditEmployeeNameText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-12">
+                @Resources.Globalization.EditEmployeeNameDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("EditEmployeeName", "Employees", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.NewFirstNameAr, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.NewMiddleNameAr, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.NewGrandFatherNameAr, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.NewLastNameAr, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.NewFirstNameAr, new { @class = "form-control" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.NewMiddleNameAr, new { @class = "form-control" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.NewGrandFatherNameAr, new { @class = "form-control" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.NewLastNameAr, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.NewFirstNameEn, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.NewMiddleNameEn, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.NewGrandFatherNameEn, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.NewLastNameEn, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.NewFirstNameEn, new { @class = "form-control" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.NewMiddleNameEn, new { @class = "form-control" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.NewGrandFatherNameEn, new { @class = "form-control" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.NewLastNameEn, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Employees"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@
+

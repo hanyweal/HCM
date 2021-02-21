@@ -1,0 +1,313 @@
+﻿@using HCM.Classes.Enums
+
+@{
+    ViewBag.Title = Resources.Globalization.VacationDaysDuringOverTimeText;
+}
+<style media="print">
+    .tablePrint td {
+        
+    }
+</style> 
+<script type="text/javascript">
+    var IsNotExistConfirm = false;
+
+    $(document).ready(function () {
+
+        $("#txtOverTimeID").keydown(function (e) {
+            var code = e.keyCode || e.which;
+            //console.log('onchange',code);
+            if (code === 13) { // user pressed on enterkey
+                e.preventDefault();
+                PopulateData();
+            }
+        });
+
+        $("#txtOverTimeID").on('change', function () {
+            PopulateData();
+        });
+
+        $('#btnPrint').on('click', function () {
+
+            var divToPrint = document.getElementById("tblOverTimeEmployees");
+            var divMaster = document.getElementById("tblMaster");
+            var divMasterHTML = divMaster.outerHTML;
+            divMasterHTML = divMasterHTML.replace('<input type="number" id="txtOverTimeID" class="form-control" maxlength="9" style="width:150px">', '<label class="control-label">' + $("#txtOverTimeID").val() + '</label>');
+            newWind = window.open("");
+            newWind.document.write('<head><style >.WeekEndCss {color: red;} .borderOnPrint{width:200px; bottom-border:1px solid grey;} .tablePrint td {padding:5px; text-align:center; border:1px solid grey; }</style></head><body style="direction: rtl;"><h1>@Resources.Globalization.VacationDaysDuringOverTimeText</h1>' + divMasterHTML +divToPrint.outerHTML+'</body>');
+            newWind.print();
+            newWind.close();
+        });
+
+    });
+
+    function PopulateData() {
+        if ($("#txtOverTimeID").val() != '') {
+                $.ajax({
+                    type: "POST"
+                    , dataType: "json"
+                    , contentType: "application/json; charset=utf-8"
+                    , url: "/OverTimes/GetOverTimeByOverTimeID"
+                    , data: "{ 'OverTimeID' : '" + $("#txtOverTimeID").val() +
+                        "'}"
+                    , success: function (data) {
+                        if (data.OverTimeID != 0) {
+                            $("#hdnFldOverTimeID").val(data.OverTimeID);
+                            $("#txtRequester").text(data.Requester);
+                            $("#txtSaturdayHoursAvg").text(data.SaturdayHoursAvg);
+                            $("#txtOverTimeStartDate").text(RenderDate(data.OverTimeStartDate));
+                            $("#txtOverTimeEndDate").text(RenderDate(data.OverTimeEndDate));
+                            $("#txtOverTimePeriod").text(data.OverTimePeriod);
+                            $("#txtWeekWorkHoursAvg").text(data.WeekWorkHoursAvg);
+                            $("#txtFridayHoursAvg").text(data.FridayHoursAvg);
+                            $("#txtRequester").text(data.Requester);
+                            //$("#chkIsApprove").prop('checked', data.IsApprove);
+                            $("#chkisapproved").text(data.IsApprove ? '@Resources.Globalization.YesText': '@Resources.Globalization.NoText');
+                            BindOverTimeEmployees(data.OverTimeID);
+                        }
+                        else {
+                            Reset();
+                            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Notice, Globals.Utilities.RemoveSpace(@Resources.Globalization.NoOverTimeFoundText))');
+                        }
+                    }
+                    , error: function (jqXHR, exception) {
+                        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+                    }
+                });
+            }
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function BindOverTimeEmployees(OverTimeID) {
+
+        if (OverTimeID != 0) {
+            $("#tblOverTimeEmployees").DataTable({
+                destroy: true,
+                "searching": false,
+                "sorting": false,
+                "paging": false,
+                "ordering": false,
+                "columnDefs": { targets: 'no-sort', orderable: false },
+                //dom: "Bfrtip",
+                //buttons:['copy', 'excel', 'csv', 'pdf'],
+                //buttons:['copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5'],
+                //"paging": true,
+                //"pageLength":1,
+                //"pageSize": 1,
+                //"lengthMenu":[[1,25,50],[1,25,50]],
+                "ajax": {
+                    "url": "/Payrolls/GetOverTimeAndVacationDaysByOverTimeID/" + OverTimeID,
+                    "type": "get",
+                    "datatype": "json"
+                },
+                "columns": [
+                    {
+                        "data": "EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo",
+                        "width": "50px",
+                        "className": "borderOnPrint",
+                        //"autowidth": true
+                    },
+                    {
+                        "data": "EmployeeCareerHistory.EmployeeCode.Employee.EmployeeNameAr",
+                        "width": "150px",
+                        "className": "borderOnPrint",
+                        //"autowidth": true
+                    },
+                    {
+                        "data": "VacationDays",
+                        "autowidth": true,
+                        "render": function (data, type, row) {
+
+                            @*$.ajax({
+                                type: "GET",
+                                url: "@Url.Content("~/Payrolls/GetVacationDaysDuringOvertime/")" + OverTimeID + "/" + data,
+                                success: function (d) {
+
+                                    $('#div' + data).html('');
+                                    var tbl = GenerateTable(d.data);
+                                    $('#div' + data).html(tbl);
+
+                                },
+                                error: function (xhr, status, error) {
+                                    $('#div' + data).html('');
+                                    OnFailure();
+                                }
+                            });*@
+
+                            return '<div id="div' + row.OverTimeDetailID + '">'+ GenerateTable(data)+'</div>';
+                        }
+                    }
+                ]
+            });
+
+        }
+        else {
+            $("#tblOverTimeEmployees").DataTable().clear().draw();
+        }
+    }
+
+    function GenerateTable(data) {
+
+        var col;
+        var cols = '';
+        var totalWeekEnds = 0, totalWeekDays = 0;
+        $(data).each(function (index, dt) {
+
+            if (isWeekEnd(dt))
+                totalWeekEnds = totalWeekEnds + 1;
+            else
+                totalWeekDays = totalWeekDays + 1;
+
+            col = '<td class="' + (isWeekEnd(dt) ? "WeekEndCss" : "") + '">' + RenderDateF(dt, 'ddd') + '</br>' + RenderDateF(dt, 'iMM-iDD') + '</td>';
+            if (index % 15 == 0) {
+                cols = cols + ((index == 0) ? '<tr>' : '</tr><tr>')+ col;
+            }
+            else {
+                cols = cols + col;
+            }
+
+        });
+
+        var tbl;
+        if (cols == '') {
+            cols = '<td>@Resources.Globalization.NoVacationFoundDuringOvertimeDaysText</td>';
+            tbl = '<table border=0><tr>' + cols + '</tr></table>';
+        }
+        else {
+            var footer = '<tr><td colspan="3"><b>@Resources.Globalization.TotalWeekDaysText</b></td><td colspan="5">'+totalWeekDays+'</td><td colspan="3"><b>@Resources.Globalization.TotalWeekEndsText</b></td><td colspan="4">'+totalWeekEnds+'</td></tr>'
+            tbl = '<table border=1 cell-padding="0" cell-spacing="0">' + cols + '</tr></table>';
+            tbl =tbl + '<table>' + footer + '</table>';
+        }
+
+        return tbl;
+    }
+
+    function Reset()
+    {
+        $("#hdnFldOverTimeID").val('');
+        $("#txtRequester").text('');
+        $("#txtSaturdayHoursAvg").text('');
+        $("#txtOverTimeStartDate").text('');
+        $("#txtOverTimeEndDate").text('');
+        $("#txtOverTimePeriod").text('');
+        $("#txtWeekWorkHoursAvg").text('');
+        $("#txtFridayHoursAvg").text('');
+        $("#txtRequester").text('');
+
+        BindOverTimeEmployees(0);
+    }
+
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.VacationDaysDuringOverTimeDescText
+    </div>
+    <div class="panel-body">
+        <span class="control-label">@Resources.Globalization.ActualOvertimeDaysInfoText</span>
+        <form id="OverTimeDetailsForm">
+            <table id="tblMaster" class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-3">
+                            <label class="control-label">@Resources.Globalization.SequenceNoText</label>
+                        </td>
+                        <td class="col-md-3">
+                            <input type="number" id="txtOverTimeID" class="form-control" maxlength="9" style="width:150px" />
+                            <input id="hdnFldOverTimeID" type="hidden" name="hdnFldOverTimeID" />
+                        </td>
+                        <td class="col-md-1"></td>
+                        <td class="col-md-3"></td>
+                        <td class="col-md-2"></td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            <label class="control-label">@Resources.Globalization.OverTimeStartDateText</label>
+                        </td>
+                        <td class="col-md-3">
+                            <label id="txtOverTimeStartDate"></label>
+                        </td>
+                        <td class="col-md-1"></td>
+                        <td class="col-md-3">
+                            <label class="control-label">@Resources.Globalization.OverTimeEndDateText</label>
+                        </td>
+                        <td class="col-md-2">
+                            <label id="txtOverTimeEndDate"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            <label class="control-label">@Resources.Globalization.OverTimePeriodText</label>
+                        </td>
+                        <td class="col-md-3">
+                            <label id="txtOverTimePeriod"></label>
+                        </td>
+                        <td class="col-md-1"></td>
+                        <td class="col-md-3">
+                            <label class="control-label">@Resources.Globalization.OverTimeWeekWorkHoursAvgText</label>
+                        </td>
+                        <td class="col-md-2">
+                            <label id="txtWeekWorkHoursAvg"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            <label class="control-label">@Resources.Globalization.FridayHoursAvgText</label>
+                        </td>
+                        <td class="col-md-3">
+                            <label id="txtFridayHoursAvg"></label>
+                        </td>
+                        <td class="col-md-1"></td>
+                        <td class="col-md-3">
+                            <label class="control-label">@Resources.Globalization.SaturdayHoursAvgText</label>
+                        </td>
+                        <td class="col-md-2">
+                            <label id="txtSaturdayHoursAvg"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            <label class="control-label">@Resources.Globalization.RequesterText</label>
+                        </td>
+                        <td class="col-md-3">
+                            <label id="txtRequester"></label>
+                        </td>
+                        <td class="col-md-1"></td>
+                        <td class="col-md-3">
+                            <label class="control-label">@Resources.Globalization.ApproveText</label>
+                        </td>
+                        <td class="col-md-2">
+                            @*<input type="checkbox" id="chkisapprove" disabled="disabled" />*@
+                            <label id="chkisapproved" class="control-label">-</label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <span class="control-label">@Resources.Globalization.EmployeesText</span>
+        <table id="tblOverTimeEmployees" class="table table-responsive table-hover tablePrint" style="width:100%">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                    <td>@Resources.Globalization.EmployeeNameArText</td>
+                    <td>@Resources.Globalization.VacationDaysDuringOverTimeText</td>
+                </tr>
+            </thead>
+        </table>
+        <table class="table table-responsive table-condensed">
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <button id="btnPrint" class="btn btn-default">@Resources.Globalization.PrintText</button> 
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div> 

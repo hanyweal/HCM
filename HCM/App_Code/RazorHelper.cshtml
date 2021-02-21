@@ -1,0 +1,57 @@
+﻿@helper DisplayImage(string Image)
+{
+    if (Image != null)
+    {
+        //string ImageBase64 = Convert.ToBase64String(Image);
+        string ImageBase64 = Image;
+        string ImageSrc = string.Format("data:image/gif;base64,{0}", ImageBase64);
+        <img id="ImgUserPic" class="img-circle img-responsive" src="@ImageSrc" />
+    }
+    else
+    {
+        <img id="ImgUserPic" class="img-circle img-responsive" src="/Content/Images/anonymous.png" />
+    }
+}
+
+@helper ShowAlert(System.Web.Mvc.WebViewPage page, HCM.Classes.Enums.ModalTypes ModalType, string Message, string CallBackFnName = null)
+{
+    @page.Url.Content("~/Modal/Index/" + ModalType + "/" + Message + "/" + CallBackFnName);
+}
+
+@helper ShowPormotionToolbar(System.Web.Mvc.WebViewPage page, HCM.Classes.Enums.PromotionsRecordsToolbarEnum PromotionRecordToolbar)
+{            
+    @page.Url.Content("~/PromotionsRecords/RenderToolBar/" + PromotionRecordToolbar);   
+
+}
+
+@*@helper RenderToolbar(HCM.Classes.Enums.PromotionsRecordsToolbarEnum PromotionRecordToolbar)
+{ 
+    <div class=""> 
+        <div id="divToolbar"></div>
+        <script type="text/javascript">
+            var PromotionRecordToolbarID = '@Convert.ToInt32(PromotionRecordToolbar)'
+            var btnPrint = ' <button id="btnPrintPromotionRecord" type="button" class="btn btn-default" title=@Resources.Globalization.PromotionRecordPrintingText ><span class="glyphicon glyphicon-print"></span> @Resources.Globalization.PromotionRecordPrintingText</button>';
+
+            console.log('PromotionRecordToolbarID', PromotionRecordToolbarID);
+
+            $('#divToolbar').load("/PromotionsRecords/RenderToolBar/" + PromotionRecordToolbarID, function () {
+
+                if (PromotionRecordToolbarID == '@Convert.ToInt32(HCM.Classes.Enums.PromotionsRecordsToolbarEnum.Open)')
+                { console.log('open'); }
+                else if (PromotionRecordToolbarID == '@Convert.ToInt32(HCM.Classes.Enums.PromotionsRecordsToolbarEnum.Opened)')
+                { console.log('opened'); }
+                else if (PromotionRecordToolbarID == '@Convert.ToInt32(HCM.Classes.Enums.PromotionsRecordsToolbarEnum.Preference)')
+                {
+                    $('.btn-group').append(btnPrint);
+                }
+                else if (PromotionRecordToolbarID == '@Convert.ToInt32(HCM.Classes.Enums.PromotionsRecordsToolbarEnum.Install)')
+                { console.log('Preference'); }
+                else if (PromotionRecordToolbarID == '@Convert.ToInt32(HCM.Classes.Enums.PromotionsRecordsToolbarEnum.Close)')
+                { console.log('Preference'); }
+                else if (PromotionRecordToolbarID == '@Convert.ToInt32(HCM.Classes.Enums.PromotionsRecordsToolbarEnum.Closed)')
+                { console.log('Preference'); }
+                
+            });
+        </script>
+    </div>
+}*@

@@ -1,0 +1,237 @@
+﻿@model HCM.Models.TransfersViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.AddNewEmployeeTransferText;
+}
+
+<script type="text/javascript">
+
+     function ResizeModal(h) {
+        iframe.css('height', h);
+        $('#divModal .modal-body').css('height', h);
+    }
+
+     function OkFunction() {
+         $.ajax({
+             type: "GET"
+              , dataType: "json"
+              , contentType: "application/json; charset=utf-8"
+              , url: "@Url.Content("~/Transfers/GetTransferPrint")"
+              , success: function (d) {
+                  if (d.data != null) {
+                      var iframe = $("#divReportModal .modal-body #iframeReportContent");
+                      iframe.attr('src', '@Url.Content("~/Transfers/PrintTransfer/")' + d.data);
+                      ShowModal("#divReportModal");
+                  }
+              }
+     , error: function (xhr, status, error) {
+         alert(error.message);
+     },
+        });
+     } 
+
+    $(document).ready(function () {
+
+        @*$.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            //console.log(message);
+            $("#divAlert").load('@Url.Content("~/Modal/Index/" +  HCM.Classes.Enums.ModalTypes.Failure + "/Error")');
+        }*@
+        $('.TransferWithoutJob').hide();
+        $('#ddlTransferTypes').on('change', function (event) {
+
+            var TransferType = $('#ddlTransferTypes').val();
+            if (TransferType == '@Convert.ToInt32(TransfersTypesEnum.TransferEmployeeWithJob)') {
+               $('.TransferWithoutJob').hide();
+            }
+            else if (TransferType == '@Convert.ToInt32(TransfersTypesEnum.TransferEmployeeWithoutJob)') {
+                $('.TransferWithoutJob').show();
+            }
+        });
+        $('#txtTransferDate').calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'), onSelect: customRange, commandsAsDateFormat: true, dateFormat: 'yyyy/mm/dd',
+            onSelect: function (dates) {
+                GetTransferEndDate();
+            }
+        });
+
+    });
+
+    function GetTransferEndDate() {
+
+        var TransferDate = new Date($('#txtTransferDate').val()),
+            TransferPeriod = parseInt("0" + $('#txtTransferPeriod').val(), 10) - 1;
+
+        if (!isNaN(TransferDate.getTime())) {
+            TransferDate.setDate(TransferDate.getDate() + TransferPeriod);
+            $('#txtTransferEndDate').val($.datepicker.formatDate('yy/mm/dd', TransferDate));
+        }
+        else {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, Globals.Utilities.RemoveSpace(@Resources.Globalization.ValidationInvalidDateText))');
+        }
+    }
+
+    function OnSuccess() {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+  
+    function Reset() {
+        $('#ddlTransferTypes').val('@Convert.ToInt32(TransfersTypesEnum.TransferEmployeeWithJob)');
+        $('#txtTransferDate').val('');
+        
+        $('.form-control').val('');
+        $('.TransferWithoutJob').hide();
+        ResetEmployee();
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.AddNewEmployeeTransferText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewEmployeeTransferDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                <a id="OpenBusinessConditions">
+                    @*<span class="glyphicon glyphicon-print" title="اضغط لمعرفة الشروط الخاصة لإنشاء تكليف جديد"></span>*@
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "Transfers", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.EmployeeTransferBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.TransfersTypes, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-4"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(model => model.TransfersTypes.TransferTypeID, new SelectList(new HCMBLL.TransfersTypesBLL().GetTransfersTypes(), "TransferTypeID", "TransferType"), new { @id = "ddlTransferTypes", @style = "width:100%" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.Destination, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.KSACity, new { @class = "control-label" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.TransferDate, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.Destination, new { @class = "form-control", @id = "txtDestination" })
+                            @Html.ValidationMessageFor(model => model.Destination, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(model => model.KSACity.KSACityID, new SelectList(new HCMBLL.KSACitiesBLL().GetKSACities(), "KSACityID", "KSACityName"), new { @id = "ddlKSACities", @style = "width:100%" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.TransferDate, new { @class = "form-control", @id = "txtTransferDate" })
+                            @Html.ValidationMessageFor(model => model.TransferDate, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr class="TransferWithoutJob">
+                        <td>
+                            @Html.LabelFor(model => model.JobName, new { @class = "control-label", @id = "JobName" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.RankName, new { @class = "control-label", @id = "RankName" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.OrganizationName, new { @class = "control-label", @id = "OrganizationName" })
+                        </td>
+                    </tr>
+                    <tr class="TransferWithoutJob">
+                        <td>
+                            @Html.TextBoxFor(model => model.JobName, new { @class = "form-control", @id = "JobName" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.RankName, new { @class = "form-control", @id = "RankName" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.OrganizationName, new { @class = "form-control", @id = "OrganizationName" })
+                        </td>
+                    </tr>
+                    <tr class="TransferWithoutJob">
+                        <td>
+                            @Html.LabelFor(model => model.CareerDegreeName, new { @class = "control-label", @id = "JobName" })
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.JobCode, new { @class = "control-label", @id = "JobCode" })
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr class="TransferWithoutJob">
+                        <td>
+                            @Html.TextBoxFor(model => model.CareerDegreeName, new { @class = "form-control", @id = "JobName" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.JobCode, new { @class = "form-control", @id = "JobCode" })
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "Transfers"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@
+

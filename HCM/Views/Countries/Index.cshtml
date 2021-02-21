@@ -1,0 +1,73 @@
+﻿@using HCM.Classes.Enums
+@{
+    ViewBag.Title = @Resources.Globalization.CountriesText;
+}
+
+<p>
+    @Html.ActionLink(@Resources.Globalization.CreateNewText, "Create")
+</p>
+
+<script>
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+        }
+
+        $("#tblCountries").DataTable({
+            //"destroy":true,
+              dom: 'Bfrtip',
+            "ajax": {
+                "url": "/Countries/GetCountries",
+                "type": "get",
+                "datatype": "json"
+            },
+              "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": ".CountryName",
+                    "autowidth": true
+                },
+                {
+                    "data": "CountryID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Edit", "Countries")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-edit" /></a>'
+                    }
+                },
+                {
+                    "data": "CountryID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {
+                        Url = '@Url.Action("Delete", "Countries")' + "/" + data;
+                        return '<a href="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                    }
+                },
+            ]
+        });
+    });
+
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading ">
+        @Resources.Globalization.SearchCountryDescText
+    </div>
+    <div class="panel-body">
+        <table id="tblCountries" class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <td>@Resources.Globalization.CountryNameText</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,65 @@
+﻿@model HCM.Models.EmployeesQualificationsViewModel
+<table class="table table-responsive table-condensed table-striped">
+    <tbody>
+        <tr>
+            <td class="col-md-3">@Html.LabelFor(model => model.QualificationDegreeID, new { @class = "control-label" })</td>
+            <td class="col-md-3">@Html.LabelFor(model => model.QualificationID, new { @class = "control-label" })</td>
+            <td class="col-md-3">@Html.LabelFor(model => model.GeneralSpecializationID, new { @class = "control-label" })</td>
+            <td class="col-md-3">@Html.LabelFor(model => model.ExactSpecializationID, new { @class = "control-label" })</td>
+            @Html.HiddenFor(model => model.EmployeeQualificationID)
+        </tr>
+        <tr>
+            <td class="col-md-3">@Html.DropDownListFor(model => model.QualificationDegreeID, new SelectList(new HCMBLL.QualificationsDegreesBLL().GetQualificationsDegrees(), "QualificationDegreeID", "QualificationDegreeName"), new { @id = "ddlQualificationDegree", @style = "width:100%", @onchange = "GetQualifications()" })</td>
+            <td class="col-md-3">@Html.DropDownListFor(model => model.QualificationID, new SelectList(new HCMBLL.QualificationsBLL().GetQualifications(), "QualificationID", "QualificationName"), new { @id = "ddlQualification", @style = "width:100%", @onchange = "GetGeneralSpecialization()" })</td>
+            <td class="col-md-3">@Html.DropDownListFor(model => model.GeneralSpecializationID, new SelectList(new HCMBLL.GeneralSpecializationsBLL().GetGeneralSpecializations(), "GeneralSpecializationID", "GeneralSpecializationName"), new { @id = "ddlGeneralSpecialization", @style = "width:100%", @onchange = "GetExactSpecializations()" })</td>
+            <td class="col-md-3">@Html.DropDownListFor(model => model.ExactSpecializationID, new SelectList(new HCMBLL.ExactSpecializationsBLL().GetExactSpecializations(), "ExactSpecializationID", "ExactSpecializationName"), new { @id = "ddlExactSpecialization", @style = "width:100%" })</td>
+        </tr>
+        <tr>
+            <td class="col-md-3">@Html.LabelFor(model => model.UniSchName, new { @class = "control-label" })</td>
+            <td class="col-md-3">@Html.LabelFor(model => model.Department, new { @class = "control-label" })</td>
+            <td class="col-md-3">@Html.LabelFor(model => model.FullGPA, new { @class = "control-label" })</td>
+            <td class="col-md-3">@Html.LabelFor(model => model.GPA, new { @class = "control-label" })</td>
+        </tr>
+        <tr>
+            <td class="col-md-3">
+                @Html.TextBoxFor(model => model.UniSchName, new { @class = "form-control", @id = "txtUniSchName" })
+            </td>
+            <td class="col-md-3">
+                @Html.TextBoxFor(model => model.Department, new { @class = "form-control", @id = "txtDepartment" })
+            </td>
+            <td class="col-md-3">
+                @Html.TextBoxFor(model => model.FullGPA, new { @class = "form-control allownumericwithdecimal ", @id = "txtFullGPA" })
+            </td>
+            <td class="col-md-3">
+                @Html.TextBoxFor(model => model.GPA, new { @class = "form-control allownumericwithdecimal", @id = "txtGPA" })
+            </td>
+        </tr>
+        <tr>
+            <td class="col-md-3">@Html.LabelFor(model => model.StudyPlace, new { @class = "control-label" })</td>
+            <td class="col-md-3">@Html.LabelFor(model => model.GraduationDate, new { @class = "control-label" })</td>
+            <td class="col-md-3">@Html.LabelFor(model => model.GraduationYear, new { @class = "control-label" })</td>
+            <td class="col-md-3">@Html.LabelFor(model => model.QualificationType, new { @class = "control-label" })</td>
+        </tr>
+        <tr>
+            <td class="col-md-3">
+                @Html.TextBoxFor(model => model.StudyPlace, new { @class = "form-control", @id = "txtStudyPlace" })
+            </td>
+            <td class="col-md-3">
+                @Html.TextBoxFor(model => model.GraduationDate, new
+                    {
+                        @class = "form-control TxtHijriPicker",
+                        @id = "txtGraduationDate",
+                        @readonly = "readonly",
+                        @Value = Model.GraduationDate.HasValue ? Model.GraduationDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) : null
+                    })
+            </td>
+            <td class="col-md-3">
+                @Html.TextBoxFor(model => model.GraduationYear, new { @class = "form-control allownumericwithoutdecimal", @id = "txtGraduationYear", @maxlength = "4" })
+            </td>
+            <td class="col-md-3">
+                @Html.DropDownListFor(model => model.QualificationType.QualificationTypeID, new SelectList(new HCMBLL.QualificationsTypesBLL().GetQualificationsTypes(), "QualificationTypeID", "QualificationTypeName"), new { @id = "ddlQualificationType", @style = "width:100%" })
+            </td>
+        </tr>
+    </tbody>
+</table>
+

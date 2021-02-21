@@ -1,0 +1,128 @@
+﻿@model HCM.Models.SportsSeasonsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.DeleteHolidaySettingText;
+}
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        $("#BtnDelete").confirm({
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () { $("#BtnDelete").submit(); },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+    });
+
+    var id;
+    function OnSuccess(data) {
+        id = data.MaturityYearID;
+        $("#BtnDelete").attr("disabled", "disabled");
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText),"OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function OkFunction() {      
+        window.location.href = '/YearsSettings/Details/' + id;
+    }
+</script>
+<p style="font-size:larger">@Resources.Globalization.DeleteHolidaySettingText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.DeleteHolidaySettingDescText
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Delete", "SportsSeasons", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "DELETE",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            <span class="control-label">@Resources.Globalization.HolidaySettingBasicInfoText</span>
+            <table class="table table-responsive table-condensed">
+                <tbody>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.MaturityYearBalance, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-9">
+                            @Html.DisplayFor(model => model.MaturityYearBalance.MaturityYear)
+                            @Html.HiddenFor(model => model.MaturityYearBalance.MaturityYearID)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.SportsSeasonDescription, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-9">
+                            @Html.DisplayFor(model => model.SportsSeasonDescription)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.HiddenFor(model => model.SportsSeasonID)
+                            @Html.LabelFor(model => model.SportsSeasonStartDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-9">
+                            @Html.DisplayFor(model => model.SportsSeasonStartDate)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.SportsSeasonPeriod, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-9">
+                            @Html.DisplayFor(model => model.SportsSeasonPeriod)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            @Html.LabelFor(model => model.SportsSeasonEndDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-9">
+                            @Html.DisplayFor(model => model.SportsSeasonEndDate)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" id="BtnDelete" name="BtnDelete" value="@Resources.Globalization.DeleteText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Details/" + @Model.MaturityYearBalance.MaturityYearID, "YearsSettings"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>

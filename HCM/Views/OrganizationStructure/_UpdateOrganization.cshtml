@@ -1,0 +1,196 @@
+﻿@model HCM.Models.OrganizationStructureViewModel
+@using HCM.Models
+@{
+    ViewBag.Title = Resources.Globalization.OrganizationStructureText;
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    bool IsCreatePermission = new HCM.Classes.Helpers.PSAHelper().IsCreatePermission(Request.Url.ToString());
+    bool IsUpdatePermission = new HCM.Classes.Helpers.PSAHelper().IsUpdatePermission(Request.Url.ToString());
+    bool IsDeletePermission = new HCM.Classes.Helpers.PSAHelper().IsDeletePermission(Request.Url.ToString());
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        
+        $("#btnSave").attr("disabled", false);
+        $("#btnDelete").attr("disabled", false);
+
+        $("#btnDelete").confirm({
+            animation: 'zoom',
+            content: '@Resources.Globalization.DeleteCofirmationMessageText',
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            buttons: {
+                confirm: {
+                    action: function () {
+                        if ($("#hdnFldOrganizationID").val() != '') {
+                            var OrganizationID = $('#hdnFldOrganizationID').val();
+                            $.ajax({
+                                type: "POST"
+                                , contentType: "application/json; charset=utf-8"
+                                , url: "/OrganizationStructure/Delete"
+                                , data: "{ 'id' :" + OrganizationID + "}"
+                                , success: function () {
+                                    DeletingSuccess();
+                                }
+                            , error: function (xhr, status, error) {
+                                OnFailure();
+                            }
+                            });
+                        }
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+        $("#btnSave").click(function () {
+            if ($("#hdnFldOrganizationID").val() != '') {
+                var Organization =
+                {
+                    OrganizationID: $('#hdnFldOrganizationID').val(),
+                    OrganizationCode: $('#txtOrganizationCode').val(),
+                    OrganizationName: $('#txtOrganizationName').val(),
+                    ManagerCodeID: $('#hdnFldEmployeeCodeIDAddOrganization').val(),
+                    BranchID: $('#ddlBranches').val(),
+                };
+
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    url: "@Url.Content("~/OrganizationStructure/Edit")",
+                    data: JSON.stringify(Organization),
+                    success: EditSuccess,
+                    error: function (xhr, status, error) {
+                        OnFailure();
+                    }
+                });
+            }
+        });
+
+    });
+
+    function EditSuccess(data) {
+
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+        
+        if (chart) {
+            chart.updateNode(data);
+        }
+    }
+
+    function DeletingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.DeletedDoneAlertText))');
+        //????BindOrgTree();
+        ResetOrganizationStructure(); 
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "/Error")');
+    }
+
+    function GetOrganizationByOrganizationID(OrganizationID) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            url: "/OrganizationStructure/GetByOrganizationID",
+            data: "{ 'id' :" + OrganizationID + "}",
+            success: function (d) {
+                $('#txtOrganizationCode').val(d.data.OrganizationCode);
+                $('#txtOrganizationName').val(d.data.OrganizationName);
+                $("#ddlBranches").val(d.data.BranchID);
+                $('#txtOrganizationParentCode').val(d.data.OrganizationNameWithBranch);
+                $('#hdnFldEmployeeCodeIDAddOrganization').val(d.data.EmployeeCodeID);
+                $('#txtEmployeeCodeNoAddOrganization').val(d.data.EmployeeCodeNo);
+                $('#txtEmployeeNameArAddOrganization').val(d.data.EmployeeNameAr);
+                $('#txtEmployeeNameEnAddOrganization').val(d.data.EmployeeNameEn);
+
+                $('#txtHiringDateAddOrganization').val(d.data.JoinDate != null ? RenderDate(d.data.JoinDate) : null);
+                $('#txtEmployeeIDNoAddOrganization').val(d.data.EmployeeIDNo);
+
+                SetEmployeePopupToReadonlyAddOrganization();
+            },
+            error: function (xhr, status, error) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "/Error")');
+            }
+        });
+    }
+     
+    function ResetOrganizationStructure() {
+        $('#txtOrganizationParentCode').val('');
+        $('#hdnFldOrganizationParentCode').val('');
+        $('#hdnFldEmployeeCodeIDAddOrganization').val('');
+        $('#txtEmployeeCodeNoAddOrganization').val('');
+        $('#txtEmployeeNameArAddOrganization').val('');
+        $('#txtEmployeeNameEnAddOrganization').val('');
+        $('#txtEmployeeOrganizationNameAddOrganization').val('');
+        $('#hdnFldEmployeeCareerHistoryIDAddOrganization').val('');
+        $('#txtHiringDateAddOrganization').val('');
+        $('#txtEmployeeIDNoAddOrganization').val('');
+
+    } 
+
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.OrganizationText
+    </div>
+    <div class="panel-body">
+        <table class="table table-responsive table-condensed table-striped">
+            <tr>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.OrganizationCode, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.OrganizationName, new { @class = "control-label" })
+                </td>
+                <td class="col-md-4">
+                    @Html.LabelFor(model => model.BranchName, new { @class = "control-label" })
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.OrganizationCode, new { @class = "form-control", @id = "txtOrganizationCode" })
+                </td>
+                <td class="col-md-4">
+                    @Html.TextBoxFor(model => model.OrganizationName, new { @class = "form-control", @id = "txtOrganizationName" })
+                </td>
+                <td class="col-md-4">
+                    @Html.DropDownListFor(model => model.BranchID, new SelectList(new HCMBLL.BranchesBLL().GetBranches(), "BranchID", "BranchName"), new { @id = "ddlBranches", @style = "width:100%" })
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" class="col-md-12">
+                    <div class="panel panel-default" style="padding:0px">
+                        <div class="panel-heading">
+                            @Resources.Globalization.OrganizationManagerText
+                        </div>
+                        <div class="panel-body">
+                            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { IsShowAllFields = false, PartialName = "AddOrganization" })
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    <div class="panel-footer">
+        <div class="row">
+            <div class="col-md-9"></div>
+            <div class="col-md-3">
+                @if (IsUpdatePermission)
+                {
+                    <input id="btnSave" type="submit" class="btn btn-default" value="@Resources.Globalization.SaveText" disabled="disabled" />
+                }
+                @*@if (IsDeletePermission)
+                {
+                    <input id="btnDelete" type="submit" class="btn btn-default" value="@Resources.Globalization.DeleteText" disabled="disabled" />
+                }*@
+            </div>
+        </div>
+    </div>
+</div>

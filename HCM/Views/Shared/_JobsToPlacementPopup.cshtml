@@ -1,0 +1,81 @@
+﻿@model HCM.Models.JobsViewModel
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        BindJobs();
+
+        $("#OpenJobsPopup").click(function () {
+            ShowModal("#divJobsToPlacementModal");
+        });
+    });
+
+    function BindJobs() {
+        $("#tblJobsToPlacement").DataTable({
+            "ajax": {
+                "url": "/Jobs/GetJobsToPlacement",
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                //{
+                //    "data": "JobCategory.JobCategoryName",
+                //    "autowidth": true
+                //},
+                {
+                    "data": "JobName",
+                    "autowidth": true
+                },
+                {
+                    "data": "JobID",
+                    "autowidth": true,
+                    "render": function (data, type, row) {                        
+                        return '<a onClick="closeJobsPopup(' + data + ')"><span class="glyphicon glyphicon-thumbs-up" /></a>'
+                    }
+                },
+            ]
+        });
+    }
+
+    function GetJobData(JobID) {
+        $.ajax({
+            type: "POST"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "/Jobs/GetJobsByJobID"
+            , data: "{ 'id' : '" + JobID + "'}"
+            , success: function (d) {
+                $("#hdnFldJobID").val(d.data.JobID);
+                $("#txtJobName").val(d.data.JobName);
+            }
+            , error: function (xhr, status, error) {
+                alert(error.message);
+            }
+        });
+    }
+
+    function ResetJob() {
+        $("#txtJobName").val('');
+        $("#hdnFldJobID").val('');
+    }
+
+    function closeJobsPopup(JobID) {
+        GetJobData(JobID);
+        DestroyModal("#divJobsToPlacementModal");
+    }
+
+</script>
+
+<table class="table table-responsive table-condensed" style="text-align:right;width:100%;margin-bottom:0">
+    <tr>
+        <td>
+            <div class="input-group col-md-12">
+                @Html.TextBoxFor(model => model.JobName, new { @class = "form-control", @id = "txtJobName", @readonly = "readonly" })
+                <span id="OpenJobsPopup" class="input-group-addon clickable" title="@Resources.Globalization.JobsListTooltip">
+                    <i class="glyphicon glyphicon-search"></i>
+                </span>
+            </div>
+            @Html.HiddenFor(model => model.JobID, new { @id = "hdnFldJobID" })
+            @Html.ValidationMessageFor(model => model.JobName, "", new { @class = "text-danger" })
+        </td>
+    </tr>
+</table>

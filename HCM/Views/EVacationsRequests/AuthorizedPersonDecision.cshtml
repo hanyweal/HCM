@@ -1,0 +1,349 @@
+﻿@model HCM.Models.EVacationsRequestsViewModel
+@using HCM.Classes.Enums;
+@using HCMBLL.Enums;
+
+@{
+    ViewBag.Title = Resources.Globalization.AuthorizedPersonDecisionText;
+    Layout = "~/Views/Shared/_EServiecsLayout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        GetLastNVacations();
+
+        GetEmployeesHaveVacaitonsInTheSameRequestPeriod();
+
+        $("#btnBack").click(function () {
+             window.location.href='@Url.Content("~/EVacationsRequests/RequestsUnderAuthorizedPerson")';
+        });
+
+    });
+
+    function GetLastNVacations() {
+        var EmployeeCodeID = $('#hdnFldEmployeeCodeID').val() || '@Model.EmployeeCodeID';
+
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Vacations/GetLastNVacations/")" + EmployeeCodeID,
+            success: function (result) {
+                $("#tblLast5Vacations").DataTable({
+                    "destroy": true,
+                    "searching": false,
+                    "ordering": false,
+                    "paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "VacationStartDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "VacationEndDate",
+                            "autowidth": false,
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "VacationPeriod",
+                            "autowidth": false,
+                        },
+                        {
+                            "data": "VacationTypeName",
+                            "autowidth": false,
+                        }
+                    ]
+                });
+            }
+        });
+    }
+
+    function GetEmployeesHaveVacaitonsInTheSameRequestPeriod() {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/Vacations/GetEmployeesHaveVacationsBetweenTwoDates/")" + '@Model.OrganizationID' + "/" + '@Globals.Calendar.UmAlquraToGreg(Model.VacationStartDate)' + "/" +  '@Globals.Calendar.UmAlquraToGreg(Model.VacationEndDate)',
+            success: function (result) {
+                $("#tblVacationsElseIntersectWithRequestSamePeriod").DataTable({
+                    "destroy": true,
+                    //"searching": false,
+                    //"ordering": false,
+                    //"paging": false,
+                    "data": result.data,
+                    "columns": [
+                        {
+                            "data": "EmployeeCodeNo",
+                            "width": '10%'
+                        },
+                        {
+                            "data": "EmployeeNameAr",
+                             "width": '30%'
+                        },
+                        {
+                            "data": "VacationStartDate",
+                            "width": '15%',
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "VacationEndDate",
+                             "width": '15%',
+                            "render": RenderDate
+                        },
+                        {
+                            "data": "VacationPeriod",
+                            "width": '15%',
+                        },
+                        {
+                            "data": "VacationTypeName",
+                             "width": '15%',
+                        }
+                    ]
+                });
+            }
+        });
+    }
+
+    function OkFunction() {
+        window.location.href = "/EVacationsRequests/RequestsUnderAuthorizedPerson";
+    }
+
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText),"OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+</script>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-12">
+                @Resources.Globalization.AuthorizedPersonDecisionText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @*<div class="alert alert-warning">
+                @Resources.Globalization.ValidationEVacationRequestStatusNotPendingText
+            </div>*@
+        <table class="table table-responsive table-condensed table-striped" style="text-align:right">
+            <tr>
+                <td class="col-md-6">
+                    <div class="alert alert-warning" style="padding:5px;margin-bottom:.0px">
+                        <label class="control-label">@Resources.Globalization.VacationDetailsInfoText</label>
+                    </div>
+                    @using (Ajax.BeginForm("AuthorizedPersonDecision", "EVacationsRequests", new AjaxOptions()
+                    {
+                        OnSuccess = "OnSuccess",
+                        OnFailure = "OnFailure",
+                        InsertionMode = InsertionMode.Replace,
+                        HttpMethod = "POST",
+                    }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <table class="table table-responsive table-condensed table-striped table-bordered" style="text-align:right">
+                            <tr>
+                                <td class="col-md-6">
+                                    @Html.LabelFor(model => model.EmployeeCodeNo, new { @class = "control-label" })
+                                </td>
+                                <td class="col-md-6">
+                                    @Html.LabelFor(model => model.EmployeeNameAr, new { @class = "control-label" })
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-md-6">
+                                    @Html.DisplayFor(model => model.EmployeeCodeNo)
+                                </td>
+                                <td class="col-md-6">
+                                    @Html.DisplayFor(model => model.EmployeeNameAr)
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    @Html.LabelFor(model => model.OrganizationName, new { @class = "control-label" })
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    @Html.DisplayFor(model => model.OrganizationName)
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-md-6">
+                                    @Html.LabelFor(model => model.EVacationRequestNo, new { @class = "control-label" })
+                                </td>
+                                <td class="col-md-6">
+                                    @Html.LabelFor(model => model.EVacationRequestStatusName, new { @class = "control-label" })
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-md-6">
+                                    @Html.DisplayFor(model => model.EVacationRequestNo)
+                                    @Html.HiddenFor(model => model.EVacationRequestID)
+                                </td>
+                                <td class="col-md-6">
+                                    @Html.DisplayFor(model => model.EVacationRequestStatusName)
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-md-6">
+                                    @Html.LabelFor(model => model.VacationType, new { @class = "control-label" })
+                                </td>
+                                <td class="col-md-6">
+                                    @Html.LabelFor(model => model.CreatedDate, new { @class = "control-label" })
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-md-6">
+                                    @Html.DisplayFor(model => model.VacationType)
+                                </td>
+                                <td class="col-md-6">
+                                    @Html.DisplayFor(model => model.CreatedDate)
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-md-6">
+                                    @Html.LabelFor(model => model.VacationStartDate, new { @class = "control-label" })
+                                </td>
+                                <td class="col-md-6">
+                                    @Html.LabelFor(model => model.VacationPeriod, new { @class = "control-label" })
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-md-6">
+                                    @Html.DisplayFor(model => model.VacationStartDate)
+                                </td>
+                                <td class="col-md-6">
+                                    @Html.DisplayFor(model => model.VacationPeriod)
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-md-6">
+                                    @Html.LabelFor(model => model.VacationEndDate, new { @class = "control-label" })
+                                </td>
+                                <td class="col-md-6">
+                                    @Html.LabelFor(model => model.WorkDate, new { @class = "control-label" })
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-md-6">
+                                    @Html.DisplayFor(model => model.VacationEndDate)
+                                </td>
+                                <td class="col-md-6">
+                                    @Html.DisplayFor(model => model.WorkDate)
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-md-12" colspan="2">
+                                    @Html.LabelFor(model => model.CreatorNotes, new { @class = "control-label" })
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-md-12" colspan="2">
+                                    @Html.DisplayFor(model => model.CreatorNotes)
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    @Html.LabelFor(model => model.AuthorizedPersonNotes, new { @class = "control-label" })
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2" class="col-md-12">
+                                    @Html.TextAreaFor(model => model.AuthorizedPersonNotes, new { @class = "form-control" })
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-md-6 text-right" style="border-left:none">
+                                    <input type="submit" class="btn btn-success" id="btnApprove" name="btnApprove" value="@Resources.Globalization.ApprovedText" />
+
+                                    <input type="submit" class="btn btn-danger" id="btnRefuse" name="btnRefuse" value="@Resources.Globalization.RefuseText" style="margin-right:30px" />
+                                </td>
+                                <td class="col-md-6 text-left" style="border-right:none">
+                                    <input type="button" class="btn btn-default" id="btnBack" name="btnSave" value="@Resources.Globalization.BackToPreviousText" />
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                </td>
+                <td class="col-md-6">
+                    <div class="alert alert-warning" style="padding:5px;margin-bottom:.0px">
+                        <label class="control-label">@Resources.Globalization.ListLast5VacationsText</label>
+                    </div>
+
+                    <table id="tblLast5Vacations" class="table table-responsive table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <td>
+                                    @Resources.Globalization.VacationStartDateText
+                                </td>
+                                <td>
+                                    @Resources.Globalization.VacationEndDateText
+                                </td>
+                                <td>
+                                    @Resources.Globalization.VacationPeriodText
+                                </td>
+                                <td>
+                                    @Resources.Globalization.VacationTypeText
+                                </td>
+                            </tr>
+                        </thead>
+                    </table>
+
+                    <br />
+
+                    <div class="alert alert-warning" style="padding:5px">
+                        <label class="control-label">@Resources.Globalization.ListVacationsElseIntersectWithRequestSamePeriodText  (@Model.OrganizationName)</label>
+                    </div>
+
+                    <table id="tblVacationsElseIntersectWithRequestSamePeriod" class="table table-responsive table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <td>
+                                    @Resources.Globalization.EmployeeCodeNoText
+                                </td>
+                                <td>
+                                    @Resources.Globalization.EmployeeNameArText
+                                </td>
+                                <td>
+                                    @Resources.Globalization.VacationStartDateText
+                                </td>
+                                <td>
+                                    @Resources.Globalization.VacationEndDateText
+                                </td>
+                                <td>
+                                    @Resources.Globalization.VacationPeriodText
+                                </td>
+                                <td>
+                                    @Resources.Globalization.VacationTypeText
+                                </td>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</div>

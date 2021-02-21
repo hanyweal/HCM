@@ -1,0 +1,26 @@
+﻿CREATE TABLE [dbo].[Scholarships] (
+    [ScholarshipID]        INT            IDENTITY (1, 1) NOT NULL,
+    [EmployeeCodeID]       INT            NOT NULL,
+    [ScholarshipTypeID]    INT            NOT NULL,
+    [Location]             NVARCHAR (151) NULL,
+    [ScholarshipStartDate] DATE           NOT NULL,
+    [ScholarshipEndDate]   DATE           NOT NULL,
+    [QualificationID]      INT            NULL,
+    [ScholarshipReason]    NVARCHAR (MAX) NULL,
+    [CreatedDate]          DATETIME       CONSTRAINT [DF_EmployeesScholarships_CreatedDate] DEFAULT (getdate()) NOT NULL,
+    [LastUpdatedDate]      DATETIME       NULL,
+    [KSACityID]            INT            NULL,
+    [CountryID]            INT            NULL,
+    [CreatedBy]            INT            NULL,
+    [IsCanceled]           BIT            CONSTRAINT [DF__Scholarsh__IsCan__629A9179] DEFAULT ((0)) NOT NULL,
+    [ScholarshipJoinDate]  DATE           NULL,
+    [IsPassed]             BIT            NULL,
+    CONSTRAINT [PK_EmployeesScholarships] PRIMARY KEY CLUSTERED ([ScholarshipID] ASC),
+    CONSTRAINT [FK_EmployeesScholarships_EmployeesCodes] FOREIGN KEY ([EmployeeCodeID]) REFERENCES [dbo].[EmployeesCodes] ([EmployeeCodeID]) ON DELETE CASCADE,
+    CONSTRAINT [FK_EmployeesScholarships_Qualifications] FOREIGN KEY ([QualificationID]) REFERENCES [dbo].[Qualifications] ([QualificationID]),
+    CONSTRAINT [FK_EmployeesScholarships_ScholarshipTypes] FOREIGN KEY ([ScholarshipTypeID]) REFERENCES [dbo].[ScholarshipsTypes] ([ScholarshipTypeID]),
+    CONSTRAINT [FK_Scholarships_Countries] FOREIGN KEY ([CountryID]) REFERENCES [dbo].[Countries] ([CountryID]),
+    CONSTRAINT [FK_Scholarships_EmployeesCodes] FOREIGN KEY ([CreatedBy]) REFERENCES [dbo].[EmployeesCodes] ([EmployeeCodeID]) ON UPDATE CASCADE,
+    CONSTRAINT [FK_Scholarships_KSACities] FOREIGN KEY ([KSACityID]) REFERENCES [dbo].[KSACities] ([KSACityID])
+);
+

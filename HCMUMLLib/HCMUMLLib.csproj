@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7C89ACAC-35E9-403C-B4CF-49F903EFE566}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HCMUMLLib</RootNamespace>
+    <AssemblyName>HCMUMLLib</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GeneratedCode\BaseVacation.cs" />
+    <Compile Include="GeneratedCode\CitiesBLL.cs" />
+    <Compile Include="GeneratedCode\CommonEntity.cs" />
+    <Compile Include="GeneratedCode\CompulsoryVacation.cs" />
+    <Compile Include="GeneratedCode\CompulsoryVacationBLL.cs" />
+    <Compile Include="GeneratedCode\DelegationPassengerOrderBLL.cs" />
+    <Compile Include="GeneratedCode\DelegationsBLL.cs" />
+    <Compile Include="GeneratedCode\EmployeeDelegationBLL .cs" />
+    <Compile Include="GeneratedCode\EmployeesBLL.cs" />
+    <Compile Include="GeneratedCode\EmployeesCareersHistoryBLL.cs" />
+    <Compile Include="GeneratedCode\EmployeesCodesBLL.cs" />
+    <Compile Include="GeneratedCode\EmployeesTypesEnum.cs" />
+    <Compile Include="GeneratedCode\ExceptionalVacation.cs" />
+    <Compile Include="GeneratedCode\ExceptionalVacationBLL.cs" />
+    <Compile Include="GeneratedCode\GovernmentDeductionsTypesBLL.cs" />
+    <Compile Include="GeneratedCode\GovernmentFundsBLL.cs" />
+    <Compile Include="GeneratedCode\GovernmentFundsTypesBLL.cs" />
+    <Compile Include="GeneratedCode\IEntity.cs" />
+    <Compile Include="GeneratedCode\InternshipsScolarshipPassengerOrderBLL.cs" />
+    <Compile Include="GeneratedCode\IPassengerOrderTypeDetails.cs" />
+    <Compile Include="GeneratedCode\IVacations.cs" />
+    <Compile Include="GeneratedCode\JobsBLL.cs" />
+    <Compile Include="GeneratedCode\JobsCategoriesBLL.cs" />
+    <Compile Include="GeneratedCode\JobsGeneralGroupsBLL.cs" />
+    <Compile Include="GeneratedCode\JobsGroupsBLL.cs" />
+    <Compile Include="GeneratedCode\NormalVacation.cs" />
+    <Compile Include="GeneratedCode\NormalVacationBLL.cs" />
+    <Compile Include="GeneratedCode\OrganizationsJobsBLL.cs" />
+    <Compile Include="GeneratedCode\OrganizationsStructureBLL.cs" />
+    <Compile Include="GeneratedCode\PassengerOrderTypeEnum.cs" />
+    <Compile Include="GeneratedCode\RanksBLL.cs" />
+    <Compile Include="GeneratedCode\RanksCategoriesBLL.cs" />
+    <Compile Include="GeneratedCode\Result.cs" />
+    <Compile Include="GeneratedCode\SickVacation.cs" />
+    <Compile Include="GeneratedCode\SickVacationBLL.cs" />
+    <Compile Include="GeneratedCode\VacationFactory.cs" />
+    <Compile Include="GeneratedCode\VacationsTypeEnum.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

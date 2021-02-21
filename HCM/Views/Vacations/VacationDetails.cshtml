@@ -1,0 +1,18 @@
+﻿@model HCM.Models.VacationsViewModel
+
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+}
+
+@Html.Partial("~/Views/Vacations/_VacationDetails.cshtml", Model)
+
+
+@*<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.glyphicon').css("display","none");
+    });
+
+</script>*@
+

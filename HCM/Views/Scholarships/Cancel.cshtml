@@ -1,0 +1,136 @@
+﻿@model HCM.Models.ScholarshipsCancelViewModel
+
+@{
+    ViewBag.Title = "Cancel";
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnCancel").confirm({
+            title: '@Resources.Globalization.CofirmationMessageTitle',
+            content: '@Resources.Globalization.ScholarshipCancelCofirmationMessageText',
+            animation: 'zoom',
+            boxWidth: '250px',
+            useBootstrap: false,
+            buttons: {
+                confirm: {
+                    action: function () {
+                        $("#btnCancel").submit();
+                    },
+                    btnClass: 'btn-blue',
+                    text: '@Resources.Globalization.ConfirmButtonText',
+                },
+                cancel: {
+                    action: function () { },
+                    text: '@Resources.Globalization.CancelButtonText',
+                },
+            },
+        });
+
+    });
+
+    function OkFunction() {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/Scholarships/PrintScholarship/")' + '@Model.ScholarshipID');
+        ShowModal("#divReportModal");
+    }
+
+  function OnSuccess() {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        BindScholarshipDetails();
+    }
+
+</script>
+
+
+<p style="font-size:larger">@Resources.Globalization.ScholarshipCancelText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.ScholarshipCancelDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+                @*@Html.Action("Index", "BusinessRules", new { id = (Int32)BusinessSubCategoriesEnum.Delegations })*@
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Cancel", "Scholarships", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <div id="divScholarshipExtend">
+                <table class="table table-responsive" style="width:100%">
+                    <tr class="col-md-12">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.ScholarshipStartDate, new { @class = "control-label" })
+                            @Html.HiddenFor(model => model.ScholarshipID)
+                            @Html.HiddenFor(model => model.ScholarshipTypeID)
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.ScholarshipStartDate, new
+                       {
+                           @class = "form-control",
+                           @id = "txtScholarshipStartDate",
+                           @readonly = "readonly",
+                           @Value = Model.ScholarshipStartDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                       })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.ScholarshipPeriod, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.ScholarshipPeriod, new { @class = "form-control", @id = "txtScholarshipPeriod", @readonly = "readonly" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.ScholarshipEndDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextBoxFor(model => model.ScholarshipEndDate, new
+                       {
+                           @class = "form-control",
+                           @id = "txtScholarshipEndDate",
+                           @readonly = "readonly",
+                           @Value = Model.ScholarshipEndDate.Value.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                       })
+                        </td>
+                    </tr>
+                    <tr class="col-md-12">
+                        <td class="col-md-2">
+                            @Html.LabelFor(model => model.Notes, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-2">
+                            @Html.TextAreaFor(model => model.Notes, new { @class = "form-control", @id = "txtNotes" })
+                        </td>
+                    </tr>
+                </table>
+                <table class="table table-responsive" style="width:100%">
+                    <tr>
+                        <td class="col-md-12" style="text-align:left">
+                            <input type="submit" id="btnCancel" value="@Resources.Globalization.ScholarshipCancelText" class="btn btn-default" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        }
+
+        @Html.Partial("~/Views/Scholarships/_ScholarshipDetails.cshtml", new HCM.Models.ScholarshipsViewModel() { ScholarshipID = @Model.ScholarshipID })
+    </div>
+</div>

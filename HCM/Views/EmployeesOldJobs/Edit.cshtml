@@ -1,0 +1,139 @@
+﻿@model HCM.Models.EmployeesOldJobsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.EditEmployeeOldJobText;
+}
+
+<script type="text/javascript">
+
+    
+
+    $(document).ready(function () {
+        GetEmployeeData(@Model.EmployeeCodeID);
+    });
+
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.EditEmployeeOldJobText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EditEmployeeOldJobDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Edit", "EmployeesOldJobs", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.EmployeeOldJobBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobName, new { @class = "control-label" })
+                            @Html.HiddenFor(model => model.EmployeeOldJobID)
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.OrganizationName, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.RankName, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.JobName, new { @class = "form-control", @id = "txtJobName" })
+                            @Html.ValidationMessageFor(model => model.JobName, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.OrganizationName, new { @class = "form-control", @id = "txtOrganizationName" })
+                            @Html.ValidationMessageFor(model => model.OrganizationName, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.RankName, new { @class = "form-control", @id = "txtRankName" })
+                            @Html.ValidationMessageFor(model => model.RankName, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.CareerDegreeName, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.EmployeeOldJobStartDate, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.EmployeeOldJobEndDate, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.CareerDegreeName, new { @class = "form-control", @id = "txtCareerDegreeName" })
+                            @Html.ValidationMessageFor(model => model.CareerDegreeName, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.EmployeeOldJobStartDate, new { @class = "form-control TxtHijriPicker", @id = "txtEmployeeOldJobStartDate", @Value = Model.EmployeeOldJobStartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) })
+                            @Html.ValidationMessageFor(model => model.EmployeeOldJobStartDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.EmployeeOldJobEndDate, new { @class = "form-control TxtHijriPicker", @id = "txtEmployeeOldJobEndDate", @Value = Model.EmployeeOldJobEndDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"]) })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+
+   
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                @*<input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />*@
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "EmployeesOldJobs"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+
+
+

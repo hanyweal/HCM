@@ -1,0 +1,130 @@
+﻿@model HCM.Models.OrganizationsJobsViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.AddNewOrganizationJobText;
+}
+
+<script type="text/javascript">
+
+    function ResizeModal(h) {
+        iframe.css('height', h);
+        $('#divModal .modal-body').css('height', h);
+    }
+
+    function OnSuccess() {
+        Reset();
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Reset() {
+        $('#ddlRanks').val(0);
+        $('#txtJobNo').val('');
+        $('#txtJobOperationDate').val('');
+        $('#ddlOrganizationsJobsStatus').val(1);
+        ResetOrganization();
+        ResetJob();
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.AddNewOrganizationJobText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.AddNewOrganizationJobDescText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Create", "OrganizationJob", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.OrganizationJobBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobNo, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.OrganizationName, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.JobName, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.JobNo, new { @class = "form-control", @id = "txtJobNo", @type = "number" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.Partial("~/Views/Shared/_OrganizationStructurePopup.cshtml", new OrganizationStructureViewModel() { })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.Partial("~/Views/Shared/_JobsPopup.cshtml", new JobsViewModel() { })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.RankName, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.LabelFor(model => model.OrganizationJobStatusID, new { @class = "control-label" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.Label(Resources.Globalization.JobOperationDateText, new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.RankID, new SelectList(new HCMBLL.RanksBLL().GetRanks(), "RankID", "RankName"), new { @id = "ddlRanks", @style = "width:100%" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.DropDownListFor(model => model.OrganizationJobStatusID, new SelectList(new HCMBLL.OrganizationsJobsStatusBLL().GetOrganizationsJobsStatus(), "OrganizationJobStatusID", "OrganizationJobStatusName"), new { @id = "ddlOrganizationsJobsStatus", @style = "width:100%" })
+                        </td>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.JobOperationDate, new { @class = "TxtHijriPicker form-control", @id = "txtJobOperationDate", @readonly = "readonly" })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                                <input type="reset" class="btn btn-default" value="@Resources.Globalization.ResetText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "OrganizationJob"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@
+

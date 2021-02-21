@@ -1,0 +1,126 @@
+﻿
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title - @Resources.Globalization.ApplicationNameText</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/javascript")
+    @Scripts.Render("~/bundles/orgChart")
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+             GetUserIdentityInfo();
+        });
+
+        function GetUserIdentityInfo() {
+                $.ajax({
+                    type: "GET"
+                     , url: "@Url.Content("/BaseEServices/GetUserIdentityInfo")"
+                     , success: function (d) {
+                         if (d.data != null) {
+                             $("#divUserIdentityKnown").show();
+                             $("#divUserIdentityNotKnown").hide();
+                             $("#hdnFldUserCodeID").val(d.data.UserCodeID);
+                             $("#txtUserName").html(d.data.UserCodeNo + " - " + d.data.UserName);
+                             $("#txtUserIDNo").html(d.data.UserIDNo);
+                             $("#txtUserOrganizationName").html(d.data.OrganizationName);
+                             $("#txtUserJobName").html(d.data.JobName);
+                             document.getElementById("imgEmployeePicture").src = "data:image/jpg;base64," + d.data.UserPicture;
+                         }
+                         else {
+                              $("#divUserIdentityKnown").hide();
+                              $("#divUserIdentityNotKnown").show();
+                         }
+                     }
+                     , error: function (xhr, status, error) {
+                        alert(error.error);
+                     }
+                });
+        }
+
+    </script>
+
+</head>
+<body>
+    <table class="table table-condensed table-striped table-responsive">
+        <tr>
+            <td style="width:8%;border-left: solid;border-left-color: lightgray;border-width: thin;padding-right:10px">
+                <img id="imgAppLogo" style="width:120px;height:70px" src="/Content/Images/AppLogo.png" />
+            </td>
+            <td style="width:30%;padding-right:10px">
+
+                <table>
+                    <tr>
+                        <td>
+                            <img id="imgEmployeePicture" style="width:70px;height:70px" src="~/Content/Images/anonymous.png" />
+                        </td>
+                        <td style="padding-right:15px">
+                            <div id="divUserIdentityNotKnown" hidden>
+                                <div class="row alert alert-danger bold text-center">
+                                    @Resources.Globalization.UnKnownUserText
+                                </div>
+                            </div>
+                            <div id="divUserIdentityKnown" hidden>
+                                <table style="font-size:small">
+                                    <tr>
+                                        <td>
+                                            <label id="txtUserName" />
+                                            <input type="hidden" id="hdnFldUserCodeID" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label id="txtUserOrganizationName" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label id="txtUserJobName" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+            </td>
+            <td>
+                <div id="divApplicationEnvironment" class="application-name" style="margin-bottom:10px">
+                    @{
+                        var ApplicationEnviroment = System.Configuration.ConfigurationManager.AppSettings["Environment"].ToString();
+                        if (ApplicationEnviroment == "dev")
+                        {
+                            <b class="text text-danger">@Resources.Globalization.DevTrialText -</b>
+                        }
+                        else if (ApplicationEnviroment == "test")
+                        {
+                            <b class="text text-danger">@Resources.Globalization.TestTrialText -</b>
+                        }
+
+                    }  <b class="text text-danger">@ViewBag.Title</b>
+                </div>
+            </td>
+            <td class="text-left" style="padding-left:10px">
+                <img id="imgAppLogo" style="width: 70px; height: 70px" src="~/Content/Images/ITLogo.png" />
+            </td>
+        </tr>
+    </table>
+
+    <br />
+
+    @RenderBody()
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/javascript")
+    @RenderSection("scripts", required: false)
+    <div id="divAlert"></div>
+    @Html.Partial("~/Views/Shared/_Spinner.cshtml")
+</body>
+</html>

@@ -1,0 +1,1864 @@
+﻿@using HCM.Classes.Enums;
+
+@{
+    Layout = "~/Views/Shared/_EServiecsLayout.cshtml";
+    ViewBag.Title = Resources.Globalization.ManagerDashboardText;
+}
+
+
+<style>
+    .chart-Container {
+        width: 100%;
+        height: 350px;
+        border: 5px solid #ddd;
+        border-radius: 10px;
+        padding: 10px;
+        background-color: #f5f5f5;
+        box-shadow: 0 2px 50px rgba(0,0,0,0.2);
+    }
+</style>
+
+<script type="text/javascript">
+
+    var backgroundColor = [
+        "RGB(111, 149, 164,.5)",
+        "RGB(227, 73, 73 ,.5)",
+        "RGB(119, 37, 37 ,.5)",
+        "RGB(41, 54, 226 ,.5)",
+        "RGB(216, 146, 164,.5)",
+        "RGB(69, 178, 144 ,.5)",
+        "RGB(241, 221, 26,.5)",
+    ];
+
+    var bordercolor = [
+        "RGBA(242,77,54)",
+        "RGBA(305,65,54)",
+        "RGBA(125,22,92)",
+        "RGBA(242,77,54)",
+        "RGBA(305,65,54)",
+        "RGBA(125,22,92)",
+        "RGBA(242,77,54)",
+    ];
+
+    var options = {
+        maintainAspectRatio: false,
+        responsive: true,
+        layout:
+        {
+            padding: {
+                top : "30"
+            },
+        },
+        "hover": {
+            "animationDuration" : 0
+        },
+        "animation": {
+                "onComplete" : function () {
+                var chartInstance = this.chart;
+                var ctx = chartInstance.ctx;
+                        //var ctx = this.chart.ctx;
+                        //ctx.fillStyle = this.scale.textColor;
+                        //ctx.font = this.scale.font;
+                ctx.textAlign = 'center';
+                ctx.textBaseLine = 'bottom';
+                this.data.datasets.forEach(function (dataset, i) {
+                    var meta = chartInstance.controller.getDatasetMeta(i);
+                    meta.data.forEach(function (bar, index) {
+                        var data = dataset.data[index];
+                                ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                     });
+                 });
+                },
+        },
+        onClick: function (e) {
+            //var xLabel = this.scales["x-axis-0"].getValueForPixel(e.offsetX);
+            //alert(xLabel);
+        },
+        scales: {
+            yAxes: [{
+                ticks: { beginAtZero: true },
+                stacked: true,
+            }],
+            xAxes: [{
+                display: true,
+                stacked: true,
+                scaleLabel: {
+                    display: false
+                },
+                //ticks: {
+                //    callback: function (value, index, values) {
+                //        return "$" + value;
+                //    }
+                //},
+            }]
+        },
+        legend: {
+            display: false,
+        }
+    };
+
+    var Timer = 500;
+
+    $(document).ready(function () {
+
+        $("#txtVacationDate").val(RenderDate(new Date()));
+        $("#txtDelegationFromDate").val(RenderDate(new Date()));
+        $("#txtDelegationToDate").val(RenderDate(new Date()));
+        $("#txtOverTimeFromDate").val(RenderDate(new Date()));
+        $("#txtOverTimeToDate").val(RenderDate(new Date()));
+
+        GetUserIdentityInfo("false");
+        BindManagerOrganizationsTree();
+
+        BindQualificationsDegrees();
+        BindVacationsTypes();
+        BindDelegationsTypes();
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+        }
+    });
+
+    function BindManagerOrganizationsTree() {
+        $.ajax({
+            type: "GET"
+            , dataType: "json"
+            , contentType: "application/json; charset=utf-8"
+            , url: "@Url.Content("/ManagerDashboard/GetManagerOrganizationsWithChilds/")"
+            , success: function (d) {
+                $('#divManagerOrganizationsTree').treeview({
+                    //data: '[' + JSON.stringify(d.data).replace(/OrganizationName/g, "text").replace(/ChildOrganization/g, "nodes") + ']',
+                    data: JSON.stringify(d.data).replace(/OrganizationName/g, "text").replace(/ChildOrganization/g, "nodes"),
+                    levels: 2, // for default expanded
+                    backColor: 'white',
+                    showBorder: true,
+                    selectedBackColor: '#2D3E50',
+                    selectedBackColor: '#2D3E50',
+                    searchResultBackColor: '#2D3E50',
+                    searchResultColor: 'white',
+                    onNodeSelected: function (event, data) {
+                        $('#hdnFldOrganizationID').val(data.OrganizationID);
+                        $('#hdnFldOrganizationName').val(data.text);
+                        $('#lblSelectedOrganizationText').css('font-weight', 'normal');
+                        $('#lblSelectedOrganizationText').html("الجهة المختارة لعرض البيانات الخاصة بها هي : ");
+                        $('#lblSelectedOrganization').html(data.text);
+                        $('#divSelectedOrganization').removeClass('alert-danger').addClass('alert-info');
+                        var CallBackFnName = 'OnOrganizationStructureNodeSelected';
+                        if (typeof CallBackFnName !== 'undefined' && $.isFunction(window[CallBackFnName])) {
+                            window[CallBackFnName]();
+                        }
+                    }
+                });
+            }
+            , error: function (xhr, status, error) {
+                alert(xhr.responseText);
+            },
+        });
+    }
+
+    //--------------------------------------------------------------------------------------------------------------//
+
+    function BindChartActualEmployeesAsRanksCategories() {
+        if ($("#hdnFldOrganizationID").val() == '') {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure,Globals.Utilities.RemoveSpace(@Resources.Globalization.NoSelectedOganizationToShowStatisticsText))');
+        }
+        else {
+            var OrganizationID = $("#hdnFldOrganizationID").val();
+
+            // reset CanvasActualEmployees
+            var CanvasActualEmployeesAsRanksCategories = $("#CanvasActualEmployeesAsRanksCategories");
+            CanvasActualEmployeesAsRanksCategories.remove();
+            $("#divActualEmployeesAsRanksCategories").append("<canvas id='CanvasActualEmployeesAsRanksCategories'></canvas>");
+
+            $.ajax({
+                type: "GET"
+                , url: "@Url.Content("/ManagerDashboard/GetActualEmployeesAsRanksCategories/")" + OrganizationID
+                , success: function (d) {
+
+                    $("#divActualEmployeesContainerAsDetails").fadeOut(Timer, function () {
+                        $("#divActualEmployeesContainerAsRanks").fadeOut(Timer, function () {
+                            $("#divActualEmployeesContainerAsRanksCategories").fadeIn(Timer);
+                        });
+                    });
+
+                     if (d.data.length != 0)
+                          $("#btnShowActualEmployeesRanksCategoriesDetails").removeClass("hidden");
+                      else
+                          $("#btnShowActualEmployeesRanksCategoriesDetails").addClass("hidden");
+
+                    var CanvasActualEmployeesAsRanksCategories = $("#CanvasActualEmployeesAsRanksCategories");
+                    var ActualEmployeesValues = d.data.map(function (e) { return e.Value });
+                    var ActualEmployeesRanksCategories = d.data.map(function (e) { return e.KeyName });
+                    var ChartActualEmployeesAsRanksCategories = new Chart(CanvasActualEmployeesAsRanksCategories, {
+                        type: "bar",
+                        data: {
+                            labels: ActualEmployeesRanksCategories,
+                            datasets: [{
+                                data: ActualEmployeesValues,
+                                @*//data: JSON.stringify('@Model[0].Value'),*@
+                                backgroundColor: backgroundColor,
+                                bordercolor: bordercolor,
+                                borderwidth: 1
+                            }],
+                        },
+
+                        options: options
+                    });
+
+                    CanvasActualEmployeesAsRanksCategories.click(function (evt) {
+                        var activePoint = ChartActualEmployeesAsRanksCategories.getElementAtEvent(evt)[0];
+                        var data = activePoint._chart.data;
+                        var datasetIndex = activePoint._datasetIndex;
+                        var label = data.labels[activePoint._index];
+                        var value = data.datasets[datasetIndex].data[activePoint._index];
+  
+                        $("#hdnFldSelectedActualEmployeesRankCategoryName").val(label);
+
+                        BindChartActualEmployeesAsRanks(label);
+
+                        $("#divActualEmployeesContainerAsRanksCategories").fadeOut("1000", function () {
+                            $("#divActualEmployeesContainerAsRanks").fadeIn("1000");
+                        });
+                    });
+                }
+                , error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
+        }
+    }
+
+    function BindChartActualEmployeesAsRanks(RankCategoryName) {
+
+        // reset CanvasActualEmployees
+        var CanvasActualEmployeesAsRanks = $("#CanvasActualEmployeesAsRanks");
+
+        CanvasActualEmployeesAsRanks.remove();
+
+        $("#divActualEmployeesAsRanks").append("<canvas id='CanvasActualEmployeesAsRanks'></canvas>");
+
+        $.ajax({
+                type: "GET"
+                , url: "@Url.Content("/ManagerDashboard/GetActualEmployeesAsRanks/")" + RankCategoryName
+                , success: function (d) {
+
+                    var CanvasActualEmployeesAsRanks = $("#CanvasActualEmployeesAsRanks");
+                    var ActualEmployeesValues = d.data.map(function (e) { return e.Value });
+                    var ActualEmployeesRanks = d.data.map(function (e) { return e.KeyName });
+                    var ChartActualEmployeesAsRanks = new Chart(CanvasActualEmployeesAsRanks, {
+                        type:"bar",
+                        data: {
+                            labels: ActualEmployeesRanks,
+                            datasets: [{
+                                data: ActualEmployeesValues,
+                                 backgroundColor: backgroundColor,
+                                bordercolor: bordercolor,
+                                borderwidth: 1
+                            }],
+                        },
+                        options: options
+                    });
+
+                    CanvasActualEmployeesAsRanks.click(function (evt) {
+                        var activePoint = ChartActualEmployeesAsRanks.getElementAtEvent(evt)[0];
+                        var data = activePoint._chart.data;
+                        var datasetIndex = activePoint._datasetIndex;
+                        var label = data.labels[activePoint._index];
+                        //var value = data.datasets[datasetIndex].data[activePoint._index];
+                       
+                        BindActualEmployeesAsDetails(null,label);
+
+                        $("#divActualEmployeesContainerAsRanks").fadeOut(Timer, function () {
+                            $("#divActualEmployeesContainerAsDetails").fadeIn(Timer);
+                        });
+                    });
+                }
+                , error: function (xhr, status, error) {
+                     alert(xhr.responseText);
+                }
+        });
+    }
+
+    function BindActualEmployeesAsDetails(DetailsType,Value) {
+
+        if (DetailsType == "RanksCategories") {
+            var url = "/ManagerDashboard/GetActualEmployeesAsRanksCategoriesDetails/";
+            $("#divActualEmployeesContainerAsRanksCategories").fadeOut(Timer, function () {
+                $("#divActualEmployeesContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        else if (DetailsType == "Ranks") {
+            var url = "/ManagerDashboard/GetActualEmployeesAsRanksDetails/" + Value;
+            $("#divActualEmployeesContainerAsRanks").fadeOut(Timer, function () {
+                $("#divActualEmployeesContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        else {
+            var url = "/ManagerDashboard/GetActualEmployeesAsDetails/" + Value;
+            $("#divActualEmployeesContainerAsRanks").fadeOut(Timer, function () {
+                $("#divActualEmployeesContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        $("#tblActualEmployeesAsDetails").DataTable({
+            "destroy": true,
+            "ajax": {
+                "url": url,
+                "type": "get",
+                "datatype": "json"
+            },
+            dom: 'Bfrtip',
+            "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "OrganizationName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "JobName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "RankCategoryName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true,
+                }
+            ]
+        });
+    }
+
+    //function BackToActualEmployeesAsRanksCategories() {
+    //     $("#divActualEmployeesContainerAsRanks").fadeOut(Timer, function () {
+    //         $("#divActualEmployeesContainerAsRanksCategories").fadeIn(Timer);
+    //     });
+    //}
+
+    function BackToActualEmployees() {
+        $("#divActualEmployeesContainerAsDetails").fadeOut(Timer, function () {
+            $("#divActualEmployeesContainerAsRanks").fadeOut(Timer, function () {
+                $("#divActualEmployeesContainerAsRanksCategories").fadeIn(Timer);
+            })  
+        });
+    }
+
+    //--------------------------------------------------------------------------------------------------------------//
+
+    function BindQualificationsDegrees() {
+        $.ajax({
+            type: "GET"
+            , url: "@Url.Content("/Qualifications/GetQualificationsDegrees/")"
+            , success: function (d) {
+                $("#ddlQualificationsDegrees").html("");
+                var QualificationsDegrees = d.data;
+                $.each(QualificationsDegrees, function (i, QualificationDegree) {
+                    $("#ddlQualificationsDegrees").append($('<option></option>').val(QualificationDegree.QualificationDegreeID).html(QualificationDegree.QualificationDegreeName));
+                });
+                BindQualifications($("#ddlQualificationsDegrees").val());
+            }
+            , error: function (xhr, status, error) {
+                alert(error.error);
+            }
+        });
+    }
+
+    function BindQualifications(QualificationDegreeID) {
+        $.ajax({
+            type: "GET"
+            , url: "@Url.Content("/Qualifications/GetQualifications/")" + QualificationDegreeID
+            , success: function (d) {
+                $("#ddlQualifications").html("");
+                var Qualifications = d.data;
+                $("#ddlQualifications").append($('<option></option>').val("0").html('@Resources.Globalization.AllText'));
+                $.each(Qualifications, function (i, Qualification) {
+                    $("#ddlQualifications").append($('<option></option>').val(Qualification.QualificationID).html(Qualification.QualificationName));
+                });
+                 BindGeneralSpecializations($("#ddlQualifications").val());
+            }
+            , error: function (xhr, status, error) {
+                alert(error.error);
+            }
+        });
+    }
+
+    function BindGeneralSpecializations(QualificationID) {
+        $.ajax({
+            type: "GET"
+            , url: "@Url.Content("/Qualifications/GetGeneralSpecializations/")" + QualificationID
+            , success: function (d) {
+                $("#ddlGeneralSpecializations").html("");
+                var GeneralSpecializations = d.data;
+                $("#ddlGeneralSpecializations").append($('<option></option>').val("0").html('@Resources.Globalization.AllText'));
+                $.each(GeneralSpecializations, function (i, GeneralSpecialization) {
+                    $("#ddlGeneralSpecializations").append($('<option></option>').val(GeneralSpecialization.GeneralSpecializationID).html(GeneralSpecialization.GeneralSpecializationName));
+                });
+            }
+            , error: function (xhr, status, error) {
+                alert(error.error);
+            }
+        });
+    }
+
+    function BindChartEmployeesQualificationsAsRanksCategories() {
+        if ($("#hdnFldOrganizationID").val()=='') {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure,Globals.Utilities.RemoveSpace(@Resources.Globalization.NoSelectedOganizationToShowStatisticsText))');
+        }
+        else {
+            var QualificationDegreeID = $("#ddlQualificationsDegrees").val();
+            var QualificationID = $("#ddlQualifications").val();
+            var GeneralSpecializationID = $("#ddlGeneralSpecializations").val();
+            var OrganizationID = $("#hdnFldOrganizationID").val();
+
+            // reset CanvasEmployeesQualifications
+            var CanvasEmployeesQualificationsAsRanksCategories = $("#CanvasEmployeesQualificationsAsRanksCategories");
+            CanvasEmployeesQualificationsAsRanksCategories.remove();
+            $("#divEmployeesQualificationsAsRanksCategories").append("<canvas id='CanvasEmployeesQualificationsAsRanksCategories'></canvas>");
+
+            $.ajax({
+                type: "GET"
+                , url: "@Url.Content("/ManagerDashboard/GetEmployeesQualificationsAsRanksCategories/")" + QualificationDegreeID + "/" + QualificationID + "/" + GeneralSpecializationID + "/" + OrganizationID
+                , success: function (d) {
+                    @*var EmployeesQualificationsValues = @Html.Raw(Json.Encode(ViewBag.Values));
+                    var EmployeesQualificationsRanksCategories = @Html.Raw(Json.Encode(ViewBag.RanksCategories));*@
+
+                    $("#divEmployeesQualificationsContainerAsDetails").fadeOut(Timer, function () {
+                        $("#divEmployeesQualificationsContainerAsRanks").fadeOut(Timer, function () {
+                            $("#divEmployeesQualificationsContainerAsRanksCategories").fadeIn(Timer);
+                        });
+                    });
+
+                    
+                    if (d.data.length != 0)
+                        $("#btnShowRanksCategoriesDetails").removeClass("hidden");
+                    else
+                        $("#btnShowRanksCategoriesDetails").addClass("hidden");
+
+                    var CanvasEmployeesQualificationsAsRanksCategories = $("#CanvasEmployeesQualificationsAsRanksCategories");
+                    var EmployeesQualificationsValues = d.data.map(function (e) { return e.Value });
+                    var EmployeesQualificationsRanksCategories = d.data.map(function (e) { return e.KeyName });
+                    var ChartEmployeesQualificationsAsRanksCategories = new Chart(CanvasEmployeesQualificationsAsRanksCategories, {
+                        type: "bar",
+                        data: {
+                            labels: EmployeesQualificationsRanksCategories,
+                            datasets: [{
+                                data: EmployeesQualificationsValues,
+                                @*//data: JSON.stringify('@Model[0].Value'),*@
+                                backgroundColor: backgroundColor,
+                                bordercolor: bordercolor,
+                                borderwidth: 1
+                            }],
+                        },
+                        options: options
+                    });
+
+                    CanvasEmployeesQualificationsAsRanksCategories.click(function (evt) {
+                        var activePoint = ChartEmployeesQualificationsAsRanksCategories.getElementAtEvent(evt)[0];
+                        var data = activePoint._chart.data;
+                        var datasetIndex = activePoint._datasetIndex;
+                        var label = data.labels[activePoint._index];
+                        //var value = data.datasets[datasetIndex].data[activePoint._index];
+
+                        $("#hdnFldSelectedEmployeesQualificationsRankCategoryName").val(label);
+
+                        BindChartEmployeesQualificationsAsRanks(label);
+
+                        $("#divEmployeesQualificationsContainerAsRanksCategories").fadeOut(Timer, function () {
+                            $("#divEmployeesQualificationsContainerAsRanks").fadeIn(Timer);
+                        });
+                    });
+                }
+                , error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
+        }
+    }
+
+    function BindChartEmployeesQualificationsAsRanks(RankCategoryName)
+    {
+        //var QualificationDegreeID = $("#ddlQualificationsDegrees").val();
+        //var QualificationID = $("#ddlQualifications").val();
+        //var GeneralSpecializationID = $("#ddlGeneralSpecializations").val();
+        //var OrganizationID = $("#hdnFldOrganizationID").val();
+
+        // reset CanvasEmployeesQualifications
+        var CanvasEmployeesQualificationsAsRanks = $("#CanvasEmployeesQualificationsAsRanks");
+        CanvasEmployeesQualificationsAsRanks.remove();
+
+        $("#divEmployeesQualificationsAsRanks").append("<canvas id='CanvasEmployeesQualificationsAsRanks'></canvas>");
+
+        $.ajax({
+            type: "GET"
+            , url: "@Url.Content("/ManagerDashboard/GetEmployeesQualificationsAsRanks/")" + RankCategoryName
+            , success: function (d) {
+
+                var CanvasEmployeesQualificationsAsRanks = $("#CanvasEmployeesQualificationsAsRanks");
+                var EmployeesQualificationsValues = d.data.map(function (e) { return e.Value });
+                var EmployeesQualificationsRanks = d.data.map(function (e) { return e.KeyName });
+                var ChartEmployeesQualificationsAsRanks = new Chart(CanvasEmployeesQualificationsAsRanks, {
+                    type:"bar",
+                    data: {
+                        labels: EmployeesQualificationsRanks,
+                        datasets: [{
+                            //label: "المؤهلات العلمية للموظفين المكلفيين للجهة المختارة على حسب المراتب",
+                            data: EmployeesQualificationsValues,
+                            backgroundColor: backgroundColor,
+                            bordercolor: bordercolor,
+                            borderwidth: 1
+                        }],
+                    },
+                    options:options
+                });
+
+                CanvasEmployeesQualificationsAsRanks.click(function (evt) {
+                    var activePoint = ChartEmployeesQualificationsAsRanks.getElementAtEvent(evt)[0];
+                    var data = activePoint._chart.data;
+                    var datasetIndex = activePoint._datasetIndex;
+                    var label = data.labels[activePoint._index];
+                    //var value = data.datasets[datasetIndex].data[activePoint._index];
+
+                    BindEmployeesQualificationsAsDetails(null,label);
+
+                    $("#divEmployeesQualificationsContainerAsRanks").fadeOut(Timer, function () {
+                        $("#divEmployeesQualificationsContainerAsDetails").fadeIn(Timer);
+                    });
+                });
+            }
+            , error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+            }
+        });
+    }
+
+    function BindEmployeesQualificationsAsDetails(DetailsType,Value) {
+
+        //var QualificationDegreeID = $("#ddlQualificationsDegrees").val();
+        //var QualificationID = $("#ddlQualifications").val();
+        //var GeneralSpecializationID = $("#ddlGeneralSpecializations").val();
+        //var OrganizationID = $("#hdnFldOrganizationID").val();
+
+        if (DetailsType == "RanksCategories") {
+            var url = "/ManagerDashboard/GetEmployeesQualificationsAsRanksCategoriesDetails/";
+            $("#divEmployeesQualificationsContainerAsRanksCategories").fadeOut(Timer, function () {
+                $("#divEmployeesQualificationsContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        else if (DetailsType == "Ranks") {
+            var url = "/ManagerDashboard/GetEmployeesQualificationsAsRanksDetails/" + Value;
+            $("#divEmployeesQualificationsContainerAsRanks").fadeOut(Timer, function () {
+                $("#divEmployeesQualificationsContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        else {
+             var url = "/ManagerDashboard/GetEmployeesQualificationsAsDetails/" + Value;
+             $("#divEmployeesQualificationsContainerAsRanks").fadeOut(Timer, function () {
+                $("#divEmployeesQualificationsContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+
+        $("#tblEmployeesQualificationsAsDetails").DataTable({
+            "destroy":true,
+            "ajax": {
+                //"url": "/ManagerDashboard/GetEmployeesQualificationsAsDetails/" + QualificationDegreeID +  "/" + QualificationID + "/" + GeneralSpecializationID + "/" + RankName  + "/" + OrganizationID,
+                "url": url,
+                "type": "get",
+                "datatype": "json",
+                //"data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+              dom: 'Bfrtip',
+            "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "OrganizationName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "JobName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "RankCategoryName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "QualificationDegreeName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "QualificationName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "GeneralSpecializationName",
+                    "autowidth": true,
+                }
+            ]
+        });
+    }
+
+    //function BackToEmployeesQualificationsAsRanksCategories() {
+    //     $("#divEmployeesQualificationsContainerAsRanks").fadeOut(Timer, function () {
+    //         $("#divEmployeesQualificationsContainerAsRanksCategories").fadeIn(Timer);
+    //     });
+    //}
+
+    function BackToEmployeesQualifications() {
+        $("#divEmployeesQualificationsContainerAsDetails").fadeOut(Timer, function () {
+            $("#divEmployeesQualificationsContainerAsRanks").fadeOut(Timer, function () {
+                $("#divEmployeesQualificationsContainerAsRanksCategories").fadeIn(Timer);
+            })  
+        });
+    }
+
+    //--------------------------------------------------------------------------------------------------------------//
+
+    function BindVacationsTypes() {
+        $.ajax({
+            type: "GET"
+            , url: "@Url.Content("/Vacations/GetVacationsType/")" + "0" // to get all vacation types (male + female)
+            , success: function (d) {
+                var VacationsTypes = d.data;
+                $("#ddlVacationsTypes").append($('<option></option>').val("0").html('@Resources.Globalization.AllText'));
+                $.each(VacationsTypes, function (i, VacationType) {
+                    $("#ddlVacationsTypes").append($('<option></option>').val(VacationType.VacationTypeID).html(VacationType.VacationTypeName));
+                });
+            }
+            , error: function (xhr, status, error) {
+                alert(error.error);
+            }
+        });
+    }
+
+    function BindChartEmployeesVacationsAsRanksCategories() {
+        if ($("#hdnFldOrganizationID").val() == '') {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure,Globals.Utilities.RemoveSpace(@Resources.Globalization.NoSelectedOganizationToShowStatisticsText))');
+        }
+        else {
+
+            var VacationDate = $("#txtVacationDate").val();
+            var VacationTypeID = $("#ddlVacationsTypes").val();
+            var OrganizationID = $("#hdnFldOrganizationID").val();
+
+            // reset CanvasEmployeesVacations
+            var CanvasEmployeesVacationsAsRanksCategories = $("#CanvasEmployeesVacationsAsRanksCategories");
+            CanvasEmployeesVacationsAsRanksCategories.remove();
+            $("#divEmployeesVacationsAsRanksCategories").append("<canvas id='CanvasEmployeesVacationsAsRanksCategories'></canvas>");
+
+            $.ajax({
+                type: "GET"
+                , url: "@Url.Content("/ManagerDashboard/GetEmployeesVacationsAsRanksCategories/")" + VacationTypeID + "/" + VacationDate + "/" + OrganizationID
+                , success: function (d) {
+
+
+                    $("#divEmployeesVacationsContainerAsDetails").fadeOut(Timer, function () {
+                        $("#divEmployeesVacationsContainerAsRanks").fadeOut(Timer, function () {
+                            $("#divEmployeesVacationsContainerAsRanksCategories").fadeIn(Timer);
+                        });
+                    });
+
+                    if (d.data.length != 0)
+                        $("#btnShowEmployeesVacationsRanksCategoriesDetails").removeClass("hidden");
+                    else
+                        $("#btnShowEmployeesVacationsRanksCategoriesDetails").addClass("hidden");
+
+                    var CanvasEmployeesVacationsAsRanksCategories = $("#CanvasEmployeesVacationsAsRanksCategories");
+                    var EmployeesVacationsValues = d.data.map(function (e) { return e.Value });
+                    var EmployeesVacationsRanksCategories = d.data.map(function (e) { return e.KeyName });
+                    var ChartEmployeesVacationsAsRanksCategories = new Chart(CanvasEmployeesVacationsAsRanksCategories, {
+                        type: "bar",
+                        data: {
+                            labels: EmployeesVacationsRanksCategories,
+                            datasets: [{
+
+                                data: EmployeesVacationsValues,
+                                backgroundColor: backgroundColor,
+                                bordercolor: bordercolor,
+                                borderwidth: 1
+                            }],
+                        },
+                        options: options
+                    });
+
+                    CanvasEmployeesVacationsAsRanksCategories.click(function (evt) {
+                        var activePoint = ChartEmployeesVacationsAsRanksCategories.getElementAtEvent(evt)[0];
+                        var data = activePoint._chart.data;
+                        var datasetIndex = activePoint._datasetIndex;
+                        var label = data.labels[activePoint._index];
+                        //var value = data.datasets[datasetIndex].data[activePoint._index];
+
+                        $("#hdnFldSelectedEmployeesVacationsRankCategoryName").val(label);
+
+                        BindChartEmployeesVacationsAsRanks(label);
+
+                        $("#divEmployeesVacationsContainerAsRanksCategories").fadeOut(Timer, function () {
+                            $("#divEmployeesVacationsContainerAsRanks").fadeIn(Timer);
+                        });
+                    });
+                }
+                , error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
+        }
+    }
+
+    function BindChartEmployeesVacationsAsRanks(RankCategoryName) {
+        //var VacationDate = $("#txtVacationDate").val();
+        //var VacationTypeID = $("#ddlVacationsTypes").val();
+        //var OrganizationID = $("#hdnFldOrganizationID").val();
+        //var RankCategoryID = 1;
+
+        // reset CanvasEmployeesVacations
+        var CanvasEmployeesVacationsAsRanks = $("#CanvasEmployeesVacationsAsRanks");
+
+        CanvasEmployeesVacationsAsRanks.remove();
+
+        $("#divEmployeesVacationsAsRanks").append("<canvas id='CanvasEmployeesVacationsAsRanks'></canvas>");
+
+        $.ajax({
+            type: "GET"
+            , url: "@Url.Content("/ManagerDashboard/GetEmployeesVacationsAsRanks/")" + RankCategoryName
+            , success: function (d) {
+
+                var CanvasEmployeesVacationsAsRanks = $("#CanvasEmployeesVacationsAsRanks");
+                var EmployeesVacationsValues = d.data.map(function (e) { return e.Value });
+                var EmployeesVacationsRanks = d.data.map(function (e) { return e.KeyName });
+                var ChartEmployeesVacationsAsRanks = new Chart(CanvasEmployeesVacationsAsRanks, {
+                    type:"bar",
+                    data: {
+                        labels: EmployeesVacationsRanks,
+                        datasets: [{
+                            //label: "المؤهلات العلمية للموظفين المكلفيين للجهة المختارة على حسب المراتب",
+                            data: EmployeesVacationsValues,
+                            backgroundColor: backgroundColor,
+                            bordercolor: bordercolor,
+                            borderwidth: 1
+                        }],
+                    },
+                    options: options
+                });
+
+                CanvasEmployeesVacationsAsRanks.click(function (evt) {
+                    var activePoint = ChartEmployeesVacationsAsRanks.getElementAtEvent(evt)[0];
+                    var data = activePoint._chart.data;
+                    var datasetIndex = activePoint._datasetIndex;
+                    var label = data.labels[activePoint._index];
+                    var value = data.datasets[datasetIndex].data[activePoint._index];
+
+                    BindEmployeesVacationsAsDetails(null,label);
+
+                    $("#divEmployeesVacationsContainerAsRanks").fadeOut(Timer, function () {
+                        $("#divEmployeesVacationsContainerAsDetails").fadeIn(Timer);
+                    });
+
+                });
+            }
+            , error: function (xhr, status, error) {
+                  alert(xhr.responseText);
+            }
+        });
+    }
+
+    function BindEmployeesVacationsAsDetails(DetailsType,Value) {
+        //var VacationDate = $("#txtVacationDate").val();
+        //var VacationTypeID = $("#ddlVacationsTypes").val();
+        //var OrganizationID = $("#hdnFldOrganizationID").val();
+
+        if (DetailsType == "RanksCategories") {
+            var url = "/ManagerDashboard/GetEmployeesVacationsAsRanksCategoriesDetails/";
+            $("#divEmployeesVacationsContainerAsRanksCategories").fadeOut(Timer, function () {
+                $("#divEmployeesVacationsContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        else if (DetailsType == "Ranks") {
+            var url = "/ManagerDashboard/GetEmployeesVacationsAsRanksDetails/" + Value;
+            $("#divEmployeesVacationsContainerAsRanks").fadeOut(Timer, function () {
+                $("#divEmployeesVacationsContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        else {
+             var url = "/ManagerDashboard/GetEmployeesVacationsAsDetails/" + Value;
+             $("#divEmployeesVacationsContainerAsRanks").fadeOut(Timer, function () {
+                $("#divEmployeesVacationsContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        $("#tblEmployeesVacationsAsDetails").DataTable({
+            "destroy":true,
+            "ajax": {
+                "url": url,
+                "type": "get",
+                "datatype": "json",
+                //"data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+              dom: 'Bfrtip',
+            "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "OrganizationName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "JobName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "RankCategoryName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "VacationTypeName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "VacationStartDate",
+                    "autowidth": true,
+                    "render" : RenderDate
+                },
+                {
+                    "data": "VacationPeriod",
+                    "autowidth": true,
+                }
+            ]
+        });
+    }
+
+    //function BackToEmployeesVacationsAsRanksCategories() {
+    //     $("#divEmployeesVacationsContainerAsRanks").fadeOut(Timer, function () {
+    //         $("#divEmployeesVacationsContainerAsRanksCategories").fadeIn(Timer);
+    //     });
+    //}
+
+    function BackToEmployeesVacations() {
+        $("#divEmployeesVacationsContainerAsDetails").fadeOut(Timer, function () {
+            $("#divEmployeesVacationsContainerAsRanks").fadeOut(Timer, function () {
+                $("#divEmployeesVacationsContainerAsRanksCategories").fadeIn(Timer);
+            })  
+        });
+    }
+
+    //--------------------------------------------------------------------------------------------------------------//
+
+    function BindDelegationsTypes() {
+        $.ajax({
+            type: "GET"
+            , url: "@Url.Content("/Delegations/GetDelegationsTypes")"
+            , success: function (d) {
+                var DelegationsTypes = d.data;
+                $("#ddlDelegationsTypes").append($('<option></option>').val("0").html('@Resources.Globalization.AllText'));
+                $.each(DelegationsTypes, function (i, DelegationType) {
+                    $("#ddlDelegationsTypes").append($('<option></option>').val(DelegationType.DelegationTypeID).html(DelegationType.DelegationTypeName));
+                });
+            }
+            , error: function (xhr, status, error) {
+                alert(error.error);
+            }
+        });
+    }
+
+    function BindChartEmployeesDelegationsAsRanksCategories() {
+        if ($("#hdnFldOrganizationID").val() == '') {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure,Globals.Utilities.RemoveSpace(@Resources.Globalization.NoSelectedOganizationToShowStatisticsText))');
+        }
+        else {
+
+            var DelegationFromDate = $("#txtDelegationFromDate").val();
+            var DelegationToDate = $("#txtDelegationFromDate").val();
+            var DelegationTypeID = $("#ddlDelegationsTypes").val();
+            var OrganizationID = $("#hdnFldOrganizationID").val();
+
+            // reset CanvasEmployeesDelegations
+            var CanvasEmployeesDelegationsAsRanksCategories = $("#CanvasEmployeesDelegationsAsRanksCategories");
+            CanvasEmployeesDelegationsAsRanksCategories.remove();
+            $("#divEmployeesDelegationsAsRanksCategories").append("<canvas id='CanvasEmployeesDelegationsAsRanksCategories'></canvas>");
+
+            $.ajax({
+                type: "GET"
+                , url: "@Url.Content("/ManagerDashboard/GetEmployeesDelegationsAsRanksCategories/")" + DelegationTypeID + "/" + DelegationFromDate + "/" + DelegationToDate + "/" + OrganizationID
+                , success: function (d) {
+
+
+                    $("#divEmployeesDelegationsContainerAsDetails").fadeOut(Timer, function () {
+                        $("#divEmployeesDelegationsContainerAsRanks").fadeOut(Timer, function () {
+                            $("#divEmployeesDelegationsContainerAsRanksCategories").fadeIn(Timer);
+                        });
+                    });
+
+                    if (d.data.length != 0)
+                        $("#btnShowEmployeesDelegationsRanksCategoriesDetails").removeClass("hidden");
+                    else
+                        $("#btnShowEmployeesDelegationsRanksCategoriesDetails").addClass("hidden");
+
+                    var CanvasEmployeesDelegationsAsRanksCategories = $("#CanvasEmployeesDelegationsAsRanksCategories");
+                    var EmployeesDelegationsValues = d.data.map(function (e) { return e.Value });
+                    var EmployeesDelegationsRanksCategories = d.data.map(function (e) { return e.KeyName });
+                    var ChartEmployeesDelegationsAsRanksCategories = new Chart(CanvasEmployeesDelegationsAsRanksCategories, {
+                        type: "bar",
+                        data: {
+                            labels: EmployeesDelegationsRanksCategories,
+                            datasets: [{
+
+                                data: EmployeesDelegationsValues,
+                                backgroundColor: backgroundColor,
+                                bordercolor: bordercolor,
+                                borderwidth: 1
+                            }],
+                        },
+                        options: options
+                    });
+
+                    CanvasEmployeesDelegationsAsRanksCategories.click(function (evt) {
+                        var activePoint = ChartEmployeesDelegationsAsRanksCategories.getElementAtEvent(evt)[0];
+                        var data = activePoint._chart.data;
+                        var datasetIndex = activePoint._datasetIndex;
+                        var label = data.labels[activePoint._index];
+                        //var value = data.datasets[datasetIndex].data[activePoint._index];
+
+                        $("#hdnFldSelectedEmployeesDelegationsRankCategoryName").val(label);
+
+                        BindChartEmployeesDelegationsAsRanks(label);
+
+                        $("#divEmployeesDelegationsContainerAsRanksCategories").fadeOut(Timer, function () {
+                            $("#divEmployeesDelegationsContainerAsRanks").fadeIn(Timer);
+                        });
+                    });
+                }
+                , error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
+        }
+    }
+
+    function BindChartEmployeesDelegationsAsRanks(RankCategoryName) {
+        //var DelegationDate = $("#txtDelegationDate").val();
+        //var DelegationTypeID = $("#ddlDelegationsTypes").val();
+        //var OrganizationID = $("#hdnFldOrganizationID").val();
+        //var RankCategoryID = 1;
+
+        // reset CanvasEmployeesDelegations
+        var CanvasEmployeesDelegationsAsRanks = $("#CanvasEmployeesDelegationsAsRanks");
+
+        CanvasEmployeesDelegationsAsRanks.remove();
+
+        $("#divEmployeesDelegationsAsRanks").append("<canvas id='CanvasEmployeesDelegationsAsRanks'></canvas>");
+
+        $.ajax({
+            type: "GET"
+            , url: "@Url.Content("/ManagerDashboard/GetEmployeesDelegationsAsRanks/")" + RankCategoryName
+            , success: function (d) {
+
+                var CanvasEmployeesDelegationsAsRanks = $("#CanvasEmployeesDelegationsAsRanks");
+                var EmployeesDelegationsValues = d.data.map(function (e) { return e.Value });
+                var EmployeesDelegationsRanks = d.data.map(function (e) { return e.KeyName });
+                var ChartEmployeesDelegationsAsRanks = new Chart(CanvasEmployeesDelegationsAsRanks, {
+                    type:"bar",
+                    data: {
+                        labels: EmployeesDelegationsRanks,
+                        datasets: [{
+                            //label: "المؤهلات العلمية للموظفين المكلفيين للجهة المختارة على حسب المراتب",
+                            data: EmployeesDelegationsValues,
+                            backgroundColor: backgroundColor,
+                            bordercolor: bordercolor,
+                            borderwidth: 1
+                        }],
+                    },
+                    options: options
+                });
+
+                CanvasEmployeesDelegationsAsRanks.click(function (evt) {
+                    var activePoint = ChartEmployeesDelegationsAsRanks.getElementAtEvent(evt)[0];
+                    var data = activePoint._chart.data;
+                    var datasetIndex = activePoint._datasetIndex;
+                    var label = data.labels[activePoint._index];
+                    var value = data.datasets[datasetIndex].data[activePoint._index];
+
+                    BindEmployeesDelegationsAsDetails(null,label);
+
+                    $("#divEmployeesDelegationsContainerAsRanks").fadeOut(Timer, function () {
+                        $("#divEmployeesDelegationsContainerAsDetails").fadeIn(Timer);
+                    });
+
+                });
+            }
+            , error: function (xhr, status, error) {
+                  alert(xhr.responseText);
+            }
+        });
+    }
+
+    function BindEmployeesDelegationsAsDetails(DetailsType,Value) {
+        //var DelegationDate = $("#txtDelegationDate").val();
+        //var DelegationTypeID = $("#ddlDelegationsTypes").val();
+        //var OrganizationID = $("#hdnFldOrganizationID").val();
+
+        if (DetailsType == "RanksCategories") {
+            var url = "/ManagerDashboard/GetEmployeesDelegationsAsRanksCategoriesDetails/";
+            $("#divEmployeesDelegationsContainerAsRanksCategories").fadeOut(Timer, function () {
+                $("#divEmployeesDelegationsContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        else if (DetailsType == "Ranks") {
+            var url = "/ManagerDashboard/GetEmployeesDelegationsAsRanksDetails/" + Value;
+            $("#divEmployeesDelegationsContainerAsRanks").fadeOut(Timer, function () {
+                $("#divEmployeesDelegationsContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        else {
+             var url = "/ManagerDashboard/GetEmployeesDelegationsAsDetails/" + Value;
+             $("#divEmployeesDelegationsContainerAsRanks").fadeOut(Timer, function () {
+                $("#divEmployeesDelegationsContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        $("#tblEmployeesDelegationsAsDetails").DataTable({
+            "destroy":true,
+            "ajax": {
+                "url": url,
+                "type": "get",
+                "datatype": "json",
+                //"data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+              dom: 'Bfrtip',
+            "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "OrganizationName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "JobName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "RankCategoryName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "DelegationTypeName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "DelegationStartDate",
+                    "autowidth": true,
+                    "render" : RenderDate
+                },
+                {
+                    "data": "DelegationPeriod",
+                    "autowidth": true,
+                }
+            ]
+        });
+    }
+
+    //function BackToEmployeesDelegationsAsRanksCategories() {
+    //     $("#divEmployeesDelegationsContainerAsRanks").fadeOut(Timer, function () {
+    //         $("#divEmployeesDelegationsContainerAsRanksCategories").fadeIn(Timer);
+    //     });
+    //}
+
+    function BackToEmployeesDelegations() {
+        $("#divEmployeesDelegationsContainerAsDetails").fadeOut(Timer, function () {
+            $("#divEmployeesDelegationsContainerAsRanks").fadeOut(Timer, function () {
+                $("#divEmployeesDelegationsContainerAsRanksCategories").fadeIn(Timer);
+            })  
+        });
+    }
+
+    //--------------------------------------------------------------------------------------------------------------//
+
+    function BindOverTimesTypes() {
+        @*$.ajax({
+            type: "GET"
+            , url: "@Url.Content("/OverTimes/GetOverTimesTypes")"
+            , success: function (d) {
+                var OverTimesTypes = d.data;
+                $("#ddlOverTimesTypes").append($('<option></option>').val("0").html('@Resources.Globalization.AllText'));
+                $.each(OverTimesTypes, function (i, OverTimeType) {
+                    $("#ddlOverTimesTypes").append($('<option></option>').val(OverTimeType.OverTimeTypeID).html(OverTimeType.OverTimeTypeName));
+                });
+            }
+            , error: function (xhr, status, error) {
+                alert(error.error);
+            }
+        });*@
+    }
+
+    function BindChartEmployeesOverTimesAsRanksCategories() {
+        if ($("#hdnFldOrganizationID").val() == '') {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure,Globals.Utilities.RemoveSpace(@Resources.Globalization.NoSelectedOganizationToShowStatisticsText))');
+        }
+        else {
+
+            var OverTimeFromDate = $("#txtOverTimeFromDate").val();
+            var OverTimeToDate = $("#txtOverTimeFromDate").val();
+            var OrganizationID = $("#hdnFldOrganizationID").val();
+
+            // reset CanvasEmployeesOverTimes
+            var CanvasEmployeesOverTimesAsRanksCategories = $("#CanvasEmployeesOverTimesAsRanksCategories");
+            CanvasEmployeesOverTimesAsRanksCategories.remove();
+            $("#divEmployeesOverTimesAsRanksCategories").append("<canvas id='CanvasEmployeesOverTimesAsRanksCategories'></canvas>");
+
+            $.ajax({
+                type: "GET"
+                , url: "@Url.Content("/ManagerDashboard/GetEmployeesOverTimesAsRanksCategories/")" + OverTimeFromDate + "/" + OverTimeToDate + "/" + OrganizationID
+                , success: function (d) {
+
+                    $("#divEmployeesOverTimesContainerAsDetails").fadeOut(Timer, function () {
+                        $("#divEmployeesOverTimesContainerAsRanks").fadeOut(Timer, function () {
+                            $("#divEmployeesOverTimesContainerAsRanksCategories").fadeIn(Timer);
+                        });
+                    });
+
+                    if (d.data.length != 0)
+                        $("#btnShowEmployeesOverTimesRanksCategoriesDetails").removeClass("hidden");
+                    else
+                        $("#btnShowEmployeesOverTimesRanksCategoriesDetails").addClass("hidden");
+
+                    var CanvasEmployeesOverTimesAsRanksCategories = $("#CanvasEmployeesOverTimesAsRanksCategories");
+                    var EmployeesOverTimesValues = d.data.map(function (e) { return e.Value });
+                    var EmployeesOverTimesRanksCategories = d.data.map(function (e) { return e.KeyName });
+                    var ChartEmployeesOverTimesAsRanksCategories = new Chart(CanvasEmployeesOverTimesAsRanksCategories, {
+                        type: "bar",
+                        data: {
+                            labels: EmployeesOverTimesRanksCategories,
+                            datasets: [{
+                                data: EmployeesOverTimesValues,
+                                backgroundColor: backgroundColor,
+                                bordercolor: bordercolor,
+                                borderwidth: 1
+                            }],
+                        },
+                        options: options
+                    });
+
+                    CanvasEmployeesOverTimesAsRanksCategories.click(function (evt) {
+                        var activePoint = ChartEmployeesOverTimesAsRanksCategories.getElementAtEvent(evt)[0];
+                        var data = activePoint._chart.data;
+                        var datasetIndex = activePoint._datasetIndex;
+                        var label = data.labels[activePoint._index];
+                        //var value = data.datasets[datasetIndex].data[activePoint._index];
+
+                        $("#hdnFldSelectedEmployeesOverTimesRankCategoryName").val(label);
+
+                        BindChartEmployeesOverTimesAsRanks(label);
+
+                        $("#divEmployeesOverTimesContainerAsRanksCategories").fadeOut(Timer, function () {
+                            $("#divEmployeesOverTimesContainerAsRanks").fadeIn(Timer);
+                        });
+                    });
+                }
+                , error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
+        }
+    }
+
+    function BindChartEmployeesOverTimesAsRanks(RankCategoryName) {
+        //var OverTimeDate = $("#txtOverTimeDate").val();
+        //var OverTimeTypeID = $("#ddlOverTimesTypes").val();
+        //var OrganizationID = $("#hdnFldOrganizationID").val();
+        //var RankCategoryID = 1;
+
+        // reset CanvasEmployeesOverTimes
+        var CanvasEmployeesOverTimesAsRanks = $("#CanvasEmployeesOverTimesAsRanks");
+
+        CanvasEmployeesOverTimesAsRanks.remove();
+
+        $("#divEmployeesOverTimesAsRanks").append("<canvas id='CanvasEmployeesOverTimesAsRanks'></canvas>");
+
+        $.ajax({
+            type: "GET"
+            , url: "@Url.Content("/ManagerDashboard/GetEmployeesOverTimesAsRanks/")" + RankCategoryName
+            , success: function (d) {
+
+                var CanvasEmployeesOverTimesAsRanks = $("#CanvasEmployeesOverTimesAsRanks");
+                var EmployeesOverTimesValues = d.data.map(function (e) { return e.Value });
+                var EmployeesOverTimesRanks = d.data.map(function (e) { return e.KeyName });
+                var ChartEmployeesOverTimesAsRanks = new Chart(CanvasEmployeesOverTimesAsRanks, {
+                    type:"bar",
+                    data: {
+                        labels: EmployeesOverTimesRanks,
+                        datasets: [{
+                            //label: "المؤهلات العلمية للموظفين المكلفيين للجهة المختارة على حسب المراتب",
+                            data: EmployeesOverTimesValues,
+                            backgroundColor: backgroundColor,
+                            bordercolor: bordercolor,
+                            borderwidth: 1
+                        }],
+                    },
+                    options: options
+                });
+
+                CanvasEmployeesOverTimesAsRanks.click(function (evt) {
+                    var activePoint = ChartEmployeesOverTimesAsRanks.getElementAtEvent(evt)[0];
+                    var data = activePoint._chart.data;
+                    var datasetIndex = activePoint._datasetIndex;
+                    var label = data.labels[activePoint._index];
+                    var value = data.datasets[datasetIndex].data[activePoint._index];
+
+                    BindEmployeesOverTimesAsDetails(null,label);
+
+                    $("#divEmployeesOverTimesContainerAsRanks").fadeOut(Timer, function () {
+                        $("#divEmployeesOverTimesContainerAsDetails").fadeIn(Timer);
+                    });
+
+                });
+            }
+            , error: function (xhr, status, error) {
+                  alert(xhr.responseText);
+            }
+        });
+    }
+
+    function BindEmployeesOverTimesAsDetails(DetailsType,Value) {
+        //var OverTimeDate = $("#txtOverTimeDate").val();
+        //var OverTimeTypeID = $("#ddlOverTimesTypes").val();
+        //var OrganizationID = $("#hdnFldOrganizationID").val();
+
+        if (DetailsType == "RanksCategories") {
+            var url = "/ManagerDashboard/GetEmployeesOverTimesAsRanksCategoriesDetails/";
+            $("#divEmployeesOverTimesContainerAsRanksCategories").fadeOut(Timer, function () {
+                $("#divEmployeesOverTimesContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        else if (DetailsType == "Ranks") {
+            var url = "/ManagerDashboard/GetEmployeesOverTimesAsRanksDetails/" + Value;
+            $("#divEmployeesOverTimesContainerAsRanks").fadeOut(Timer, function () {
+                $("#divEmployeesOverTimesContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        else {
+             var url = "/ManagerDashboard/GetEmployeesOverTimesAsDetails/" + Value;
+             $("#divEmployeesOverTimesContainerAsRanks").fadeOut(Timer, function () {
+                $("#divEmployeesOverTimesContainerAsDetails").fadeIn(Timer);
+            });
+        }
+
+        $("#tblEmployeesOverTimesAsDetails").DataTable({
+            "destroy":true,
+            "ajax": {
+                "url": url,
+                "type": "get",
+                "datatype": "json",
+                //"data": RemoveExtraColumnsFromURL,
+                "global": false // set to false to prevent the global handlers like [ajaxStart, ajaxStop] from being triggered.
+            },
+              dom: 'Bfrtip',
+            "initComplete": function (settings, json) {
+                $(".dt-buttons").addClass("text text-left");
+                $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+            },
+            "buttons": ['excel'],
+            "columns": [
+                {
+                    "data": "EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeNameAr",
+                    "autowidth": true
+                },
+                {
+                    "data": "OrganizationName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "JobName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "RankCategoryName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "RankName",
+                    "autowidth": true,
+                },
+                {
+                    "data": "OverTimeStartDate",
+                    "autowidth": true,
+                    "render" : RenderDate
+                },
+                {
+                    "data": "OverTimePeriod",
+                    "autowidth": true,
+                }
+            ]
+        });
+    }
+
+    //function BackToEmployeesOverTimesAsRanksCategories() {
+    //     $("#divEmployeesOverTimesContainerAsRanks").fadeOut(Timer, function () {
+    //         $("#divEmployeesOverTimesContainerAsRanksCategories").fadeIn(Timer);
+    //     });
+    //}
+
+    function BackToEmployeesOverTimes() {
+        $("#divEmployeesOverTimesContainerAsDetails").fadeOut(Timer, function () {
+            $("#divEmployeesOverTimesContainerAsRanks").fadeOut(Timer, function () {
+                $("#divEmployeesOverTimesContainerAsRanksCategories").fadeIn(Timer);
+            })  
+        });
+    }
+
+</script>
+
+<div class="panel panel-default" style="padding:0px;">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                @Resources.Globalization.ManagerDashboardDescText
+            </div>
+        </div>
+    </div>
+    <div class="panel-body" style="width:100%;margin-left:auto;margin-right:auto">
+        @*@Html.Partial("~/Views/Shared/_ManagerInfo.cshtml")*@
+        <div>
+            <div class="row">
+                <div class="col-md-2 col-sm-2">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="divOrganizationStructure" style="width:100%;">
+                                <div id="divManagerOrganizationsTree" style="width:100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="hdnFldOrganizationID" />
+                    <input type="hidden" id="hdnFldOrganizationName" />
+                </div>
+                <div class="col-md-10 col-sm-10">
+                    <div class="row">
+                        <div id="divSelectedOrganization" class="alert alert-danger">
+                            <label id="lblSelectedOrganizationText">@Resources.Globalization.NoSelectedOganizationToShowStatisticsText</label>
+                            <label id="lblSelectedOrganization"></label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="divOrganizationContent">
+                            <ul class="nav nav-tabs">
+                                <li class="active">
+                                    <a href="#TabActualEmployees" data-toggle="tab">@Resources.Globalization.ActualEmployeesText</a>
+                                </li>
+                                <li>
+                                    <a href="#TabQualifications" data-toggle="tab">@Resources.Globalization.EmployeesQualificationsText</a>
+                                </li>
+                                <li>
+                                    <a href="#TabVacations" data-toggle="tab">@Resources.Globalization.EmployeesVacationsText</a>
+                                </li>
+                                <li>
+                                    <a href="#TabDelegations" data-toggle="tab">@Resources.Globalization.DelegationsText</a>
+                                </li>
+                                <li>
+                                    <a href="#TabOverTimes" data-toggle="tab">@Resources.Globalization.OverTimesText</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content clearfix">
+                                <div id="TabActualEmployees" class="tab-pane padding-5 active">
+                                    <div class="panel panel-default" style="padding:0px">
+                                        <div class="panel-heading">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    @Resources.Globalization.ActualEmployeesDescText
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-body">
+                                            <table class="table table-condensed table-responsive table-bordered">
+                                                <tr>
+                                                    <td class="col-md-3"></td>
+                                                    <td class="col-md-3"></td>
+                                                    <td class="col-md-3"></td>
+                                                    <td class="col-md-3"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-3">
+                                                    </td>
+                                                    <td class="col-md-3">
+                                                    </td>
+                                                    <td class="col-md-3">
+                                                    </td>
+                                                    <td class="col-md-3" style="text-align:center">
+                                                        <button class="btn btn-default" id="btnRefreshActualEmployees" title="@Resources.Globalization.RefreshText" onclick="BindChartActualEmployeesAsRanksCategories();">@Resources.Globalization.RefreshText</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4">
+                                                        <div id="divActualEmployeesContainerAsRanksCategories" class="Container" style="width:100%">
+                                                            <div class="row">
+                                                                <button id="btnShowActualEmployeesRanksCategoriesDetails" class="btn btn-default hidden" onclick="BindActualEmployeesAsDetails('RanksCategories')">@Resources.Globalization.DetailsText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <div id="divActualEmployeesAsRanksCategories" class="chart-Container">
+                                                                    <canvas id="CanvasActualEmployeesAsRanksCategories"></canvas>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="divActualEmployeesContainerAsRanks" class="container" style="width:100%" hidden>
+                                                            <div class="row">
+                                                                <input type="hidden" id="hdnFldSelectedActualEmployeesRankCategoryName" />
+                                                                <button class="btn btn-default" onclick="BindActualEmployeesAsDetails('Ranks',$('#hdnFldSelectedActualEmployeesRankCategoryName').val())">@Resources.Globalization.DetailsText</button>
+                                                                <button class="btn btn-default" onclick="BackToActualEmployees()">@Resources.Globalization.BackToPreviousText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <div id="divActualEmployeesAsRanks" class="chart-Container">
+                                                                    <canvas id="CanvasActualEmployeesAsRanks"></canvas>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="divActualEmployeesContainerAsDetails" class="container" style="width:100%" hidden>
+                                                            <div class="row">
+                                                               @* <a title="@Resources.Globalization.BackToPreviousText"><span class='glyphicon glyphicon-arrow-left font-13 clickable' onclick="BackToActualEmployeesAsRanks()"></span></a>*@
+                                                                <button class="btn btn-default" onclick="BackToActualEmployees()">@Resources.Globalization.BackToPreviousText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <table id="tblActualEmployeesAsDetails" class="table table-responsive table-hover" style="width:100%">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                                                                            <td>@Resources.Globalization.EmployeeNameArText</td>
+                                                                            <td>@Resources.Globalization.OrganizationNameText</td>
+                                                                            <td>@Resources.Globalization.JobNameText</td>
+                                                                            <td>@Resources.Globalization.RankCategoryNameText</td>
+                                                                            <td>@Resources.Globalization.RankNameText</td>
+                                                                        </tr>
+                                                                    </thead>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="TabQualifications" class="tab-pane padding-5">
+                                    <div class="panel panel-default" style="padding:0px">
+                                        <div class="panel-heading">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    @Resources.Globalization.ActualEmployeesQualificationsDescText
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-body">
+                                            <table class="table table-condensed table-responsive table-bordered">
+                                                <tr>
+                                                    <td class="col-md-3">@Resources.Globalization.QualificationDegreeNameText</td>
+                                                    <td class="col-md-3">@Resources.Globalization.QualificationNameText</td>
+                                                    <td class="col-md-3">@Resources.Globalization.GeneralSpecializationNameText</td>
+                                                    <td class="col-md-3"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-3">
+                                                        <select id="ddlQualificationsDegrees" style="width:100%" onchange="BindQualifications(this.value)"></select>
+                                                    </td>
+                                                    <td class="col-md-3">
+                                                        <select id="ddlQualifications" style="width:100%" onchange="BindGeneralSpecializations(this.value)"></select>
+                                                    </td>
+                                                    <td class="col-md-3">
+                                                        <select id="ddlGeneralSpecializations" style="width:100%"></select>
+                                                    </td>
+                                                    <td class="col-md-3" style="text-align:center">
+                                                        <button class="btn btn-default" id="btnRefreshEmployeesQualifications" title="@Resources.Globalization.RefreshText" onclick="BindChartEmployeesQualificationsAsRanksCategories();">@Resources.Globalization.RefreshText</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4">
+                                                       
+                                                        <div id="divEmployeesQualificationsContainerAsRanksCategories" class="container" style="width:100%">
+                                                            <div class="row">
+                                                                <button id="btnShowRanksCategoriesDetails" class="btn btn-default hidden" onclick="BindEmployeesQualificationsAsDetails('RanksCategories');">@Resources.Globalization.DetailsText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <div class="chart-Container" id="divEmployeesQualificationsAsRanksCategories">
+                                                                    <canvas id="CanvasEmployeesQualificationsAsRanksCategories"></canvas>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="divEmployeesQualificationsContainerAsRanks" class="container" style="width:100%" hidden>
+                                                            <div class="row">
+                                                                <input type="hidden" id="hdnFldSelectedEmployeesQualificationsRankCategoryName" />
+                                                                <button class="btn btn-default" onclick="BindEmployeesQualificationsAsDetails('Ranks',$('#hdnFldSelectedEmployeesQualificationsRankCategoryName').val())">@Resources.Globalization.DetailsText</button>
+                                                                <button class="btn btn-default" onclick="BackToEmployeesQualifications()">@Resources.Globalization.BackToPreviousText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <div class="chart-Container" id="divEmployeesQualificationsAsRanks">
+                                                                    <canvas id="CanvasEmployeesQualificationsAsRanks"></canvas>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="divEmployeesQualificationsContainerAsDetails" class="container" style="width:100%" hidden>
+                                                            <div class="row">
+                                                                @*<a title="@Resources.Globalization.BackToPreviousChartText"><span class='glyphicon glyphicon-arrow-left font-13 clickable' onclick="BackToEmployeesQualificationsAsRanks()"></span></a>*@
+                                                                <button class="btn btn-default" onclick="BackToEmployeesQualifications()">@Resources.Globalization.BackToPreviousText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <table id="tblEmployeesQualificationsAsDetails" class="table table-responsive table-hover" style="width:100%">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                                                                            <td>@Resources.Globalization.EmployeeNameArText</td>
+                                                                            <td>@Resources.Globalization.OrganizationNameText</td>
+                                                                            <td>@Resources.Globalization.JobNameText</td>
+                                                                            <td>@Resources.Globalization.RankCategoryNameText</td>
+                                                                            <td>@Resources.Globalization.RankNameText</td>
+                                                                            <td>@Resources.Globalization.QualificationDegreeNameText</td>
+                                                                            <td>@Resources.Globalization.QualificationNameText</td>
+                                                                            <td>@Resources.Globalization.GeneralSpecializationNameText</td>
+                                                                        </tr>
+                                                                    </thead>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="TabVacations" class="tab-pane padding-5">
+                                    <div class="panel panel-default" style="padding:0px">
+                                        <div class="panel-heading">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    @Resources.Globalization.ActualEmployeesVacationsDescText
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-body">
+                                            <table class="table table-condensed table-responsive table-bordered">
+                                                <tr>
+                                                    <td class="col-md-3">@Resources.Globalization.VacationDateText</td>
+                                                    <td class="col-md-3">@Resources.Globalization.VacationTypeText</td>
+                                                    <td class="col-md-3"></td>
+                                                    <td class="col-md-3"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-3">
+                                                        <input type="text" class="TxtHijriPicker form-control readonly" id="txtVacationDate" />
+                                                    </td>
+                                                    <td class="col-md-3">
+                                                        <select id="ddlVacationsTypes" style="width:100%"></select>
+                                                    </td>
+                                                    <td class="col-md-3">
+                                                    </td>
+                                                    <td class="col-md-3" style="text-align:center">
+                                                        <button class="btn btn-default" id="btnRefreshEmployeesVacations" title="@Resources.Globalization.RefreshText" onclick="BindChartEmployeesVacationsAsRanksCategories();">@Resources.Globalization.RefreshText</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4">
+                                                        <div id="divEmployeesVacationsContainerAsRanksCategories" class="container" style="width:100%">
+                                                            <div class="row">
+                                                                <button id="btnShowEmployeesVacationsRanksCategoriesDetails" class="btn btn-default hidden" onclick="BindEmployeesVacationsAsDetails('RanksCategories');">@Resources.Globalization.DetailsText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <div class="chart-Container" id="divEmployeesVacationsAsRanksCategories">
+                                                                    <canvas id="CanvasEmployeesVacationsAsRanksCategories"></canvas>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="divEmployeesVacationsContainerAsRanks" class="container" style="width:100%" hidden>
+                                                            <div class="row">
+                                                                <input type="hidden" id="hdnFldSelectedEmployeesVacationsRankCategoryName" />
+                                                                <button class="btn btn-default" onclick="BindEmployeesVacationsAsDetails('Ranks',$('#hdnFldSelectedEmployeesVacationsRankCategoryName').val())">@Resources.Globalization.DetailsText</button>
+                                                                <button class="btn btn-default" onclick="BackToEmployeesVacations()">@Resources.Globalization.BackToPreviousText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <div class="chart-Container" id="divEmployeesVacationsAsRanks">
+                                                                    <canvas id="CanvasEmployeesVacationsAsRanks"></canvas>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="divEmployeesVacationsContainerAsDetails" class="container" style="width:100%" hidden>
+                                                            <div class="row">
+                                                                @*  <a title="@Resources.Globalization.BackToPreviousText"><span class='glyphicon glyphicon-arrow-left font-13 clickable' onclick="BackToEmployeesVacationsAsRanks()"></span></a>*@
+                                                                <button class="btn btn-default" onclick="BackToEmployeesVacations()">@Resources.Globalization.BackToPreviousText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <table id="tblEmployeesVacationsAsDetails" class="table table-responsive table-hover" style="width:100%">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                                                                            <td>@Resources.Globalization.EmployeeNameArText</td>
+                                                                            <td>@Resources.Globalization.OrganizationNameText</td>
+                                                                            <td>@Resources.Globalization.JobNameText</td>
+                                                                            <td>@Resources.Globalization.RankCategoryNameText</td>
+                                                                            <td>@Resources.Globalization.RankNameText</td>
+                                                                            <td>@Resources.Globalization.VacationTypeText</td>
+                                                                            <td>@Resources.Globalization.VacationStartDateText</td>
+                                                                            <td>@Resources.Globalization.VacationPeriodText</td>
+                                                                        </tr>
+                                                                    </thead>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="TabDelegations" class="tab-pane padding-5">
+                                    <div class="panel panel-default" style="padding:0px">
+                                        <div class="panel-heading">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    @Resources.Globalization.ActualEmployeesDelegationsDescText
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-body">
+                                            <table class="table table-condensed table-responsive table-bordered">
+                                                <tr>
+                                                    <td class="col-md-3">@Resources.Globalization.FromDateText</td>
+                                                    <td class="col-md-3">@Resources.Globalization.ToDateText</td>
+                                                    <td class="col-md-3">@Resources.Globalization.DelegationTypeText</td>
+                                                    <td class="col-md-3"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-3">
+                                                        <input type="text" class="TxtHijriPicker form-control readonly" id="txtDelegationFromDate" />
+                                                    </td>
+                                                    <td class="col-md-3">
+                                                        <input type="text" class="TxtHijriPicker form-control readonly" id="txtDelegationToDate" />
+                                                    </td>
+                                                    <td class="col-md-3">
+                                                        <select id="ddlDelegationsTypes" style="width:100%"></select>
+                                                    </td>
+                                                    <td class="col-md-3" style="text-align:center">
+                                                        <button class="btn btn-default" id="btnRefreshEmployeesDelegations" title="@Resources.Globalization.RefreshText" onclick="BindChartEmployeesDelegationsAsRanksCategories();">@Resources.Globalization.RefreshText</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4">
+                                                        <div id="divEmployeesDelegationsContainerAsRanksCategories" class="container" style="width:100%">
+                                                            <div class="row">
+                                                                <button id="btnShowEmployeesDelegationsRanksCategoriesDetails" class="btn btn-default hidden" onclick="BindEmployeesDelegationsAsDetails('RanksCategories');">@Resources.Globalization.DetailsText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <div class="chart-Container" id="divEmployeesDelegationsAsRanksCategories">
+                                                                    <canvas id="CanvasEmployeesDelegationsAsRanksCategories"></canvas>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="divEmployeesDelegationsContainerAsRanks" class="container" style="width:100%" hidden>
+                                                            <div class="row">
+                                                                <input type="hidden" id="hdnFldSelectedEmployeesDelegationsRankCategoryName" />
+                                                                <button class="btn btn-default" onclick="BindEmployeesDelegationsAsDetails('Ranks',$('#hdnFldSelectedEmployeesDelegationsRankCategoryName').val())">@Resources.Globalization.DetailsText</button>
+                                                                <button class="btn btn-default" onclick="BackToEmployeesDelegations()">@Resources.Globalization.BackToPreviousText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <div class="chart-Container" id="divEmployeesDelegationsAsRanks">
+                                                                    <canvas id="CanvasEmployeesDelegationsAsRanks"></canvas>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="divEmployeesDelegationsContainerAsDetails" class="container" style="width:100%" hidden>
+                                                            <div class="row">
+                                                                @*<a title="@Resources.Globalization.BackToPreviousText"><span class='glyphicon glyphicon-arrow-left font-13 clickable' onclick="BackToEmployeesDelegationsAsRanks()"></span></a>*@
+                                                                <button class="btn btn-default" onclick="BackToEmployeesDelegations()">@Resources.Globalization.BackToPreviousText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <table id="tblEmployeesDelegationsAsDetails" class="table table-responsive table-hover" style="width:100%">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                                                                            <td>@Resources.Globalization.EmployeeNameArText</td>
+                                                                            <td>@Resources.Globalization.OrganizationNameText</td>
+                                                                            <td>@Resources.Globalization.JobNameText</td>
+                                                                            <td>@Resources.Globalization.RankCategoryNameText</td>
+                                                                            <td>@Resources.Globalization.RankNameText</td>
+                                                                            <td>@Resources.Globalization.DelegationTypeText</td>
+                                                                            <td>@Resources.Globalization.DelegationStartDateText</td>
+                                                                            <td>@Resources.Globalization.DelegationPeriodText</td>
+                                                                        </tr>
+                                                                    </thead>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="TabOverTimes" class="tab-pane padding-5">
+                                    <div class="panel panel-default" style="padding:0px">
+                                        <div class="panel-heading">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    @Resources.Globalization.ActualEmployeesOverTimesDescText
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-body">
+                                            <table class="table table-condensed table-responsive table-bordered">
+                                                <tr>
+                                                    <td class="col-md-3">@Resources.Globalization.FromDateText</td>
+                                                    <td class="col-md-3">@Resources.Globalization.ToDateText</td>
+                                                    <td class="col-md-3"></td>
+                                                    <td class="col-md-3"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-3">
+                                                        <input type="text" class="TxtHijriPicker form-control readonly" id="txtOverTimeFromDate" />
+                                                    </td>
+                                                    <td class="col-md-3">
+                                                        <input type="text" class="TxtHijriPicker form-control readonly" id="txtOverTimeToDate" />
+                                                    </td>
+                                                    <td class="col-md-3">
+                                                        @*<select id="ddlOverTimesTypes" class="form-control" style="width:100%"></select>*@
+                                                    </td>
+                                                    <td class="col-md-3" style="text-align:center">
+                                                        <button class="btn btn-default" id="btnRefreshEmployeesOverTimes" title="@Resources.Globalization.RefreshText" onclick="BindChartEmployeesOverTimesAsRanksCategories();">@Resources.Globalization.RefreshText</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4">
+                                                        <div id="divEmployeesOverTimesContainerAsRanksCategories" class="container" style="width:100%">
+                                                            <div class="row">
+                                                                <button id="btnShowEmployeesOverTimesRanksCategoriesDetails" class="btn btn-default hidden" onclick="BindEmployeesOverTimesAsDetails('RanksCategories');">@Resources.Globalization.DetailsText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <div class="chart-Container" id="divEmployeesOverTimesAsRanksCategories">
+                                                                    <canvas id="CanvasEmployeesOverTimesAsRanksCategories"></canvas>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="divEmployeesOverTimesContainerAsRanks" class="container" style="width:100%" hidden>
+                                                            <div class="row">
+                                                                <input type="hidden" id="hdnFldSelectedEmployeesOverTimesRankCategoryName" />
+                                                                <button class="btn btn-default" onclick="BindEmployeesOverTimesAsDetails('Ranks',$('#hdnFldSelectedEmployeesOverTimesRankCategoryName').val())">@Resources.Globalization.DetailsText</button>
+                                                                <button class="btn btn-default" onclick="BackToEmployeesOverTimes()">@Resources.Globalization.BackToPreviousText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <div class="chart-Container" id="divEmployeesOverTimesAsRanks">
+                                                                    <canvas id="CanvasEmployeesOverTimesAsRanks"></canvas>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="divEmployeesOverTimesContainerAsDetails" class="container" style="width:100%" hidden>
+                                                            <div class="row">
+                                                                @*<a title="@Resources.Globalization.BackToPreviousText"><span class='glyphicon glyphicon-arrow-left font-13 clickable' onclick="BackToEmployeesOverTimesAsRanks()"></span></a>*@
+                                                                <button class="btn btn-default" onclick="BackToEmployeesOverTimes()">@Resources.Globalization.BackToPreviousText</button>
+                                                            </div>
+                                                            <div class="row" style="padding:0">
+                                                                <table id="tblEmployeesOverTimesAsDetails" class="table table-responsive table-hover" style="width:100%">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                                                                            <td>@Resources.Globalization.EmployeeNameArText</td>
+                                                                            <td>@Resources.Globalization.OrganizationNameText</td>
+                                                                            <td>@Resources.Globalization.JobNameText</td>
+                                                                            <td>@Resources.Globalization.RankCategoryNameText</td>
+                                                                            <td>@Resources.Globalization.RankNameText</td>
+                                                                            <td>@Resources.Globalization.OverTimeStartDateText</td>
+                                                                            <td>@Resources.Globalization.OverTimePeriodText</td>
+                                                                        </tr>
+                                                                    </thead>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

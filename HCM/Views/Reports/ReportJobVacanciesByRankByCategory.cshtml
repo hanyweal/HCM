@@ -1,0 +1,66 @@
+﻿@model HCM.Models.ReportJobVacanciesByRankByCategoryViewModel
+@using HCM.Classes.Enums
+@using HCMBLL
+@using System.Configuration
+
+@{
+    ViewBag.Title = @Resources.Globalization.ReportJobVacanciesByRankAndCategoryText;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+
+    $(document).ready(function () {
+        insertSelectionOptionToDDL('ddlRanks');
+    });
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function Print() {
+        var RankID = $('#ddlRanks').val();
+        var JobCategoryID = $('#hdnFldJobCategoryID').val();
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content(string.Format("~/Reports/JobVacanciesByRankByCategory?RankID="))' + RankID + '&JobCategoryID=' + JobCategoryID);
+        ShowModal("#divReportModal");
+    }
+</script>
+
+<div class="panel panel-default" style="padding:0">
+    <div class="panel-heading">
+        @Resources.Globalization.ReportJobVacanciesByRankAndCategoryText
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("ReportJobVacanciesByRankByCategory", "Report", new AjaxOptions()
+        {
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.ValidationSummary()
+            <div class="form-group">
+                <table class="table table-responsive table-condensed table-striped">
+                    <tbody>
+                        <tr>
+                            <td>@Html.LabelFor(model => model.RankID, new { @class = "control-label" })</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.DropDownListFor(model => model.RankID, new SelectList(new HCMBLL.RanksBLL().GetRanks(), "RankID", "RankName"), new { @id = "ddlRanks", @style = "width:34%" })
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-group">
+                @Html.Partial("~/Views/Shared/_JobsCategoriesPopup.cshtml", new HCM.Models.JobsCategoriesViewModel() { })
+            </div>
+        }  <input type="submit" value='@Resources.Globalization.ReportViewText' class="btn btn-primary" onclick="Print()">
+    </div>
+</div>
+

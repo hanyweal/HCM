@@ -1,0 +1,278 @@
+﻿@using HCM.Classes.Enums;
+
+<script type="text/javascript">
+    var VariablePromotionRecordID;
+
+    $(document).ready(function () {
+
+        $("#btnOpenCandidatesAlreadyPromotedPopup").click(function () {
+
+            var PromotionRecordID = $('#hdnFldPromotionRecordID').val();
+            if (PromotionRecordID == "") PromotionRecordID = 0;
+
+            ShowCandidatesAlreadyPromotedByPromotionRecordID(PromotionRecordID);
+            ShowModal("#divCandidatesAlreadyPromotedModal");
+
+        });
+
+        $('#txtPromotionDate').on('focus', function () {
+        }).calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            onSelect: customRange,
+            commandsAsDateFormat: true,
+            dateFormat: '@System.Configuration.ConfigurationManager.AppSettings["DateFormatRTL"]',
+     
+        });
+    });
+
+    function ShowCandidatesAlreadyPromotedByPromotionRecordID(PromotionRecordID) {
+        VariablePromotionRecordID = PromotionRecordID;
+        GetPromotionDate(PromotionRecordID);
+        BindCandidatesAlreadyPromoted(PromotionRecordID);
+        ShowModal("#divCandidatesAlreadyPromoted");
+    }
+
+    function PrintPromotionDecision() {
+        CheckIsDeserveExtraBonusNotSpecifiedValueForCandidatesAlreadyPromoted(VariablePromotionRecordID);
+    }
+
+    function PrintReport(VariablePromotionRecordID) {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/PromotionsRecords/PrintPromotionDecision/")' + VariablePromotionRecordID + "/" + 0);
+        ShowModal("#divReportModal");
+    }
+
+    function BindCandidatesAlreadyPromoted(PromotionRecordID) {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "/PromotionsRecords/GetCandidatesAlreadyPromotedByPromotionRecordID/" + PromotionRecordID,
+            success: function (result) {
+                $("#tblCandidatesAlreadyPromoted").DataTable({
+                    destroy: true,
+                    "searching": true,
+                    "ordering": true,
+                    "paging": true,
+                    "data": result.data,
+                    "columns": [
+                         {
+                             "data": "EmployeeCodeNo",
+                             "autowidth": true
+                         },
+                          {
+                              "data": "EmployeeNameAr",
+                              "autowidth": true
+                          },
+                          {
+                              "data": "JobName",
+                              "autowidth": true
+                          },
+                          {
+                              "data": "JobCode",
+                              "autowidth": true
+                          },
+                          {
+                              "data": "OrganizationName",
+                              "autowidth": true
+                          },
+                          {
+                              "data": "RankName",
+                              "autowidth": true
+                          },
+                          {
+                              "data": "AbsentDays",
+                              "autowidth": true
+                          },                          
+                          {
+                              "data": "IsApproved",
+                              "autowidth": false,
+                              "render": RenderCheckBox
+                          },
+                          {
+                              "data": "IsDeserveExtraBonus",
+                              "autowidth": false,
+                              "render": function (data, type, row) {
+                                  var TrueChecked;
+                                  var FalseChecked;
+                                  if (row.IsDeserveExtraBonus == null) {
+                                      TrueChecked = '';
+                                      FalseChecked = '';
+                                  }
+                                  else if (row.IsDeserveExtraBonus) {
+                                      TrueChecked = 'checked';
+                                      FalseChecked = '';
+                                  }
+                                  else if (!row.IsDeserveExtraBonus) {
+                                      TrueChecked = '';
+                                      FalseChecked = 'checked';
+                                  }
+                                  var disabled = '';
+                                  if (row.IsApproved) {
+                                      disabled = 'disabled'
+                                  }
+
+                                  content = "<input type='radio' name='IsDeserveExtraBonus"+ row.PromotionRecordEmployeeID + "' value='True'  " + TrueChecked + "  " + disabled + "  onclick='UpdatePromotionRecordQualificationPoint(" + JSON.stringify(row) + ", $(this).val())' /> نعم";
+                                  content = content + "<input type='radio' name='IsDeserveExtraBonus" + row.PromotionRecordEmployeeID + "'  value='False' " + FalseChecked + " " + disabled + " onclick='UpdatePromotionRecordQualificationPoint(" + JSON.stringify(row) + ", $(this).val())'/> لا";
+                                  //Url = 'RemoveJobCategorieQualification(' + '\'' + row.JobCategoryQualificationID + '\'' + ');';
+                                  return content//'<a onclick="' + Url + '"><span Class="glyphicon glyphicon-remove" /></a>'
+                              }
+                          }
+                    ]
+                });
+            }
+              , error: function (xhr, status, error) {
+                  $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+              }
+        });
+
+    }
+
+    function UpdatePromotionRecordQualificationPoint(row, IsDeserveExtraBonus) {
+
+        var PromotionRecordEmployeeVM = {
+            PromotionRecordEmployeeID: row.PromotionRecordEmployeeID,
+            IsDeserveExtraBonus: IsDeserveExtraBonus,
+        };
+
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Content("~/PromotionsRecords/UpdatePromotionRecordEmployeeIsDeserveExtraBonus")",
+            data: JSON.stringify(PromotionRecordEmployeeVM),
+            //success: OnSuccess,
+            error: OnFailure
+        });
+
+    }
+
+    function OnSuccess(data) {
+        //$("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText),"")');
+        //console.log('OnSuccess data', data, $(".points" + data.PromotionRecordQualificationPointID).val());
+
+        //$(".points" + data.PromotionRecordQualificationPointID).html(data.Points);
+        //$(".points").fadeIn(400);
+        //$(".points" + data.PromotionRecordQualificationPointID)
+        //	.fadeOut(1000, function () {
+        //	    $(".points" + data.PromotionRecordQualificationPointID).html(data.Points);
+        //	    $(".points" + data.PromotionRecordQualificationPointID).fadeIn(400);
+        //	});
+
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function CheckIsDeserveExtraBonusNotSpecifiedValueForCandidatesAlreadyPromoted(PromotionRecordID) {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "/PromotionsRecords/CheckIsDeserveExtraBonusNotSpecifiedValueForCandidatesAlreadyPromoted/" + PromotionRecordID,
+            success: function (data, status, xhr) {
+                SetPromotionDate(PromotionRecordID);
+            }
+            , error: function (xhr, status, error) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+            }
+        });
+    }
+
+    function GetPromotionDate(PromotionRecordID) {
+  
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "/PromotionsRecords/GetPromotionDate/" + PromotionRecordID,
+            success: function (data, status, xhr) {
+                $('#txtPromotionDate').val(data); 
+            }
+            , error: function (xhr, status, error) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+            }
+        });
+    }
+
+    //-----=========
+ 
+
+    //--------=========
+
+    function SetPromotionDate(PromotionRecordID) {
+        var PromotionDate = $('#txtPromotionDate').val();
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "/PromotionsRecords/SetPromotionDate/" + PromotionRecordID + "/" + PromotionDate,
+            success: function (data, status, xhr) {
+                PrintReport(PromotionRecordID);
+            }
+            , error: function (xhr, status, error) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "Error")');
+            }
+        });
+    }
+
+    //function ShowCandidatesAlreadyPromoted() {
+    //    ShowCandidatesAlreadyPromotedByPromotionRecordID(272);
+    //}
+</script>
+
+<button id="btnOpenCandidatesAlreadyPromotedPopup" class="btn btn-default" title="@Resources.Globalization.SearchAboutPromotionsRecordsDecisionPrintTooltipText" type="button">
+    <span class="glyphicon glyphicon-print"></span> @Resources.Globalization.ShowPromotionsRecordsDecisionPrintText
+</button>
+<div class="modal fade" id="divCandidatesAlreadyPromotedModal">
+    <div class="modal-dialog" style="width:1100px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="float:left">
+                    <button data-dismiss="modal" class="close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    @Resources.Globalization.CandidatesAlreadyPromotedText
+                </div>
+            </div>
+            <div class="modal-body" style="height:600px">
+                <div class="row">
+                    <div class="col-md-2">
+                        <label class="control-label">@Resources.Globalization.PromotionDateText</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="TxtHijriPicker form-control" id="txtPromotionDate" readonly />
+                    </div>
+                </div>
+                <br />
+                <table id="tblCandidatesAlreadyPromoted" class="table table-responsive table-hover dataTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                            <td>@Resources.Globalization.EmployeeNameArText</td>
+                            <td>@Resources.Globalization.NewJobNameText</td>
+                            <td>@Resources.Globalization.JobNoText</td>
+                            <td>@Resources.Globalization.OrganizationNameText</td>
+                            <td>@Resources.Globalization.RankNameText</td>
+                            <td>@Resources.Globalization.AbsenceText</td>
+                            <td>@Resources.Globalization.ApproveText</td>
+                            <td>@Resources.Globalization.IsDeserveExtraBonusText</td>
+                            @*<td></td>*@
+                        </tr>
+                    </thead>
+                </table>
+                <div class="row text-center">
+                    <div class="tab-content">
+                        <button class="btn btn-default" onclick="PrintPromotionDecision()">@Resources.Globalization.PrintText</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="margin:0">
+                <button class="btn btn-default" data-dismiss="modal">@Resources.Globalization.CloseText</button>
+            </div>
+        </div>
+    </div>
+</div>

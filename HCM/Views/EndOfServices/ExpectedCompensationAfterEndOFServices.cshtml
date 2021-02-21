@@ -1,0 +1,143 @@
+﻿@using HCM.Classes.Enums
+@{
+    ViewBag.Title = @Resources.Globalization.ExpectedCompensationAfterEndOfServicesText;
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+            $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+        }
+
+        $("#btnSearch").click(function () {
+
+             $("#tblExpectedCompensationAfterEndOfServices").DataTable({
+             "destroy": true,
+                "ajax": {
+                    "url": "@Url.Content("/EndOfServices/GetExpectedCompensationAfterEndOfServices/")" + ($("#txtEmployeeCodeNo").val() != '' ? $("#txtEmployeeCodeNo").val() : '0'),
+                    "type": "get",
+                    "datatype": "json"
+                },
+                 dom: 'Bfrtip',
+                "initComplete": function (settings, json) {
+                    $(".dt-buttons").addClass("text text-left");
+                    $(".dt-buttons span").html('@Resources.Globalization.ExportToExcelText');
+                },
+                "buttons": ['excel'],
+                "columns": [
+                    {
+                        "data": "EmployeeCodeNo",
+                        "autowidth": true
+                    },
+                    {
+                        "data": "EmployeeNameAr",
+                        "autowidth": true
+                    },
+                    {
+                        "data": "RankCategoryName",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "RankName",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "OrganizationName",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "HiringDate",
+                        "autowidth": true,
+                        "render" : RenderDate
+                    },
+                    {
+                        "data": "BasicSalary",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "TotalSalary",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "RemainingNormalVacationBalance",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "NormalVacationCompensation",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "ServicePeriod",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "EndOfService",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "Age",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "RemainingYearsCountInService",
+                        "autowidth": true,
+                    },
+                    {
+                        "data": "AdditionalCompensation",
+                        "autowidth": true,
+                    },
+                ]
+              });
+        });
+    });
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.ExpectedCompensationAfterEndOfServicesDescText
+    </div>
+    <div class="panel-body">
+        <table class="table table-responsive table-hover">
+            <tr>
+                <td style="width:10%">
+                    <label class="control-label">@Resources.Globalization.EmployeeCodeNoText</label>
+                </td>
+                <td style="width:20%">
+                    <input id="txtEmployeeCodeNo" type="text" class="form-control" />
+                </td>
+                <td style="width:70%">
+                    <button id="btnSearch" type="button" class="btn btn-default">@Resources.Globalization.SearchText</button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <table id="tblExpectedCompensationAfterEndOfServices" class="table table-responsive table-hover">
+                        <thead>
+                            <tr>
+                                <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                                <td>@Resources.Globalization.EmployeeNameArText</td>
+                                <td>@Resources.Globalization.RankCategoryNameText</td>
+                                <td>@Resources.Globalization.RankNameText</td>
+                                <td>@Resources.Globalization.OrganizationNameText</td>
+                                <td>@Resources.Globalization.HiringDateText</td>
+                                <td>@Resources.Globalization.BasicSalaryText</td>
+                                <td>@Resources.Globalization.TotalSalaryText</td>
+                                <td>@Resources.Globalization.TotalRemainingText</td>
+                                <td>@Resources.Globalization.NormalVacationCompensationText</td>
+                                <td>@Resources.Globalization.ServicePeriodText</td>
+                                <td>@Resources.Globalization.EndOfServiceCompensationText</td>
+                                <td>@Resources.Globalization.EmployeeAgeText</td>
+                                <td>@Resources.Globalization.RemainingYearsInServiceText</td>
+                                <td>@Resources.Globalization.AdditionalCompensationText</td>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+</div>
+

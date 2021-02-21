@@ -1,0 +1,228 @@
+﻿@using HCM.Models
+@{
+    ViewBag.Title = @Resources.Globalization.HomePageText;
+}
+
+
+<style>
+    html, body {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        font-family: Helvetica;
+    }
+
+    #tree {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<div id="editForm" style="display:none; text-align:center; position:absolute; border: 1px solid #aeaeae;width:300px;background-color:#F57C00;z-index:10000;">
+    <div style="padding: 10px 0 10px 0; background-color:#039BE5; color: #ffffff;">Edit Form</div>
+    <div>
+        <div style="padding: 10px 0 5px 0;">
+            <label style="color:#ffffff; width:50px; display:inline-block;" for="name">Name</label>
+            <input style="background-color:#FFCA28" id="name" value="" />
+        </div>
+        <div style="padding: 5px 0 10px 0;">
+            <label style="color:#ffffff; width:50px; display:inline-block;" for="title">Title</label>
+            <input style="background-color:#FFCA28" id="title" value="" readonly />
+        </div>
+        <div style="padding: 5px 0 15px 0;">
+            <button class="btn btn-default" id="btnCancel">Cancel</button>
+            <button class="btn btn-default" id="btnSave">Save</button>
+        </div>
+    </div>
+</div>
+
+<div id="tree" />
+
+
+
+
+
+@*<div id="editForm" style="display:none; text-align:center; position:absolute; border: 1px solid #aeaeae;width:300px;background-color:#F57C00;z-index:10000;">
+        <div style="padding: 10px 0 10px 0; background-color:#039BE5; color: #ffffff;">Edit Form</div>
+        <div>
+            <div style="padding: 10px 0 5px 0;">
+                <label style="color:#ffffff; width:50px; display:inline-block;" for="name">Name</label>
+                <input style="background-color:#FFCA28" id="name" value="" />
+            </div>
+            <div style="padding: 5px 0 10px 0;">
+                <label style="color:#ffffff; width:50px; display:inline-block;" for="title">Title</label>
+                <input style="background-color:#FFCA28" id="title" value="" readonly />
+            </div>
+            <div style="padding: 5px 0 15px 0;">
+                <button class="btn btn-default" id="cancel">Cancel</button>
+                <button class="btn btn-default" id="save">Save</button>
+            </div>
+        </div>
+    </div>*@
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+    var editForm = function () {
+        this.nodeId = null;
+    };
+
+    editForm.prototype.init = function (obj) {
+        var that = this;
+        this.obj = obj;
+        this.editForm = document.getElementById("editForm");
+        this.nameInput = document.getElementById("name");
+        this.titleInput = document.getElementById("title");
+        this.cancelButton = document.getElementById("cancel");
+        this.saveButton = document.getElementById("save");
+
+        this.cancelButton.addEventListener("click", function () {
+            that.hide();
+        });
+
+        this.saveButton.addEventListener("click", function () {
+            var node = chart.get(that.nodeId);
+            node.name = that.nameInput.value;
+            node.title = that.titleInput.value;
+
+            chart.updateNode(node);
+            that.hide();
+        });
+    };
+
+    editForm.prototype.show = function (nodeId) {
+        this.nodeId = nodeId;
+
+        var left = document.body.offsetWidth / 2 - 150;
+        this.editForm.style.display = "block";
+        this.editForm.style.left = left + "px";
+        var node = chart.get(nodeId);
+        this.nameInput.value = node.name;
+        this.titleInput.value = node.title;
+    };
+
+    editForm.prototype.hide = function (showldUpdateTheNode) {
+        this.editForm.style.display = "none";
+    };
+
+
+    var chart = new OrgChart(document.getElementById("tree"), {
+        mouseScrool: OrgChart.action.none,
+        nodeMenu: {
+            edit: { text: "@Resources.Globalization.EditText" },
+            add: { text: "@Resources.Globalization.AddText" },
+            remove: { text: "@Resources.Globalization.DeleteText" }
+        },
+        editUI: new editForm(),
+        nodeBinding: {
+            field_0: "name",
+            field_1: "title"
+        },
+        nodes: [
+            { id: 1, name: "Amber McKenzie", title: "CEO" },
+            { id: 2, pid: 1, name: "", title: "IT Manager" },
+            { id: 3, pid: 1, name: "Peter Stevens", title: "HR Manager" }
+        ]
+    });
+
+</script>
+
+
+
+
+
+
+
+@*<div class="jumbotron">
+        <h1>ASP.NET</h1>
+        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
+        <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Getting started</h2>
+            <p>
+                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
+                enables a clean separation of concerns and gives you full control over markup
+                for enjoyable, agile development.
+            </p>
+            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+            <h2>Get more libraries</h2>
+            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
+            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+            <h2>Web Hosting</h2>
+            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
+            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+        </div>
+    </div>*@
+
+
+@*<div class="jumbotron">
+        <h1>ASP.NET</h1>
+        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
+        <p><a href="http://asp.net" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+    </div>*@
+@*<div class="row">
+        <div class="col-md-12">
+            <img src="~/Content/Images/PieChartAll.png" class="col-md-12" />
+        </div>
+
+    </div>*@
+@*<div class="mainDashboard">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel panel-default" style="padding:0px">
+                    <div class="panel-heading ">
+                        الاجازات
+                    </div>
+                    <div class="panel-body">
+                        <img src="~/Content/Images/PieChartVacation.png" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="panel panel-default" style="padding:0px">
+                    <div class="panel-heading ">
+                        الانتداب
+                    </div>
+                    <div class="panel-body">
+                        <img src="~/Content/Images/PieChartIntedab.png"  />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel panel-default" style="padding:0px">
+                    <div class="panel-heading ">
+                        التكاليف
+                    </div>
+                    <div class="panel-body">
+                        <img src="~/Content/Images/PieChartTakalef.png"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="panel panel-default" style="padding:0px">
+                    <div class="panel-heading ">
+                        الابتعاث
+                    </div>
+                    <div class="panel-body">
+                        <img src="~/Content/Images/PieChartIbteaath.png" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@

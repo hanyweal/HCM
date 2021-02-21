@@ -1,0 +1,280 @@
+﻿@model HCM.Models.OverTimesViewModel
+@using HCM.Classes.Enums
+@using HCMBLL.Enums
+@using HCM.Models
+
+@{
+    ViewBag.Title = Resources.Globalization.EditOverTimeText;
+}
+
+<script type="text/javascript">
+
+    function OkFunction() {
+        var iframe = $("#divReportModal .modal-body #iframeReportContent");
+        iframe.attr('src', '@Url.Content("~/OverTimes/PrintOverTime/")' + '@Model.OverTimeID');
+        ShowModal("#divReportModal");
+    }
+
+    $(document).ready(function () {
+        bindOverTimesDays();
+        BindOverTimeEmployees();
+        $("#btnAdd").click(function () {
+            var Employee = {};
+            if ($("#txtEmployeeCodeNo").val() != '') {
+                Employee = {
+                    EmployeeCareerHistory: {
+                        EmployeeCareerHistoryID: $("#hdnFldEmployeeCareerHistoryID").val(),
+                        EmployeeCode: {
+                            EmployeeCodeID: $("#hdnFldEmployeeCodeID").val(),
+                            EmployeeCodeNo: $("#txtEmployeeCodeNo").val(),
+                            Employee: {
+                                FirstNameAr: $("#txtEmployeeNameAr").val()
+                            }
+                        }
+                    }
+                }
+            }
+
+            var ObjToPassForAdd =
+           {
+               OverTimeID: '@Model.OverTimeID',
+               OverTimeStartDate: $('#txtOverTimeStartDate').val(),
+               OverTimeEndDate: $('#txtOverTimeEndDate').val(),
+               OverTimePeriod: $('#txtOverTimePeriod').val(),
+               OverTimeKind: { OverTimeKindID: $('#ddlOverTimeKinds').val() },
+               OverTimeDetailRequest: Employee
+           };
+            $.ajax({
+                type: "POST"
+                //, dataType: "json"     :  if you pass 'dataType: "json"' then there is always parseerror from .ajax call and return type is 'HttpResponseMessage'
+               , contentType: "application/json; charset=utf-8"
+               , url: "@Url.Content("~/OverTimes/CreateOverTimeDetailDB")"
+               , data: JSON.stringify(ObjToPassForAdd)
+               , success: function () {
+                   AddingSuccess();
+                   BindOverTimeEmployees();
+               }
+            , error: function (xhr, status, error) {
+                AddingFailure();
+            }
+            });
+        });
+    });
+
+    function OnSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText), "OkFunction")');
+    }
+
+    function OnFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Failure, "Error")');
+    }
+
+    function AddingSuccess() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.AddingDoneText))');
+        ResetEmployeeData();
+    }
+
+    function AddingFailure() {
+        OnFailure();
+    }
+
+    function closeEmployeesPopup(EmployeeCodeID) {
+        GetEmployeeData(EmployeeCodeID);
+    }
+
+
+    function bindOverTimesDays() {
+        var calendar = $.calendars.instance($('islamic').val());
+        var date = calendar.parseDate('yyyy-mm-dd', $('#txtOverTimeStartDate').val());
+        $('#txtOverTimesDays').calendarsPicker({
+            calendar: jQuery.calendars.instance('ummalqura', 'ar'),
+            dateFormat: 'yyyy-mm-dd',
+            minDate: '@Model.OverTimeStartDate.ToString(System.Configuration.ConfigurationManager.AppSettings["DateFormat"])',
+            maxDate: '@Model.OverTimeEndDate.Value.ToString(System.Configuration.ConfigurationManager.AppSettings["DateFormat"])',
+            multiSelect: $('#txtOverTimePeriod').val(),
+            onDate: function () { 
+                return { selectable: false };
+            }
+        });
+    }
+
+    function BindOverTimeEmployees() {
+        $("#tblOverTimeEmployees").DataTable({
+            destroy: true,
+            "searching": false,
+            "ordering": false,
+            "paging": false,
+            "ajax": {
+                "url": "/OverTimes/GetOverTimeEmployeesByOverTimeID/" + '@Model.OverTimeID',
+                "type": "get",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.EmployeeCodeNo",
+                    "autowidth": true
+                },
+                {
+                    "data": "EmployeeCareerHistory.EmployeeCode.Employee.EmployeeNameAr",
+                    "autowidth": true
+                }
+            ]
+        });
+    }
+
+</script>
+<p style="font-size:larger">@Resources.Globalization.EditOverTimeText</p>
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-9">
+                @Resources.Globalization.EditOverTimeDescText
+            </div>
+            <div class="col-md-3" style="text-align:left">
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @using (Ajax.BeginForm("Edit", "OverTimes", new AjaxOptions()
+        {
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            HttpMethod = "POST",
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <span class="control-label">@Resources.Globalization.OverTimeBasicInfoText</span><br />
+            <table class="table table-responsive table-condensed table-striped">
+                <tbody>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.OverTimeStartDate, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.OverTimePeriod, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.OverTimeEndDate, new { @class = "control-label" })</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.OverTimeStartDate, new
+                       {
+                           @class = "form-control",
+                           @id = "txtOverTimeStartDate",
+                           @readonly = "readonly",
+                           @Value = Model.OverTimeStartDate.ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                       })
+                            @Html.ValidationMessageFor(model => model.OverTimeStartDate, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @*<input type="number" id="txtOverTimePeriod" min="1" class="form-control" />*@
+                            @Html.TextBoxFor(model => model.OverTimePeriod, new { @class = "form-control", @id = "txtOverTimePeriod", @type = "number", @readonly = "readonly" })
+                            @Html.HiddenFor(model => model.OverTimeID)
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.OverTimeEndDate, new
+                                                                       {
+                                                                           @class = "form-control",
+                                                                           @id = "txtOverTimeEndDate",
+                                                                           @readonly = "readonly",
+                                                                           @Value = ((DateTime)Model.OverTimeEndDate).ToString(@System.Configuration.ConfigurationManager.AppSettings["DateFormat"])
+                                                                       })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label> @Resources.Globalization.AddOverTimesDaysText </label>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            @Html.TextBoxFor(model => model.OverTimesDays, new { @class = "form-control", @id = "txtOverTimesDays", @readonly = "readonly", @onClick = "SetSelectedHijri();" })
+                        </td>
+                        <td>
+                            <div id="TextBoxContainer">
+
+                            </div>
+                        </td>
+                        <td>
+                            @*@Html.TextBoxFor(model => model.OverTimesDays, new { @class = "form-control", @id = "txtOverTimesDays", @readonly = "readonly" ,@onClick="SetSelectedHijri();"})*@
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.WeekWorkHoursAvg, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.FridayHoursAvg, new { @class = "control-label" })</td>
+                        <td>@Html.LabelFor(model => model.SaturdayHoursAvg, new { @class = "control-label" })</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.WeekWorkHoursAvg, new { @class = "form-control", @id = "txtOverTimeWeekWorkHoursAvg", @min = "0", @value = "0" })
+                            @Html.ValidationMessageFor(model => model.WeekWorkHoursAvg, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.FridayHoursAvg, new { @class = "form-control", @id = "txtFridayHoursAvg", @min = "0", @value = "0" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.SaturdayHoursAvg, new { @class = "form-control", @id = "txtSaturdayHoursAvg", @min = "0", @value = "0" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.Requester, new { @class = "control-label" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(model => model.Requester, new { @class = "form-control", @id = "txtRequester" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>@Html.LabelFor(model => model.Tasks, new { @class = "control-label" })</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            @Html.TextAreaFor(model => model.Tasks, new { @class = "form-control", @id = "txtTasks" })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <span class="control-label">@Resources.Globalization.EmployeesText</span>
+            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { })
+            <input id="btnAdd" type="button" class="btn btn-default" value="@Resources.Globalization.AddText" />
+            <table id="tblOverTimeEmployees" class="table table-responsive table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <td>@Resources.Globalization.EmployeeCodeNoText</td>
+                        <td>@Resources.Globalization.EmployeeNameArText</td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <center>
+                                <input type="submit" class="btn btn-default" name="BtnSave" value="@Resources.Globalization.SaveText" />
+                            </center>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div class="panel-footer">
+        @using (Html.BeginForm("Index", "OverTimes"))
+        {
+            <input type="submit" class="btn btn-default" name="BtnBack" value="@Resources.Globalization.BacktoListText" />
+        }
+    </div>
+</div>
+
+@*@section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }*@
+

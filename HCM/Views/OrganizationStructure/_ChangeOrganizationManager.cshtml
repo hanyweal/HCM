@@ -1,0 +1,115 @@
+﻿@model HCM.Models.OrganizationStructureViewModel
+@using HCM.Models
+@{
+    ViewBag.Title = Resources.Globalization.OrganizationStructureText;
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+    bool IsCreatePermission = new HCM.Classes.Helpers.PSAHelper().IsCreatePermission(Request.Url.ToString());
+    bool IsUpdatePermission = new HCM.Classes.Helpers.PSAHelper().IsUpdatePermission(Request.Url.ToString());
+    bool IsDeletePermission = new HCM.Classes.Helpers.PSAHelper().IsDeletePermission(Request.Url.ToString());
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#btnChangeOrgManager").attr("disabled", false);
+         
+        $("#btnChangeOrgManager").click(function () {
+
+            if ($("#hdnFldOrganizationID").val() != '') {
+                var Organization =
+                {
+                    OrganizationID: $('#hdnFldOrganizationID').val(), 
+                    ManagerCodeID: $('#hdnFldEmployeeCodeIDChangeOrgManager').val(), 
+                };
+
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    url: "@Url.Content("~/OrganizationStructure/ChangeOrganizationManager")",
+                    data: JSON.stringify(Organization),
+                    success: OnChangeManagerSuccess,
+                    error: OnChangeManagerFailure
+                });
+            }
+        });
+
+    });
+
+    function OnChangeManagerSuccess(data) {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Success, Globals.Utilities.RemoveSpace(@Resources.Globalization.SavedDoneAlertText))');
+        
+        if (chart) {
+            chart.updateNode(data);
+        }
+    }
+     
+    function OnChangeManagerFailure() {
+        $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "/Error")');
+    }
+
+    function GetOrgByOrganizationID(OrganizationID) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            url: "/OrganizationStructure/GetByOrganizationID",
+            data: "{ 'id' :" + OrganizationID + "}",
+            success: function (d) { 
+                $('#hdnFldEmployeeCodeIDChangeOrgManager').val(d.data.EmployeeCodeID);
+                $('#txtEmployeeCodeNoChangeOrgManager').val(d.data.EmployeeCodeNo);
+                $('#txtEmployeeNameArChangeOrgManager').val(d.data.EmployeeNameAr);
+                $('#txtEmployeeNameEnChangeOrgManager').val(d.data.EmployeeNameEn);
+
+                $('#txtEmployeeIDNoChangeOrgManager').val(d.data.EmployeeIDNo);
+            },
+            error: function (xhr, status, error) {
+                $("#divAlert").load('@RazorHelper.ShowAlert(this, HCM.Classes.Enums.ModalTypes.Failure, "/Error")');
+            }
+        });
+    }
+     
+    function ResetOrganizationStructure() {
+        $('#hdnFldEmployeeCodeIDChangeOrgManager').val('');
+        $('#txtEmployeeCodeNoChangeOrgManager').val('');
+        $('#txtEmployeeNameArChangeOrgManager').val('');
+        $('#txtEmployeeNameEnChangeOrgManager').val('');
+        $('#txtEmployeeIDNoChangeOrgManager').val('');
+    } 
+
+</script>
+
+<div class="panel panel-default" style="padding:0px">
+    <div class="panel-heading">
+        @Resources.Globalization.AssginingManagersToOrganizationsDescText
+    </div>
+    <div class="panel-body">
+        <table class="table table-responsive table-condensed table-striped">
+            <tr class="row">
+                <td class="col-md-12">
+                    <div class="panel panel-default" style="padding:0px">
+                        <div class="panel-heading">
+                            @Resources.Globalization.OrganizationManagerText
+                        </div>
+                        <div class="panel-body">
+                            @Html.Partial("~/Views/Shared/_EmployeesPopup.cshtml", new EmployeesViewModel() { IsShowAllFields = false, PartialName = "ChangeOrgManager" })
+                        </div>
+                    </div>
+                </td>
+            </tr> 
+        </table>
+    </div>
+    <div class="panel-footer">
+        <div class="row">
+            <div class="col-md-9"></div>
+            <div class="col-md-3">
+                @if (IsUpdatePermission)
+                {
+                    <input id="btnChangeOrgManager" type="submit" class="btn btn-default" value="@Resources.Globalization.SaveText" disabled="disabled" />
+                }
+                @*@if (IsDeletePermission)
+                {
+                    <input id="btnDelete" type="submit" class="btn btn-default" value="@Resources.Globalization.DeleteText" disabled="disabled" />
+                }*@
+            </div>
+        </div>
+    </div>
+</div>

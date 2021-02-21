@@ -1,0 +1,13 @@
+﻿@helper DisplayImage(byte[] Image)
+{
+    if (Image != null)
+    {
+        string ImageBase64 = Convert.ToBase64String(Image);
+        string ImageSrc = string.Format("data:image/gif;base64,{0}", ImageBase64);
+        <img id="ImgUserPic" class="img-circle img-responsive" src="@ImageSrc" />
+    }
+    else
+    {
+        <img id="ImgUserPic" class="img-circle img-responsive" src="/Content/Images/profilepic.png" />
+    }
+}
